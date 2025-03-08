@@ -61,4 +61,22 @@ public class heap {
         }
         return ans;
     }
+    public int lastStoneWeight(int[] stones) { // Leetcode 1046
+        PriorityQueue<Integer> maxBoi=new PriorityQueue<>(Collections.reverseOrder());
+        maxBoi.add(0);
+        for(int stone : stones)
+            maxBoi.add(stone);
+        while(maxBoi.size()>1)
+        {
+            int x=maxBoi.poll();
+            int y=maxBoi.poll();
+            if(x==y)
+                continue;
+            else
+            {
+                maxBoi.add(x-y);
+            }
+        }
+        return maxBoi.peek();
+    }
 }
