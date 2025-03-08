@@ -1,3 +1,4 @@
+import java.util.*;
 public class ListNode2 {
     public class ListNode {
         int val;
@@ -88,4 +89,51 @@ public class ListNode2 {
         t.next=t.next.next;
         return head;
     }
+    public ListNode sortList(ListNode head) { // leetcode 148
+        if(head==null || head.next==null)
+            return head;
+        ListNode temp=head;
+        List<Integer> ans=new ArrayList<>();
+        while(temp!=null)
+        {
+            ans.add(temp.val);
+            temp=temp.next;
+        }
+        Collections.sort(ans);
+        int i=0;
+        temp=head;
+        while(temp!=null)
+        {
+            temp.val=ans.get(i++);
+            temp=temp.next;
+        }
+        return head;
+
+    }
+    class LRUCache { // leetcode 146
+        LinkedHashMap<Integer,Integer> ans;
+        public LRUCache(int capacity) {
+            ans=new LinkedHashMap<Integer,Integer>(capacity,0.75f,true){
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+                    return size() > capacity;
+                }
+            };
+    
+        }
+        
+        public int get(int key) {
+            // if(ans.containsKey(key))
+            //     return ans.get(key);
+            // else
+            //     return -1;
+            return ans.getOrDefault(key,-1);
+        }
+        
+        public void put(int key, int value) {
+            ans.put(key,value);
+            
+        }
+    }
+    
 }
