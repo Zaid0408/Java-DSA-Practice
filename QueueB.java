@@ -129,9 +129,9 @@ public class QueueB {
         sq.add(1);
         sq.add(2);
         sq.add(3);
-        System.out.print(sq.peek()+" ");
+        System.out.println(sq.peek()+" ");
         sq.remove();
-        System.out.println();
+        System.out.println(sq.peek()   +" ");
         sq.add(4);
         // while(!sq.isEmpty()){
         //     System.out.println(sq.peek());

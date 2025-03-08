@@ -1,6 +1,34 @@
 import java.util.*;
 class array{
     Scanner sc = new Scanner(System.in);
+    public static List<List<Integer>> generateSubarraysBruteForce(int[] arr) { // O(n^3) to find all subarrays of a given array
+        List<List<Integer>> result = new ArrayList<>();
+        
+        int n = arr.length;
+        for (int i = 0; i < n; i++) { // Start index
+            for (int j = i; j < n; j++) { // End index
+                List<Integer> subarray = new ArrayList<>();
+                for (int k = i; k <= j; k++) { // Extract elements
+                    subarray.add(arr[k]);
+                }
+                result.add(subarray);
+            }
+        }
+        return result;
+    }
+    public static List<List<Integer>> generateSubarraysOptimized(int[] arr) { // O(n^2) to find all subarrays of a given array. Optimized approach
+        List<List<Integer>> result = new ArrayList<>();
+        
+        int n = arr.length;
+        for (int i = 0; i < n; i++) { // Start index
+            List<Integer> subarray = new ArrayList<>();
+            for (int j = i; j < n; j++) { // Extend the subarray
+                subarray.add(arr[j]); // Append element instead of using a third loop
+                result.add(new ArrayList<>(subarray)); // Store copy of subarray
+            }
+        }
+        return result;
+    }
     public static void maxSubArrSum(int nums[])//Calculate Maximum SubArray Sum in O(n^2) complexity.
     {
         int maxSum=Integer.MIN_VALUE;
@@ -263,7 +291,10 @@ class array{
         // int prices[]={7,1,5,3,6,4};
         // System.out.println("Max profit is "+BestTimeToBuySellStock(prices));
         int height[]={1,8,6,2,5,4,8,3,7};
-        TrappedRainWater(height);
+        //TrappedRainWater(height);
+        int arr[]={1,2,3,4};
+        System.out.println(generateSubarraysBruteForce(arr));
+        System.out.println(generateSubarraysOptimized(arr));
 
     }
 }
