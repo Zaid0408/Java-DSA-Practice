@@ -29,6 +29,23 @@ class array{
         }
         return result;
     }
+    public long subArrayRanges(int[] nums) { // Leetcode 2104 , refer to above code for finding all sub arrays
+        int n = nums.length;
+        long answer=0;
+        for (int i = 0; i < n; i++) { // Start index of the subarray
+            // List<Integer> subarray=new ArrayList<>();
+            int mini=Integer.MAX_VALUE;
+            int maxi=Integer.MIN_VALUE;
+            for (int j = i; j < n; j++) { // Extend the subarray
+                //subarray.add(nums[j]); // Append element instead of using a third loop will form a sub array each time an element is added.
+                mini=Math.min(mini,nums[j]);
+                maxi=Math.max(maxi,nums[j]);
+                answer+=(maxi-mini);
+                
+            }
+        }
+        return answer;
+    }
     public static void maxSubArrSum(int nums[])//Calculate Maximum SubArray Sum in O(n^2) complexity.
     {
         int maxSum=Integer.MIN_VALUE;
