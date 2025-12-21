@@ -87,6 +87,70 @@ class array{
         }
         System.out.println("Max Subarray Sum using Kadane Algo is  "+maxSum);
     }
+
+    /*
+    *  Check if array is sorted and rotatted Leetcode 1752
+        // find pivot elements (where the array must be rotated at the given position) must be at most one 
+        // bcuz for array to be rotated and sorted there will only be one occurence of an elemnt x < y where x is smallest and y is largest post that it wont be rotatable
+        
+    */
+    public boolean check(int[] nums) {
+        int ans =0;
+        int n=nums.length;
+        for (int i =0;i<n;i++)
+        {
+            if(nums[i] > nums[(i+1)%n])
+                ans++;
+        }
+
+        return ans<=1;
+    }
+    // leetcode 485
+    public int findMaxConsecutiveOnes(int[] nums) {
+        int count=0;
+        int maxCount=-1;
+        for(int i=0;i<nums.length;i++)
+        {
+            if(nums[i]==0){
+                maxCount=Math.max(maxCount,count);
+                count =0;
+            }   
+            else
+                count++;
+        } 
+
+        return Math.max(maxCount,count);
+    }
+    // leetcode 283 
+    // instead of counting zeroes count non zeroes and move them to the front
+    public void moveZeroes(int[] nums) {
+        int count =0;
+        int n=nums.length;
+        for(int i=0;i<n;i++)
+        {
+            if(nums[i]!=0){
+                nums[count]=nums[i];
+                count++;
+            }
+        }
+        while(count<n){
+            nums[count]=0;
+            count++;
+        }
+    }
+    // leetcode 136
+    public int singleNumber(int[] nums) {
+        // XOR operation n^n=0 n^0=n 
+        // if all are appearing twice then n^n wil give zero for all , p[ost that there will be only one odd number left which will be doing x^0 hence we will get x
+        int ans=0;
+
+        for(int i=0;i<nums.length;i++)
+        {
+            ans=ans^nums[i];
+        }
+        return ans;
+    }
+
     public static void AppearTwice(int nums[]){
         Arrays.sort(nums);
         for(int i=0;i<nums.length-1;i++)

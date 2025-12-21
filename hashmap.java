@@ -223,7 +223,7 @@ public class hashmap {
         
         // hm.clear();// to clear the hashmap
         // System.out.println(hm);
-        LinkedHashMap <Integer,String> lhm = new LinkedHashMap<>();// Same order as insertion order
+        // LinkedHashMap <Integer,String> lhm = new LinkedHashMap<>();// Same order as insertion order
         // all operations are same as above 
         // doubly linked list inside
 
