@@ -377,6 +377,29 @@ class array{
         }
         return ans;
     }
+
+    // leetcode 2149. Rearrange Array Elements by Sign
+    public int[] rearrangeArray(int[] nums) {
+        // brute force : two arrs one for storing positive other for negative , loop once in nums add in order for both positive and negative, combine both the arrays by each index one by one Time O(2n) space O(n)
+        // little optimal : Time O(n) space O(n), since arr to begin with positive number and follow pos,neg,pos,neg format , we can say that every pos number will be at even index and every ne number will be at an odd index
+        int pos=0,neg=1,n=nums.length;
+        int arr[]=new int[n];
+        for(int i=0;i<n;i++)
+        {
+            if(nums[i]>0)
+            {
+                arr[pos]=nums[i];
+                pos +=2;
+            }
+            else{
+                arr[neg]=nums[i];
+                neg +=2;
+            }
+            
+        }
+
+        return arr;
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
