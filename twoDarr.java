@@ -16,16 +16,20 @@ class twoDarr {
                 System.out.print(matrix[i][col_end]+", ");
             }
             col_end-=1;
-            for(int i=col_end;i>=col_start;i--)//go left
-            {
-                System.out.print(matrix[row_end][i]+", ");
+            if(row_start<= row_end){
+                for(int i=col_end;i>=col_start;i--)//go left
+                {
+                    System.out.print(matrix[row_end][i]+", ");
+                }
+                row_end-=1;
             }
-            row_end-=1;
-            for(int i=row_end;i>=row_start;i--)//go up
-            {
-                System.out.print(matrix[i][col_start]+", ");
+            if(col_start<= col_end){
+                for(int i=row_end;i>=row_start;i--)//go up
+                {
+                    System.out.print(matrix[i][col_start]+", ");
+                }
+                col_start+=1;
             }
-            col_start+=1;
        }
     }
     public static int DiagnolSum(int matrix[][])
@@ -78,6 +82,52 @@ class twoDarr {
         visited[r][c]=false;
         return ans;
     }
+    public boolean searchMatrix(int[][] matrix, int target) {
+        /* 
+        *. Start from top right corner. if the element is greater than target, move left else move down. 
+        */
+        int i = 0, j = matrix[0].length - 1; // start from top right corner
+
+        while (i < matrix.length && j >= 0) {
+            if (matrix[i][j] == target) {
+                return true;
+            } else if (matrix[i][j] > target) {
+                j--; 
+            } else {
+                i++; 
+            }
+        }
+        return false;
+    }
+
+    /*
+    * For rotation of matrix : 90 = transpose + reverse row
+    180 = reverse row + reverse column
+    270 = transpose + reverse col
+     */
+    public void rotate(int[][] matrix) {
+        // For rotation of matrix : 90 = transpose + reverse row
+        int m=matrix.length;
+        for(int i=0;i<m;i++)
+        {
+            for(int j=i;j<m;j++)
+            {
+                int s=matrix[i][j];
+                matrix[i][j]=matrix[j][i];
+                matrix[j][i]=s;
+            }
+        }
+
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<m/2;j++)
+            {
+                int s=matrix[i][j];
+                matrix[i][j]=matrix[i][m-1-j];
+                matrix[i][m-1-j]=s;
+            }
+        }
+    }
     public static void main(String[] args) {
         int matrix[][]={{1,2,3,4},
                         {5,6,7,8},
@@ -86,8 +136,8 @@ class twoDarr {
                         };
         //System.out.println(matrix.length);
         //System.out.println(matrix[0].length);
-        //SpiralMat(matrix);
-        System.out.println(DiagnolSum(matrix));
+        SpiralMat(matrix);
+        //System.out.println(DiagnolSum(matrix));
         
     }
 }
