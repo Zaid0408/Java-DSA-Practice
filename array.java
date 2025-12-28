@@ -363,6 +363,20 @@ class array{
             j++;
         }
     }
+
+    // leetcode 1299 replace elements with greatest element on right side
+    public int[] replaceElements(int[] arr) {
+        int n=arr.length;
+        int ans[]=new int[n];
+        int max=-1;
+        ans[n-1]=max;
+        for(int i=n-2;i>=0;i--)
+        {
+            max=Math.max(max,arr[i+1]);
+            ans[i]=max;
+        }
+        return ans;
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
