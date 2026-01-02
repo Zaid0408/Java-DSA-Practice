@@ -400,6 +400,63 @@ class array{
 
         return arr;
     }
+
+    // leetcode 31. Next Permutation
+    /**
+     * 
+     * 2,1,5,4,3,0,0 
+    1. Longer prefix matching first , find a breaking point where a[I] < a[I+1] , break point here is between 1,5 where a(i)=1 
+        1. If we did not find this breaking point that means this array is the greatest permutation, reverse to get the answer.
+    2. Post that find an element on the right side of a[I] which is greater than  a[I] but the smallest greater element . In this case among 5,4,3 it is 3 
+    3. a(i) will be come this greatest element ie 3 .
+    4. Post that we have 5,4,1,0,0 remaining, sort these remaining numbers in ascending order to get the final answer as 2,3,0,0,1,4,5. 
+        1. Or instead of sorting we already knew that since the breaking point is where we see the dip from the increasing order, som simply reverse all the remains elements
+        2. 5,4,1,0,0 is what we get after swapping 3 and 1 , since this arrangement is already increasing we can just reverse the remaining to get the array. 
+     */
+    public void nextPermutation(int[] nums) {
+        // step 1 : longest prefix matching and finding the break point.
+        int n=nums.length;
+        int index=-1;
+        for(int i=n-2;i>=0;i--)
+        {
+            if(nums[i]<nums[i+1])
+            {
+                index=i;
+                break; // do not forget 
+            }
+        }
+        if (index==-1) // no breaking point found this means we are at highest possible permutation
+        {
+            reverse(nums,0,n-1);
+            return;
+        }
+
+        // step 2 : swap element at index with the element which is the samllest greater number than with index
+        for(int i=n-1;i>=index;i--)
+        {
+            if(nums[i]>nums[index])
+            {
+                int s=nums[i];
+                nums[i]=nums[index];
+                nums[index]=s;
+                break; // do not forget.
+            }
+        }
+
+        // step 3 : reverse all the numbers from index to n. all numbers from n-1 to index+1 are always in increasing order reverse to get the array
+        reverse(nums,index+1,n-1);
+
+    }
+    public void reverse(int[] nums,int i,int j)
+    {
+        while (i < j) {
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+            i++;
+            j--;
+        }
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
