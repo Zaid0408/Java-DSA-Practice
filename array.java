@@ -457,6 +457,44 @@ class array{
             j--;
         }
     }
+
+    // leetcode 56. Merge Intervals
+    // [[1,1],[2,2],[0,0],[2,3],[1,3],[3,5],[2,3],[3,5]]
+    // [[0,0],[1,1],[1,3],[2,2],[2,3],[2,3],[3,5],[3,5]]
+    // [[0,0],[1,1],[1,3],[3,5],[3,5]] 
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        List<int[]> ans=new ArrayList<>();
+        int p[]=intervals[0];
+        for(int i=1;i<intervals.length;i++)
+        {
+            if(p[1]>= intervals[i][0]) // able to merge then merge the interval in p arr
+            {
+               p[1]= Math.max(intervals[i][1],p[1]);
+            }
+            else // if merge not possible just add to results
+            {
+                ans.add(p);
+                p=intervals[i];
+            }
+
+        }
+        ans.add(p);
+        return ans.toArray(new int[ans.size()][]);
+    }
+    // leetcode 88 Merge Sorted Array
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int a=m-1,b=n-1,c=m+n-1;
+        // merge conditions : b> a c-- b comes at pos c esle a>b c-- a comes in place of c
+        while( b>=0)
+        {
+            if (a >= 0 && nums1[a] > nums2[b]) { // is done so that it does not compare when a beocmes -1.
+                nums1[c--] = nums1[a--];
+            } else {
+                nums1[c--] = nums2[b--];
+            }
+        }
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
