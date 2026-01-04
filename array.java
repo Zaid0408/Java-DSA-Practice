@@ -72,6 +72,38 @@ class array{
         }
         System.out.println("Max Subarray Sum is "+maxSum);
     }
+    // letcode 560 Subarray Sum Equals K 
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer,Integer> map=new HashMap<>();
+            //(sum,index)
+        map.put(0,1);
+        int sum=0,ans=0;
+        for(int j=0;j<nums.length;j++)
+        {
+            sum+=nums[j];
+            if(map.containsKey(sum-k))
+                ans+=map.get(sum-k);
+            map.put(sum,map.getOrDefault(sum,0)+1);
+        }
+        // or we can do this : o(n^2) complexity O(N) space
+        // int sum=0,ans=0;
+        // int prefix[]=new int[nums.length+1];
+        // prefix[0]=nums[0];
+        // for(int i=1;i<=nums.length;i++)
+        // {
+        //     prefix[i]=prefix[i-1]+nums[i-1];
+        // }
+        // for(int i=0;i<nums.length;i++)
+        // {
+        //     for(int j=i+1;j<=nums.length;j++)
+        //     {
+        //         if(prefix[j]-prefix[i]==k)
+        //             ans +=1;
+        //     }
+        // }
+
+        return ans;
+    }
     public static void KadaneAlgo(int nums[])
     {//Maximum Sub Array Sum
         int currSum=0,maxSum=Integer.MIN_VALUE;
@@ -494,6 +526,53 @@ class array{
                 nums1[c--] = nums2[b--];
             }
         }
+    }
+
+    public int longestConsecutive(int[] nums) {
+        // Solution os to sort and count . keep track of the curent sequence and the longest sequence . n log n time complexity.
+        // if(nums.length==1)
+        //     return 1;
+        // Arrays.sort(nums);
+        // int cur=0,ans=0,prev=Integer.MIN_VALUE;
+
+        // for(int i=0;i<nums.length;i++)
+        // {
+        //     if(nums[i]-1==prev)
+        //     {
+        //         cur++;
+        //     }
+        //     else if(nums[i]-1 >prev){
+        //         cur=1;
+        //     }
+        //     prev=nums[i];
+        //     ans=Math.max(ans,cur);
+        // }
+        // return ans;
+
+
+        // Also correct soln: 
+        HashSet<Integer> hs = new HashSet<>();
+        for (int num : nums) {
+            hs.add(num);
+        }
+
+        int ans = 0;
+
+        for (int ele : hs) {
+            // start only if ele is the beginning of a sequence
+            if (!hs.contains(ele - 1)) {
+                int cur = 1;
+                int x = ele;
+
+                while (hs.contains(x + 1)) {
+                    x++;
+                    cur++;
+                }
+
+                ans = Math.max(ans, cur);
+            }
+        }
+        return ans;
     }
     
     public static void main(String[] args) {
