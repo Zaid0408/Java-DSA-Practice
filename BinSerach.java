@@ -64,4 +64,85 @@ public class BinSerach {
         return ans;
     }
 
+    // floor and ceil : floor is the largest element less than or equal to x and ceil is the smallest element greater than or equal to x
+    public int[] getFloorAndCeil(int[] nums, int x) {
+        int ans=nums.length-1;
+         int s=0,e=nums.length-1;
+         boolean found= false;
+         while(s<=e)
+         {
+             int mid=(s+e)/2;
+             if(nums[mid]>=x){
+                 ans=mid;
+                 e= mid-1;    
+                 if(nums[mid]==x)
+                     found=true;
+             }
+             else if(nums[mid]<x)
+             {
+                 s=mid+1;
+             }
+         }
+         if(found)
+             return new int[]{nums[ans],nums[ans]};
+         return new int[]{nums[ans-1],nums[ans]};
+     }
+
+    //leetcode 34. Find First and Last Position of Element in Sorted Array
+    public int[] searchRange(int[] nums, int target) {
+        int s=0,e=nums.length-1;
+        int mid=0;
+        int ans[]=new int[]{-1,-1};
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(nums[mid]>target)
+                e=mid-1;
+            else if(nums[mid]<target)
+                s=mid+1;
+            else if(nums[mid]==target)
+            {
+                int x=mid,y=mid;
+                while(x< nums.length-1 && nums[x+1]==target)
+                    x++;
+                while(y>0 && nums[y-1]==target)
+                    y--;
+                ans[0]=y;
+                ans[1]=x;
+                return ans; // important otherwise time limit exceded
+            }
+        }
+
+        return ans;
+    }
+    // count Occurences : Count occurences of given element in sorted array
+    public int countOccurrences(int[] arr, int target) {
+        // Your code goes here
+        int s=0,e=arr.length-1;
+        int mid=0;
+        int ans=-1;
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(arr[mid]>target)
+                e=mid-1;
+            else if(arr[mid]<target)
+                s=mid+1;
+            else if(arr[mid]==target)
+            {
+                int x=mid,y=mid;
+                while(x< arr.length-1 && arr[x+1]==target)
+                    x++;
+                while(y>0 && arr[y-1]==target)
+                    y--;
+                // ans[0]=y;
+                // ans[1]=x;
+                ans=x-y+1;
+                return ans;
+            }
+        }
+
+        return ans;
+    }
+
 }
