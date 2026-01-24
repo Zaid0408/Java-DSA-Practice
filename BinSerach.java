@@ -145,4 +145,33 @@ public class BinSerach {
         return ans;
     }
 
+    // leetcode 33 : Search in rotated sorted array
+    public int search(int[] nums, int target) { 
+        // Figure out the sorted part of the array left or right? then check if target comes in left part or right part based on relation with mid element
+        // Atleast one half of the array is sorted compulsorily
+        int ans=-1;
+        int s=0,e=nums.length-1;
+        int mid=0;
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(nums[mid]==target)
+                ans=mid;
+            if (nums[s] <= nums[mid]) { // assuming if left part of the array us sorted (from start to mid), nothing to do with the target
+                if (target > nums[mid] || target < nums[s]) // target is on right side 
+                    s = mid + 1;
+                else
+                    e = mid - 1;
+            }
+            else { // assuming if right part of the array us sorted (from mid to end), nothing to do with the target
+                if (target < nums[mid] || target > nums[e]) // target is on left side
+                    e = mid - 1;
+                else
+                    s = mid + 1;
+            }
+        }
+
+        return ans;
+    }
+
 }
