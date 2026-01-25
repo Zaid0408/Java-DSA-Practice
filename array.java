@@ -330,32 +330,6 @@ class array{
         }
         return -1;
     }
-    public static int findMin(int[] nums) {
-        // Find minimum element in a rotated sorted array
-        // input: nums = [4,5,6,7,0,1,2] Output: 0 input: nums= [3,4,5,1,2] Output: 1
-        int mini=Integer.MAX_VALUE;
-        int start=0,end=nums.length-1;
-        while(start<=end)
-        {
-            if(nums[start]<nums[end]) // when we reach a sorted subarray then the leftmost lement is the smallest element in the list
-            {
-                mini=Math.min(nums[start],mini);
-                break;
-            }
-            int mid=(start+end)/2;
-            mini=Math.min(nums[mid],mini);
-            if(nums[start]<=nums[mid])
-            {   // mid > start means mid is part of left sorted array and is larger than start hence search right sorted array part
-                start=mid+1;
-                
-            }
-            else
-            {
-                end=mid-1;
-            }
-        }
-        return mini;
-    }
 
 //     Given an array nums of size n, return the majority element.
 //     The majority element is the element that appears more than ⌊n / 2⌋ times. 
