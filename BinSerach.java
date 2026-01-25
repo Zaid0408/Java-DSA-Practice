@@ -233,12 +233,70 @@ public class BinSerach {
         return mini;
     }
 
+    // Find out how many times the array is rotated ,same as above but return the index  
+    public int findKRotation(ArrayList<Integer> nums) { // find the smallest number in the arry , the index at which it is present is the number of times the array is rotated
+        int mini=-1;
+        int start=0,end=nums.size()-1;
+        while(start<=end)
+        {
+            if(nums.get(start)<nums.get(end)) // when we reach a sorted subarray then the leftmost lement is the smallest element in the list
+            {
+                mini=start;
+                break;
+            }
+            int mid=(start+end)/2;
+            mini=Math.min(mid,mini);
+            if(nums.get(start)<=nums.get(mid))
+            {   // mid > start means mid is part of left sorted array and is larger than start hence search right sorted array part
+                start=mid+1;
+                
+            }
+            else
+            {
+                end=mid-1;
+            }
+        }
+        return mini;
+    }
+
     public static void main(String[] args)
     {
         //         m
         //         s e   
         int arr[]={1,0,1,1,1};
         System.out.println(searchOnly(arr, 0));
+    }
+
+    // leetcode 540 Single Element in a Sorted Array
+    public int singleNonDuplicate(int[] nums) {
+        int n=nums.length;
+        if(nums.length==1)
+            return nums[0];
+        if(nums[0]!=nums[1])
+            return nums[0];
+        if(nums[n-1]!=nums[n-2])
+            return nums[n-1];
+// From left side for all pairs 1st occurrence is at even position 2nd at odd (even,odd)
+
+        // From the target element all pairs to the right : 1st occurrence at odd pos but 2nd at even (odd,even)
+
+        int mid=0,s=1,e=nums.length-2;
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(nums[mid-1]!= nums[mid] && nums[mid]!=nums[mid+1])
+                return nums[mid];
+            if((mid%2==1 && nums[mid]==nums[mid-1]) || (mid%2==0 && nums[mid]==nums[mid+1])) // if odd position and mid and mid-1 are same then no single element on the left hence go right 
+            {
+                s=mid+1;
+            } // or if even position and mid and mid+1 are same then no single element on the right hence go left , can be checked with above conditions to verify 
+            else 
+            {
+                e=mid-1;
+            } // everything else go left
+        }
+        return -1;
+
     }
 
 }
