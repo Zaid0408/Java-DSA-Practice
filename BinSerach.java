@@ -1,5 +1,9 @@
 import java.util.*;
 
+
+// For identifying binary searach : see this in question : SEARCH , SORT these keywords together then yes 
+// If we have to search andthe question has a sorrting tendency or exactly sorted then yes
+// aslo if we run out of time while solving for o(n) then yes
 public class BinSerach {
     
     // lowerbound problem to find the index of the smallest element greater than or equal to x. nums[i]>=x
@@ -69,13 +73,13 @@ public class BinSerach {
         int ans=nums.length-1;
          int s=0,e=nums.length-1;
          boolean found= false;
-         while(s<=e)
+         while(s<=e) // lower bound code
          {
              int mid=(s+e)/2;
              if(nums[mid]>=x){
                  ans=mid;
                  e= mid-1;    
-                 if(nums[mid]==x)
+                 if(nums[mid]==x) // if the element is found then floor and ceil are same
                      found=true;
              }
              else if(nums[mid]<x)
@@ -220,8 +224,8 @@ public class BinSerach {
             }
             int mid=(start+end)/2;
             mini=Math.min(nums[mid],mini);
-            if(nums[start]<=nums[mid])
-            {   // mid > start means mid is part of left sorted array and is larger than start hence search right sorted array part
+            if(nums[start]<=nums[mid]) // mid > start means mid is part of left sorted array and is larger than start hence search right sorted array part
+            {   // this is done as since the array is rotated so nums[start] is NOT the samllest element ex: [4,5,6,7,0,1,2] ; [3,4,5,1,2]
                 start=mid+1;
                 
             }
@@ -276,7 +280,7 @@ public class BinSerach {
             return nums[0];
         if(nums[n-1]!=nums[n-2])
             return nums[n-1];
-// From left side for all pairs 1st occurrence is at even position 2nd at odd (even,odd)
+// From left side of target element for all pairs 1st occurrence is at even position 2nd at odd (even,odd)
 
         // From the target element all pairs to the right : 1st occurrence at odd pos but 2nd at even (odd,even)
 
@@ -286,7 +290,7 @@ public class BinSerach {
             mid=(s+e)/2;
             if(nums[mid-1]!= nums[mid] && nums[mid]!=nums[mid+1])
                 return nums[mid];
-            if((mid%2==1 && nums[mid]==nums[mid-1]) || (mid%2==0 && nums[mid]==nums[mid+1])) // if odd position and mid and mid-1 are same then no single element on the left hence go right 
+            if((mid%2==1 && nums[mid]==nums[mid-1]) || (mid%2==0 && nums[mid]==nums[mid+1])) // if odd position and mid and mid-1 are same then no single element on the left hence go right , either of these conditions satisfy condition one
             {
                 s=mid+1;
             } // or if even position and mid and mid+1 are same then no single element on the right hence go left , can be checked with above conditions to verify 
@@ -297,6 +301,31 @@ public class BinSerach {
         }
         return -1;
 
+    }
+
+    public int findPeakElement(int[] nums) {
+        int s=1,e=nums.length-2,mid=0;
+        if(nums.length==1)
+            return 0;
+        if(nums[e+1]>nums[e])
+            return e+1;
+        if(nums[0]>nums[1])
+            return 0;
+        
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(nums[mid]>nums[mid-1] && nums[mid]>nums[mid+1])
+                return mid;
+            else if(nums[mid]>nums[mid-1])
+                s=mid+1;
+            else // not writing the other condition nums[mid]>nums[mid+1] as 1. if nums[mid] is less than both then it getsv stuck in an infinite loop
+                e=mid-1;
+        }
+        // even if nums[mid] is less than both the elements, i know that the peak is there on either side as condition is to return any peak so go anyway from there
+        // also satisfies the condition nums[mid]>nums[mid+1]
+
+        return -1;
     }
 
 }
