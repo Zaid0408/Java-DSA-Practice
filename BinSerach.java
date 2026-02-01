@@ -383,7 +383,7 @@ public class BinSerach {
 
     // leetcode 875 Koko eating bananas
 
-    public int minEatingSpeed(int[] piles, int h) {
+    public int minEatingSpeed(int[] piles, int h) { // Time Complexity O(nlogn)
         // to find min integer k which is the banana eaten per hour to finish all bananas within time h in hours
         // ex: if we say avg eating of banana ie k=3 then piles[0]=3 -> 1 hr, 6->2 7->3 hrs(3+3+1) and 11->4(3+3+3+2) adding all times comes around 10 > h=8 hence not correct 
         // if we say avg eating of banana ie k=4 then piles[0]=3 -> 1 hr, 6->2 7->2 hrs(4+3) and 11->3(4+3+3) adding all times comes around 8 == h=8 hence  correct 
@@ -425,7 +425,7 @@ public class BinSerach {
     }
 
     // leetcode 1283 Find the Smallest Divisor Given a Threshold , same logic as koko eating bananas // same pattern as searching in search space 
-    public int smallestDivisor(int[] nums, int threshold) {
+    public int smallestDivisor(int[] nums, int threshold) { // Time Complexity O(nlogn)
         int s=1,e=-1,mid=0,ans=-1;
         long divisor=0;
         for(int i=0;i<nums.length;i++)
@@ -458,6 +458,95 @@ public class BinSerach {
             div += (int)Math.ceil((double)nums[i]/(double)mid);
         }
         return div;
+    }
+
+    // leetcode 1011 Capacity to ship Packages within D days // same logic as above 
+    public int shipWithinDays(int[] weights, int days) {
+        int s=1,e=0,mid=0,ans=-1,capacity=0;
+        for(int i=0; i<weights.length;i++)
+        {
+            s=Math.max(s,weights[i]); // starting with maximum weight as it reduces calculation INSTEAD OF starting from 1:  time saved 
+            e+=weights[i];
+        }
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            capacity=numOfDays(weights,mid);
+            if(capacity<=days)
+            {
+                e=mid-1;
+                ans=mid;
+            }
+            else
+            {
+                s=mid+1;
+            }
+        }
+
+        return ans;
+    }
+
+    public int numOfDays(int weights[],int mid)
+    {
+        int day = 1; 
+        int currentLoad = 0;
+        for(int i = 0; i < weights.length; i++) {
+            // If adding current weight exceeds capacity, start a new day
+            if(currentLoad + weights[i] > mid) {
+                day++;
+                currentLoad = 0;  // Reset load for new day
+            }
+            currentLoad += weights[i];
+        }
+        
+        return day;
+    
+    }
+
+    // leetcode 1482 Minimum Number of Days to Make m Bouquets // same logic as above
+    public int minDays(int[] bloomDay, int m, int k) {
+        if(m*k>bloomDay.length)
+            return -1;
+        
+        int s=Integer.MAX_VALUE, e=-1,mid=0,ans=-1,countM=0;
+        for(int i=0;i<bloomDay.length;i++) // find ideal range
+        {
+            s=Math.min(s,bloomDay[i]);
+            e=Math.max(e,bloomDay[i]);
+        }
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            countM=help(bloomDay,mid,k);
+            if(countM>=m)
+            {
+                e=mid-1;
+                ans=mid;
+            }
+            else
+            {
+                s=mid+1;
+            }
+        }
+        return ans;
+    }
+    public int help(int[] bloomDay, int mid, int k)
+    {
+        int cnt=0,noOfB=0;
+        for(int i=0;i<bloomDay.length;i++)
+        {
+            if(bloomDay[i]>mid)
+            {
+                noOfB += (cnt/k);
+                cnt=0;
+            }
+            else
+            {
+                cnt++; 
+            }
+        }
+        noOfB += (cnt/k);
+        return noOfB;
     }
 
 }
