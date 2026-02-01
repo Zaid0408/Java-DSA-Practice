@@ -379,6 +379,8 @@ public class BinSerach {
         return 0;
     }
 
+// advanced binary search problems : they deal with search space more than search elements , finding the serach space is crucila for us to solve this problem
+
     // leetcode 875 Koko eating bananas
 
     public int minEatingSpeed(int[] piles, int h) {
@@ -389,12 +391,12 @@ public class BinSerach {
         int e=-1,s=1,mid=0,ans=-1;
         for(int i=0;i<piles.length;i++)
         {
-            e=Math.max(piles[i],e);
+            e=Math.max(piles[i],e); // search space calculation between s and e 
         }
         while(s<=e)
         {
             mid=(s+e)/2;
-            if(helper(piles,mid,h)==1)
+            if(helper(piles,mid,h)==1) // helper function that compares with mid 
             {
                 e=mid-1;
                 ans=mid;
@@ -420,6 +422,42 @@ public class BinSerach {
         if(count>h)
             return 0;
         return 1;
+    }
+
+    // leetcode 1283 Find the Smallest Divisor Given a Threshold , same logic as koko eating bananas // same pattern as searching in search space 
+    public int smallestDivisor(int[] nums, int threshold) {
+        int s=1,e=-1,mid=0,ans=-1;
+        long divisor=0;
+        for(int i=0;i<nums.length;i++)
+        {
+            e=Math.max(e,nums[i]);
+        }
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            divisor=helper(nums,mid);
+            if(divisor <= threshold)
+            {
+                e=mid-1;
+                ans=mid;
+            }
+            else
+            {
+                s=mid+1;
+            }
+
+        }
+
+        return ans;
+    }
+    public long helper(int nums[],int mid)
+    {
+        long div=0;
+        for(int i=0;i<nums.length;i++)
+        {
+            div += (int)Math.ceil((double)nums[i]/(double)mid);
+        }
+        return div;
     }
 
 }
