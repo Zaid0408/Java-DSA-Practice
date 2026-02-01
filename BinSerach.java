@@ -4,6 +4,7 @@ import java.util.*;
 // For identifying binary searach : see this in question : SEARCH , SORT these keywords together then yes 
 // If we have to search andthe question has a sorrting tendency or exactly sorted then yes
 // aslo if we run out of time while solving for o(n) then yes
+// more than sorting also if we seeb any particular range in the question then yes we can use binary search ex: square root nth root koko eating bananas etc 
 public class BinSerach {
     
     // lowerbound problem to find the index of the smallest element greater than or equal to x. nums[i]>=x
@@ -376,6 +377,49 @@ public class BinSerach {
         if(ans==m)
             return 1;
         return 0;
+    }
+
+    // leetcode 875 Koko eating bananas
+
+    public int minEatingSpeed(int[] piles, int h) {
+        // to find min integer k which is the banana eaten per hour to finish all bananas within time h in hours
+        // ex: if we say avg eating of banana ie k=3 then piles[0]=3 -> 1 hr, 6->2 7->3 hrs(3+3+1) and 11->4(3+3+3+2) adding all times comes around 10 > h=8 hence not correct 
+        // if we say avg eating of banana ie k=4 then piles[0]=3 -> 1 hr, 6->2 7->2 hrs(4+3) and 11->3(4+3+3) adding all times comes around 8 == h=8 hence  correct 
+        // k=5,6,7... are all correct but since we need min integer hence only correct answer is k=4
+        int e=-1,s=1,mid=0,ans=-1;
+        for(int i=0;i<piles.length;i++)
+        {
+            e=Math.max(piles[i],e);
+        }
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(helper(piles,mid,h)==1)
+            {
+                e=mid-1;
+                ans=mid;
+            }
+            else
+            {
+                s=mid+1;
+            }
+        }
+
+        return ans;
+
+    }
+    public int helper(int[] piles, int mid,int h)
+    {
+        long count=0;
+        for(int i=0;i<piles.length;i++)
+        {
+            if(piles[i]%mid>0)
+                count += 1 ;
+            count += piles[i]/mid;
+        }
+        if(count>h)
+            return 0;
+        return 1;
     }
 
 }
