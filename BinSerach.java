@@ -268,8 +268,11 @@ public class BinSerach {
     {
         //         m
         //         s e   
-        int arr[]={1,0,1,1,1};
-        System.out.println(searchOnly(arr, 0));
+        // int arr[]={1,0,1,1,1};
+        // System.out.println(searchOnly(arr, 0));
+
+        int mat[][]= {{1,2,3,1,8},{2,3,4,5,6}};
+        System.out.println(findPeakGrid(mat));
     }
 
     // leetcode 540 Single Element in a Sorted Array
@@ -547,6 +550,62 @@ public class BinSerach {
         }
         noOfB += (cnt/k);
         return noOfB;
+    }
+
+    public static int[] findPeakGrid(int[][] mat) { // same logic as peak element 1
+        if(mat.length==1 && mat[0].length==1)
+            return new int[]{0,0};
+        if(mat.length>1 && mat[0].length==1)
+        {
+            int pos=Max(mat,0);
+            return new int[]{pos,0};
+        }
+        int s=0,e=mat[0].length-1,mid=0,pos=-1;
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            pos=Max(mat,mid);
+            if(mid-1>=0 && mid+1<mat[0].length)
+            {
+                if(mat[pos][mid-1]>mat[pos][mid])
+                    e=mid-1;
+                else if(mat[pos][mid+1]>mat[pos][mid])
+                    s=mid+1;
+                else
+                    return new int[]{pos,mid};
+            }
+            else if(mid-1>=0 && mid+1>=mat[0].length) // rightmost column
+            {
+                if(mat[pos][mid-1]>mat[pos][mid])
+                    e=mid-1;
+                else
+                    return new int[]{pos,mid};
+            }
+            else if(mid+1<mat[0].length && mid-1<0)
+            {
+                if(mat[pos][mid+1]>mat[pos][mid])
+                    s=mid+1;
+                else
+                    return new int[]{pos,mid};
+            }
+        }
+
+        return new int[]{-1,-1};
+
+    }
+    public static int Max(int mat[][],int mid)
+    {
+        int p=-1;
+        int max=Integer.MIN_VALUE;
+        for(int i=0;i<mat.length;i++)
+        {
+            if(mat[i][mid]>max)
+            {
+                max=mat[i][mid];
+                p=i;
+            }
+        }
+        return p;
     }
 
 }
