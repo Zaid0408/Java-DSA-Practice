@@ -89,6 +89,55 @@ class strings {
         }
         return ans;
     }
+    public String reverseWords(String s) {
+        String m="",c="";
+        for(int i=s.length()-1;i>=0;i--)
+        {
+            if(s.charAt(i)!=' ')
+            {
+                c=c+s.charAt(i);
+            }
+            else
+            {
+                if(c.length()>0){
+                    c=rev(c);
+                    System.out.println(c);
+                    m= m+c+" ";
+                    c="";
+                }
+            }
+        }
+        if(c.length() > 0) { // check for last word in the string as the else statement does not account for that 
+            c = rev(c);
+            m = m + c;
+        } else {
+            m = m.trim();   // Remove trailing space from last word added
+        }
+        
+        return m.trim();
+    }
+    public String rev(String k)
+    {
+        String l="";
+        for(int i=k.length()-1;i>=0;i--)
+        {
+            l=l+k.charAt(i);
+        }
+        return l;
+    }
+    public String largestOddNumber(String num) {
+        
+        for(int i=num.length()-1;i>=0;i--)
+        {
+            char ch = num.charAt(i);
+            if((ch-'0')%2 !=0){
+                return num.substring(0, i + 1);
+            }
+        }
+        
+        return "";
+        
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
