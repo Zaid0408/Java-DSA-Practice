@@ -60,6 +60,35 @@ class strings {
         return sb.toString();
     }
 
+    // letcode 1021 Remove Outermost Parentheses
+    // whenever you encounter a first '(' remove it and when ct of '(' == ct of ')' then remove ')' again if you encounter '(' then you remove it. 
+    // as it is given balanced parentheses already so after removing ')' 
+    // you will always find next element is '(' and it will be again first for next consecutive sequence..
+    public String removeOuterParentheses(String s) {
+        String ans="";
+        int c1=0;
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            if(ch=='(')
+            {
+                if(c1>0)
+                {
+                    ans=ans+ch;
+                }
+                c1++;
+            }
+            else if(ch==')')
+            {
+                c1--;
+                if(c1>0)
+                {
+                    ans=ans+ch;
+                }
+            }
+        }
+        return ans;
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
