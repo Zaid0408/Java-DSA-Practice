@@ -89,6 +89,7 @@ class strings {
         }
         return ans;
     }
+    // leetcode 151 Reverse Words in a String
     public String reverseWords(String s) {
         String m="",c="";
         for(int i=s.length()-1;i>=0;i--)
@@ -125,6 +126,7 @@ class strings {
         }
         return l;
     }
+    // leetcode 1903 Largest Odd Number in String
     public String largestOddNumber(String num) {
         
         for(int i=num.length()-1;i>=0;i--)
@@ -137,6 +139,24 @@ class strings {
         
         return "";
         
+    }
+    // Leetcode 205 Isomorphic Strings
+    public boolean isIsomorphic(String s, String t) {
+        if(s.length()!=t.length())
+            return false;
+
+        int a[]=new int[200];
+        int b[]=new int[200];
+        for(int i=0;i<s.length();i++)
+        {
+            if(a[s.charAt(i)] != b[t.charAt(i)])
+                return false;
+
+            a[s.charAt(i)]= i+1;     
+            b[t.charAt(i)]= i+1;        
+        }
+
+        return true;
     }
     public static void main(String[] args) {
         String path="WNEENESENNN";
