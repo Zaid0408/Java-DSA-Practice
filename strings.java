@@ -158,6 +158,38 @@ class strings {
 
         return true;
     }
+    // leetcode 796 Rotate String brute force fails at test case : s ="defdefdefabcabc" and goal = "defdefabcabcdef"
+
+    public boolean rotateString(String s, String goal) { 
+        if(s.length()!=goal.length())
+            return false;
+        char ch=s.charAt(0);
+        int idx=-1;
+        for(int i=0;i<goal.length();i++)
+        {
+            if(ch==goal.charAt(i)){
+                idx=i;
+                break;
+            }
+        }
+        if(idx==-1)
+            return false;
+        for(int i=0,j=idx;i<s.length() && j<goal.length();i++)
+        {
+            if(s.charAt(i)!=goal.charAt(j))
+                return false;
+            j=(j+1)%goal.length();
+        }
+
+        return true;
+    }
+    // Leetcode 796 Rotate String optimized better than above 
+    public boolean rotateStringOptimized(String s, String goal) {
+        if (s.length() != goal.length()) {
+            return false;
+        }
+        return (s + s).contains(goal);
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
