@@ -306,9 +306,84 @@ class strings {
         }
         return sb.toString();
     }
+    //leetcode 3 Longest Substring Without Repeating Characters
+    // REMEMBER THE BELOW PATTERN FOR SUBSTRING/SLIDING WINDOW PROBLEMS
+    public int lengthOfLongestSubstring(String s) {
+        int freaky[]=new int[128];
+        int left=0,ans=0;
+        for(int right=0;right<s.length();right++)
+        {
+            freaky[s.charAt(right)]++; // append frequesncy of the given chararacter
+            // check invalid condition to move the window
+            while(freaky[s.charAt(right)]>1) // because without repeating means frequency has to be one to be included in the window
+            {
+                freaky[s.charAt(left)]--; //reduce the occurence as this will get removed from the window
+                left++;
+
+            }
+            ans= Math.max(ans, right-left+1); // where right-left+1 is the size of the sliding window
+        }
+        return ans;
+    }
+    // Count number of substrings with k distinct characters
+    /*
+    * Problem Statement: You are given a string s and a positive integer k. Return the number of substrings that contain exactly k distinct characters.
+    Example 1:
+    Input:
+    s = "pqpqs", k = 2  
+    Output:
+    7  
+    Explanation:
+    All substrings with exactly 2 distinct characters:  
+    "pq", "pqp", "pqpq", "qp", "qpq", "pqs", "qs"  
+    Total = 7.
+
+    Example 2:
+    Input:
+    s = "abcbaa", k = 3  
+    Output:
+    5  
+    Explanation:
+    All substrings with exactly 3 distinct characters:  
+    "abc", "abcb", "abcba", "bcba", "cbaa"  
+    Total = 5.
+    */
+
+    public static int atMostKDistinct(String s, int k) {
+        int left = 0, res = 0;
+        Map<Character, Integer> freq = new HashMap<>();
+
+        // Iterate with right pointer
+        for (int right = 0; right < s.length(); right++) {
+            freq.put(s.charAt(right), freq.getOrDefault(s.charAt(right), 0) + 1);
+
+            // Shrink window if distinct characters exceed k
+            while (freq.size() > k) {
+                char leftChar = s.charAt(left);
+                freq.put(leftChar, freq.get(leftChar) - 1);
+                if (freq.get(leftChar) == 0) freq.remove(leftChar);
+                left++;
+            }
+
+            // Add count of substrings in current window
+            res += (right - left + 1);
+        }
+        return res;
+    }
+
+    // Function to count substrings with exactly k distinct characters
+    public static int countSubstrings(String s, int k) {
+        return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
-        System.out.println(compress2("aaabbcccdd"));
+       // System.out.println(compress2("aaabbcccdd"));
+
+        String s = "abcbaa";
+        int k = 3;
+
+        // Output the result
+        System.out.println("Count: " + countSubstrings(s, k)); // Output: 7
     }
 }
