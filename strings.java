@@ -1,6 +1,24 @@
 import java.util.*;
+import java.util.stream.Collectors;
 class strings {
     Scanner sc = new Scanner(System.in);
+    // BAD - String concatenation
+    // String sb1 = "";
+    // sb1 = sb1 + ch;  // Creates a NEW string object every single time!
+
+    // GOOD - StringBuilder
+    // StringBuilder sb = new StringBuilder();
+    // sb.append(ch);  // Modifies the SAME object in place
+
+
+// **Why string concatenation is slow:**
+
+// Strings in Java are **immutable** — they cannot be changed once created. So every `+` operation:
+// 1. Creates a brand new String object in memory
+// 2. Copies all existing characters into it
+// 3. Adds the new character
+// 4. Discards the old String (garbage collection)
+
     public static float ShortestPath(String s)
     {
         int x=0,y=0;
@@ -189,6 +207,104 @@ class strings {
             return false;
         }
         return (s + s).contains(goal);
+    }
+    // leetcode 242 Valid Anagram
+    public boolean isAnagram(String s, String t) {
+        int [] count = new int[26];
+
+        for(int i=0; i<s.length(); i++) {
+            char c = s.charAt(i);
+            int index = (int)c - (int)'a';
+            count[index]++;
+        }
+        for(int i=0; i<t.length(); i++) {
+            char c = t.charAt(i);
+            int index = (int)c - (int)'a';
+            count[index]--;
+        }
+        for (int i=0; i<count.length; i++) {
+            if (count[i] != 0) return false;
+        }
+        return true;
+    }
+    // leetcode 451 Sort Characters By Frequency
+    // very slow code 
+    // Time Complexity: O(n + k log k)
+
+    // O(n) to build the frequency map
+    // O(k log k) for stream sorting where k = unique characters
+    // O(n) to build the result string
+    // Since k ≤ 26 (lowercase) or 128 (ASCII), sort is nearly O(1) in practice
+
+    // Space Complexity: O(n + k)
+
+    // O(k) for the HashMap
+    // O(n + k) for the LinkedHashMap + result string
+    // O(n) for toCharArray()
+    public String frequencySort(String s) {
+        String ans="";
+        HashMap<Character,Integer> hs=new HashMap<>();
+
+        for(char ch:s.toCharArray())
+        {
+            if(hs.containsKey(ch))
+            {
+                hs.put(ch,hs.get(ch)+1);
+            }
+            else
+                hs.put(ch,1);
+        }
+        // use bucket sort for better time and space complexity 
+        Map<Character, Integer> sM = hs.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, // Merge function to handle potential key collisions (not an issuehere)
+                        LinkedHashMap::new // Use LinkedHashMap to preserve the sorted order
+                ));
+        String k="";
+        for (Map.Entry<Character,Integer> mapElement : sM.entrySet()) {
+            char key = mapElement.getKey();
+            int value =  mapElement.getValue();
+            for(int i=1;i<=value;i++)
+            {
+                k= k+ key;
+            }
+            ans=ans+k;
+            k="";
+        }
+
+        return ans;
+    }
+    public String frequencySortOptimized(String s) { // using bucket sort 
+        int[] freq = new int[128];  // ASCII characters
+        for(char ch : s.toCharArray()) 
+        {
+            freq[ch]++;
+        }
+        // Step 2: Bucket sort - index = frequency, value = list of chars
+        // Max frequency can be s.length()
+        List<List<Character>> buckets = new ArrayList<>();
+        for(int i = 0; i <= s.length(); i++) 
+        {
+            buckets.add(new ArrayList<>());
+        }
+        for(int i = 0; i < 128; i++) {
+            if(freq[i] > 0) {
+                buckets.get(freq[i]).add((char) i);
+            }
+        }
+        // Step 3: Build result from highest frequency bucket to lowest
+        StringBuilder sb = new StringBuilder();
+        for(int i = s.length(); i >= 1; i--) {
+            for(char ch : buckets.get(i)) {
+                for(int j = 0; j < i; j++) {
+                    sb.append(ch);
+                }
+            }
+        }
+        return sb.toString();
     }
     public static void main(String[] args) {
         String path="WNEENESENNN";
