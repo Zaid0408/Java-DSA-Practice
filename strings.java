@@ -114,15 +114,15 @@ class strings {
         {
             if(s.charAt(i)!=' ')
             {
-                c=c+s.charAt(i);
+                c=c+s.charAt(i); // append the word 
             }
             else
             {
-                if(c.length()>0){
+                if(c.length()>0){ // if space encountered then reverse the word
                     c=rev(c);
                     System.out.println(c);
                     m= m+c+" ";
-                    c="";
+                    c="";// store the reverse in m and reset c
                 }
             }
         }
@@ -135,7 +135,7 @@ class strings {
         
         return m.trim();
     }
-    public String rev(String k)
+    public String rev(String k) // function to reverse word used above
     {
         String l="";
         for(int i=k.length()-1;i>=0;i--)
@@ -145,7 +145,7 @@ class strings {
         return l;
     }
     // leetcode 1903 Largest Odd Number in String
-    public String largestOddNumber(String num) {
+    public String largestOddNumber(String num) { 
         
         for(int i=num.length()-1;i>=0;i--)
         {
@@ -158,7 +158,7 @@ class strings {
         return "";
         
     }
-    // Leetcode 205 Isomorphic Strings
+    // Leetcode 205 Isomorphic Strings : Two strings are isomorphic if the characters in s can be replaced to get t.
     public boolean isIsomorphic(String s, String t) {
         if(s.length()!=t.length())
             return false;
@@ -177,6 +177,7 @@ class strings {
         return true;
     }
     // leetcode 796 Rotate String brute force fails at test case : s ="defdefdefabcabc" and goal = "defdefabcabcdef"
+    // Rotate String means 
 
     public boolean rotateString(String s, String goal) { 
         if(s.length()!=goal.length())
@@ -262,7 +263,7 @@ class strings {
                         Map.Entry::getValue,
                         (e1, e2) -> e1, // Merge function to handle potential key collisions (not an issuehere)
                         LinkedHashMap::new // Use LinkedHashMap to preserve the sorted order
-                ));
+                )); // Sort in descending order of values
         String k="";
         for (Map.Entry<Character,Integer> mapElement : sM.entrySet()) {
             char key = mapElement.getKey();
@@ -297,14 +298,44 @@ class strings {
         }
         // Step 3: Build result from highest frequency bucket to lowest
         StringBuilder sb = new StringBuilder();
-        for(int i = s.length(); i >= 1; i--) {
-            for(char ch : buckets.get(i)) {
-                for(int j = 0; j < i; j++) {
+        for(int i = s.length(); i >= 1; i--) { // Loop 1: visits each bucket (max frequency down to 1)
+            for(char ch : buckets.get(i)) { // Loop 2: visits each character inside that bucket
+                for(int j = 0; j < i; j++) { // loop 3: appends that character as many times as its frequency
                     sb.append(ch);
                 }
             }
         }
         return sb.toString();
+
+        // **Example `s = "tree"`:**
+        // ```
+        // i=4 → bucket empty, skip
+        // i=3 → bucket empty, skip
+        // i=2 → bucket has [e] → append 'e' twice  → "ee"
+        // i=1 → bucket has [r,t] → append 'r' once, 't' once → "eetr"
+        // ```
+
+        // **Why it's still O(n) total:**
+
+        // Even though there are 3 loops, the total characters appended across ALL iterations equals exactly `n` (length of original string). You're never doing more work than the input size.
+        // ```
+        // Total appends = sum of (frequency × 1) for each character
+        //              = total characters in string
+        //              = n
+        // ```
+            //         Think of it like this — if `s = "aabbb"`, n=5:
+            // ```
+            // 'a' appended 2 times
+            // 'b' appended 3 times
+            // Total = 2 + 3 = 5 = n ✓
+            // ```
+
+            // ---
+            // buckets[0] = []
+            // buckets[1] = [r, t]      ← chars with frequency 1
+            // buckets[2] = [e]          ← chars with frequency 2
+            // buckets[3] = []
+            // buckets[4] = []
     }
     //leetcode 3 Longest Substring Without Repeating Characters
     // REMEMBER THE BELOW PATTERN FOR SUBSTRING/SLIDING WINDOW PROBLEMS
@@ -323,6 +354,30 @@ class strings {
             }
             ans= Math.max(ans, right-left+1); // where right-left+1 is the size of the sliding window
         }
+        return ans;
+    }
+    // leetcode 1781 Sum of Beauty in the Array
+
+    public int beautySum(String s) {
+        int ans = 0;
+        // Fix starting point i, expand j from i+1 to end
+        for(int i = 0; i < s.length(); i++) {
+            int[] freq = new int[26];
+            freq[s.charAt(i) - 'a']++;                 // Count starting char
+            for(int j = i + 1; j < s.length(); j++) {
+                freq[s.charAt(j) - 'a']++;             // Expand window right
+                // Beauty = max frequency - min frequency in window
+                int max = 0, min = Integer.MAX_VALUE;
+                for(int f : freq) {
+                    if(f > 0) {                         // Only consider chars present
+                        max = Math.max(max, f);
+                        min = Math.min(min, f);
+                    }
+                }
+                ans += (max - min);                     // Beauty of substring s[i..j]
+            }
+        }
+
         return ans;
     }
     // Count number of substrings with k distinct characters
@@ -374,6 +429,52 @@ class strings {
     // Function to count substrings with exactly k distinct characters
     public static int countSubstrings(String s, int k) {
         return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);
+    }
+    // lc 14 Longest Common Prefix
+    // Compare each string character by chararcter wise with the first string, o(n^2)
+    public String longestCommonPrefix(String[] strs) {
+        String ans="";
+        for(int i=0;i<strs[0].length();i++)
+        {
+            for(String str: strs)
+            {
+                if(i==str.length() || str.charAt(i)!=strs[0].charAt(i))
+                { // i==str.length() to make sure that we dont go out of bounds if a given string is leeser than the first string
+                    return ans;
+                }
+            }
+            ans= ans + strs[0].charAt(i);
+        }
+        return ans;
+    }
+    // leetcode 5 Longest Palindromic Substring
+    public String longestPalindrome(String s) {
+        if(s.length()==1)
+            return s;
+        int st=0,e=0;
+        for(int i=0;i<s.length();i++)
+        {
+            int odd= checkPallindromeLen(i,i,s);
+            int even= checkPallindromeLen(i,i+1,s);
+            int ma=Math.max(odd,even);
+            if(ma>(e-st))
+            {
+                st=i-(ma-1)/2;
+                e=i+ma/2;
+            }
+        }
+
+        return s.substring(st,e+1);
+        
+
+    }
+    private int checkPallindromeLen(int left,int right,String s)
+    {
+        while((left>=0 && right<s.length()) && (s.charAt(left)==s.charAt(right)))
+        {
+            left--;right++;
+        }
+        return right-left-1; // length of the pallindrome 
     }
     public static void main(String[] args) {
         String path="WNEENESENNN";
