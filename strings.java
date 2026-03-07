@@ -476,6 +476,72 @@ class strings {
         }
         return right-left-1; // length of the pallindrome 
     }
+    // leetcode 647 Palindromic Substrings brite force 
+    public int countSubstrings(String s) {
+        // brute force 
+        int ans=0;
+        for(int i=0;i<s.length();i++)
+        {
+            for(int j=i+1;j<=s.length();j++)
+            {
+                String str=s.substring(i,j);
+                ans+=isPallindrome(str);
+            }
+        }
+        return ans;
+    }
+    private int isPallindrome(String str)
+    {
+        int n= str.length();
+        for(int i=0;i<n/2;i++)
+        {
+            if(str.charAt(i)!=str.charAt(n-i-1) && n>0)
+                return 0;
+        }
+        return 1;
+    }
+    // better approach for lc 647 using similar pattern in lc 5
+
+    public int countSubstringsOptimized(String s) {
+        if(s.length()==1)
+            return 1;
+        int ans=0;
+        for(int i=0;i<s.length();i++)
+        {
+            ans += checkPallindrome(i,i,s);
+            ans += checkPallindrome(i,i+1,s);
+        }
+
+        return ans;
+    }
+    private int checkPallindrome(int left,int right,String s)
+    {
+        int count = 0;
+        while((left>=0 && right<s.length()) && (s.charAt(left)==s.charAt(right)))
+        {
+            left--;right++;
+            count++;
+        }
+        return count; 
+    }
+
+    // leetcode 921 Minimum Add to Make Parentheses Valid
+    public int minAddToMakeValid(String s) {
+        int ch1=0,ch2=0;
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            if(ch=='(')
+            {
+                ch1++;
+            }
+            else if(ch==')' && ch1>0)
+                ch1--;
+            else
+                ch2++;
+        }
+        return ch1+ch2;
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
