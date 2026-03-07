@@ -31,10 +31,37 @@ public class ListNode2 {
             head=head.next;
         }
         //System.out.println(head.val);
-        after.next=null; // this waqs the issue . if this was not made null the list is cyclic error was coming
+        after.next=null; // this was the issue . if this was not made null the list is cyclic error was coming
         before.next=after_head.next;
         return before_head.next;
     }
+    // leetcode 328 Odd Even Linked List Odd position comes first all of them then append remaining even position at the end
+    // same pattern as above 
+    public ListNode oddEvenList(ListNode head) {
+        int position = 0;
+        ListNode oddHead = new ListNode(0);
+        ListNode evenHead = new ListNode(0);
+        
+        ListNode odd = oddHead; // to traverse head
+        ListNode even = evenHead;
+        
+        while(head != null){
+            position++;
+            if(position % 2 == 0){
+                even.next = head;
+                even = even.next;
+            } else{
+                odd.next = head;
+                odd = odd.next;
+            }
+            head = head.next;
+        }
+        odd.next = evenHead.next;
+        even.next = null;
+        return oddHead.next;
+    }
+
+    //leetcode 2
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) { // leetcode 2
         int j=0,k=0,carry=0;
         ListNode ans=new ListNode();
