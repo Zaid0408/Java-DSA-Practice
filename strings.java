@@ -565,6 +565,30 @@ class strings {
         
         return -1;
     }
+    // leetcode 28 Find the Index of the First Occurrence in a String
+    // sample implementation of IndexOf method in java
+    public int strStr(String haystack, String needle) {
+        // advanced sliding window
+        // start comparing within the sliding window only when first and last char in sliding window are same (saves many computations)
+        // once first and last char are same start comparing others inside the sliding window
+        int m=haystack.length();
+        int n=needle.length();
+        if(n>m) return -1;
+        for(int i=0;i<=m-n;i++) // m-n because if pattern is present at end of the string 
+        {
+            if(haystack.charAt(i)==needle.charAt(0) && haystack.charAt(i+n-1)==needle.charAt(n-1))
+            { // first and last char are same start comparing others inside the sliding window
+                int j=0;
+                while(j<n && haystack.charAt(i+j)==needle.charAt(j))
+                {
+                    j++;
+                }
+                if(j==n) // means we have found the pattern which is there in the substring
+                    return i;
+            }
+        }
+        return -1;
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
