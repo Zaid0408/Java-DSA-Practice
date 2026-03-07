@@ -61,6 +61,36 @@ public class ListNode2 {
         return oddHead.next;
     }
 
+    // leetcode 206 Reverse Linked List
+    public ListNode reverseList(ListNode head) {
+        if(head==null)
+            return null;
+        ListNode prev=null;
+        ListNode cur=head;
+        ListNode nex=head.next;
+        while(cur!=null){
+            cur.next=prev;
+            prev=cur;
+            cur=nex;
+            if(nex==null)
+                continue;
+            else 
+                nex=nex.next;
+        }
+        return prev;
+    }
+    // recursion
+    public ListNode reverseListRecursion(ListNode head) {
+        if(head==null || head.next==null )
+            return head;
+
+        ListNode temp= reverseList(head.next);
+        head.next.next=head;
+        head.next=null; // to prevent cyclic error
+
+        return temp;
+    }
+
     //leetcode 2
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) { // leetcode 2
         int j=0,k=0,carry=0;
@@ -73,7 +103,7 @@ public class ListNode2 {
 
             // new digit
             int val= (j+k+ carry);
-            carry= val/10;
+            carry= val/10; // calc carry before val 
             val=val%10;
             temp.next=new ListNode(val);
 
