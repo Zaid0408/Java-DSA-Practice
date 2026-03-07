@@ -542,6 +542,29 @@ class strings {
         }
         return ch1+ch2;
     }
+
+    // leetcode 686 Repeated String Match
+    // Number of times a should be exapanded so that b becomes a substring of it
+    // keep appending a to ss until ss.length()>=b.length() 
+    // if b is present in ss then return count as with indexOf function
+    // else append a again and check if b is present in it example ss="abcabc" b="bcabca"
+    // else return -1;
+    public int repeatedStringMatch(String a, String b) {
+        StringBuilder ss=new StringBuilder();
+        int cnt=0;
+        while(ss.length()<b.length())
+        {
+            ss.append(a);cnt++;
+        }
+        if(ss.indexOf(b)!=-1)
+            return cnt;
+
+        ss.append(a);cnt++; 
+        if(ss.indexOf(b)!=-1)
+            return cnt;
+        
+        return -1;
+    }
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
