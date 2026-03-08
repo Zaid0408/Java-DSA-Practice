@@ -123,6 +123,30 @@ public class ListNode2 {
         return slow;
     }
 
+    //leetcode 142  Linked List cycle 2 
+    // Detect from where the cycle starts wherever fast and slow meet initially that means cycle is present 
+    // post that set fast to head and increment each pointer once eventually they will reach the start of cycle
+    // mathematical proof : https://leetcode.com/problems/linked-list-cycle-ii/description/comments/1567596/ 
+    public ListNode detectCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if(fast==slow){
+                fast=head;
+                while(fast != slow) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+
+                return fast;
+            }
+        }
+        return null;
+    }
+
     //leetcode 2
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) { // leetcode 2
         int j=0,k=0,carry=0;
