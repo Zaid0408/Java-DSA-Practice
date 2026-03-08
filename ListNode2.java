@@ -91,6 +91,38 @@ public class ListNode2 {
         return temp;
     }
 
+    // leetcode 234 Palindrome Linked List
+    public boolean isPalindrome(ListNode head) {
+        ListNode sl=split(head);
+        ListNode rev= reverseList(sl);
+
+        return palindrome(head,rev);
+
+    }
+    public boolean palindrome(ListNode sl,ListNode rev)
+    {
+        while(rev!=null)
+        {
+            if(sl.val!= rev.val)
+                return false;
+            sl=sl.next;
+            rev=rev.next;
+        }
+
+        return true;
+    }
+    public ListNode split(ListNode head) {  
+        ListNode fast = head;
+        ListNode slow = head;
+
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        return slow;
+    }
+
     //leetcode 2
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) { // leetcode 2
         int j=0,k=0,carry=0;
@@ -166,6 +198,19 @@ public class ListNode2 {
         }
         return head;
 
+    }
+    // leetcode 160 Intersection of Two Linked Lists
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode temp=headA;
+        ListNode tem=headB;
+
+        while(temp!=tem)
+        {
+            temp = temp==null?headB:temp.next;
+            tem = tem==null?headA:tem.next;
+        }
+
+        return temp;
     }
     class LRUCache { // leetcode 146
         LinkedHashMap<Integer,Integer> ans;
