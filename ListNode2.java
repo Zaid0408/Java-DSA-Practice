@@ -9,6 +9,30 @@ public class ListNode2 {
         ListNode(int val) { this.val = val; }
         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
     }
+
+    public class ListNode3{
+        int val;
+        ListNode3 next;
+        ListNode3 prev;
+
+        ListNode3() {
+            val = 0;
+            next = null;
+            prev = null;
+        }
+    
+        ListNode3(int data1) {
+            val = data1;
+            next = null;
+            prev = null;
+        }
+    
+        ListNode3(int data1, ListNode3 next1, ListNode3 prev1) {
+            val = data1;
+            next = next1;
+            prev = prev1;
+        }
+    }
     public ListNode partition(ListNode head, int x) { // leetcode 86
         // partion but preserve relative order.
         // All nodes less than x have to come before x in the list while maintaining their order in head list.
@@ -161,13 +185,13 @@ public class ListNode2 {
         while(fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
-            if(fast==slow){
+            if(fast==slow){ // cycle found
                 fast=head;
-                while(fast != slow) {
+                while(fast != slow) { // keep incrementing until they reach the start of cycle
                     slow = slow.next;
                     fast = fast.next;
                 }
-
+                // mathe=matically possible
                 return fast;
             }
         }
@@ -263,6 +287,39 @@ public class ListNode2 {
 
         return temp;
     }
+    // leetcode 61 Rotate List
+    // Go to end and make a cycle
+    // traverse from the newly added cycle to n-k times 
+    // point to the next position to head this is where the rotated list should start from
+    // make temp.next to null to break cycle
+    public ListNode rotateRight(ListNode head, int k) {
+        if(head==null || head.next==null)
+            return head;
+        int n=1;
+        ListNode temp=head;
+        while(temp.next!=null)
+        {
+            n++;
+            temp=temp.next;
+        }
+        
+        k=k%n;
+        if(k==0)
+            return head;
+        k=n-k;
+        temp.next=head; // instead of pointing to null we point to the first position 
+        // at this point it becomes a cycle 1->2->3->4->5->1->2->3->4->5
+        while(k>0)
+        {
+            temp=temp.next;
+            k--;
+        }
+        head= temp.next;
+        temp.next=null; //removing the cycle
+
+        return head;
+         
+    }
     class LRUCache { // leetcode 146
         LinkedHashMap<Integer,Integer> ans;
         public LRUCache(int capacity) {
@@ -272,6 +329,64 @@ public class ListNode2 {
                     return size() > capacity;
                 }
             };
+    
+        }
+
+        // delete all occurences of a node in a DLL
+
+        // two scenarios either cur.val==target or cur.val!=target
+        // check if first element is target simply move the head forward
+        // initialize nex and pre which is prev and next of cur , then link pre and nex 
+        // move cur to nex
+        // scenario 2 just move cur
+        public ListNode3 deleteAllOccurrences(ListNode3 head, int target) {
+            ListNode3 cur=head;
+            while(cur!=null)
+            {
+                if(cur.val==target)
+                {
+                    if(cur==head)
+                    {
+                        head=head.next;
+                    }
+                    ListNode3 nex=cur.next;
+                    ListNode3 pre=cur.prev;
+                    if(nex!=null)
+                    {
+                        nex.prev=pre;
+                    }
+                    if(pre!=null)
+                    {
+                        pre.next=nex;
+                    }
+                    cur=nex;
+                }
+                else
+                {
+                    cur=cur.next;
+                }
+                
+            }
+            return head;
+        }
+
+        // find pairs with given sum in sll 
+        public List<List<Integer>> findPairsWithGivenSum(ListNode head, int target) {
+            List<List<Integer>> ans= new ArrayList<>();
+            HashSet hs=new HashSet<>();
+    
+            ListNode cur=head;
+            while(cur!=null)
+            {
+                if(hs.contains(target-cur.val))
+                {
+                    List<Integer> ne= new ArrayList<>(Arrays.asList(target-cur.val,cur.val));
+                    ans.add(ne);
+                }
+                hs.add(cur.val);
+                cur=cur.next;
+            }
+            return ans;
     
         }
         
