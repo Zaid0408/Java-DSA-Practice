@@ -1,4 +1,6 @@
 import java.util.*;
+
+import org.w3c.dom.Node;
 public class ListNode2 {
     public class ListNode {
         int val;
@@ -84,19 +86,44 @@ public class ListNode2 {
         if(head==null || head.next==null )
             return head;
 
-        ListNode temp= reverseList(head.next);
+        ListNode temp= reverseListRecursion(head.next);
         head.next.next=head;
         head.next=null; // to prevent cyclic error
 
         return temp;
     }
 
+    public ListNode reverseDLL(ListNode head) {
+    ListNode current = head;
+    ListNode temp = null;
+
+    // Traverse through the list and swap next and prev pointers
+    while (current != null) {
+        // Swap the next and prev pointers of the current node
+        // temp = current.prev;
+        // current.prev = current.next;
+        // current.next = temp;
+
+        // Move to the next node (which is now stored in current.prev because of the swap)
+        // current = current.prev;
+    }
+
+    // Before the while loop finishes, temp holds the reference to the last node
+    // of the original list, which is the new head.
+    // Need to handle the case where the list was empty or single node.
+    if (temp != null) {
+        // head = temp.prev;  The new head is the node that was originally the last node
+    }
+    
+    return head;
+}
+
     // leetcode 234 Palindrome Linked List
     public boolean isPalindrome(ListNode head) {
         ListNode sl=split(head);
         ListNode rev= reverseList(sl);
 
-        return palindrome(head,rev);
+        return palindrome(head,rev); // impo to pass head and not 
 
     }
     public boolean palindrome(ListNode sl,ListNode rev)
