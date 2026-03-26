@@ -124,7 +124,7 @@ class array{
     *  Check if array is sorted and rotatted Leetcode 1752
         // find pivot elements (where the array must be rotated at the given position) must be at most one 
         // bcuz for array to be rotated and sorted there will only be one occurence of an elemnt x < y where x is smallest and y is largest post that it wont be rotatable
-        
+        //ex array 3,4,5,1,2 here there are are two occurences where arr[i]>arr[i+1] so arr[i] could be a possible pivot , the count of such conditions should be <=1 and is true for every rotated sorted array
     */
     public boolean check(int[] nums) {
         int ans =0;
@@ -151,7 +151,7 @@ class array{
                 count++;
         } 
 
-        return Math.max(maxCount,count);
+        return Math.max(maxCount,count); // this is impo as what if the max consecutive ones are as=t the end of array
     }
     // leetcode 283 
     // instead of counting zeroes count non zeroes and move them to the front
@@ -170,6 +170,68 @@ class array{
             count++;
         }
     }
+
+    //leetcode 217
+
+    public boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> hs=new HashSet<>();
+        for(int num:nums)
+        {
+            if(hs.contains(num))
+                return true;
+            hs.add(num);
+        }
+        return false;
+    }
+    //leetcode 242
+    public boolean isAnagram(String s, String t) {
+        int chs[]=new int[26];
+
+        for(int i=0;i<s.length();i++)
+        {
+            chs[(int)(s.charAt(i)-'a')] +=1;
+        }
+        for(int i=0;i<t.length();i++)
+        {
+            chs[(int)(t.charAt(i)-'a')] -=1;
+        }
+        for(int i=0;i<chs.length;i++)
+        {
+            if(chs[i]!=0)
+                return false;
+        }
+        return true;
+    }
+
+    // leetcode 1
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer,Integer> ans= new HashMap<>();
+         for(int i=0;i<nums.length;i++)
+         {
+             if(ans.containsKey(target-nums[i]))
+             {
+                 return new int[]{i,ans.get(target-nums[i])};
+             }
+             ans.put(nums[i],i);
+         }
+ 
+         return new int[]{0,0};
+     }
+    // leetcode 26
+    public int removeDuplicates(int[] nums) {
+        int c=0;
+        for(int i=0;i<nums.length;i++)
+        {
+            if(nums[c]!=nums[i])
+            {
+                c++;
+                nums[c]=nums[i];
+            }
+        }
+        return c+1;
+
+    }
+
     // leetcode 136
     public int singleNumber(int[] nums) {
         // XOR operation n^n=0 n^0=n 
@@ -329,6 +391,21 @@ class array{
             }
         }
         return -1;
+    }
+
+    // leetcode 189
+    public void rotate(int[] nums, int k) {
+        // brute force : for every 1 to k we rotate once the array 
+        // extra space : new array K+1 pos to end then 0 to k 
+        int n=nums.length;
+        k=k%n;
+        int arr[]=new int[n];
+        for (int i=0;i<n;i++) {
+            arr[(i + k) % n] = nums[i];
+        }
+        for (int i=0;i<n;i++) {
+            nums[i] = arr[i];
+        }
     }
 
 //     Given an array nums of size n, return the majority element.
