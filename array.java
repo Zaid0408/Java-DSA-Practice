@@ -231,6 +231,64 @@ class array{
         return c+1;
 
     }
+    //leetcode 74
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int j=matrix[0].length-1,i=0;
+        while(j>=0 && i<matrix.length)
+        {
+            if(target==matrix[i][j])
+                return true;
+            else if(target>matrix[i][j])
+            {
+                i++;
+            }
+            else
+                j--;
+        }
+        return false;
+    }
+
+    // leaders in an array
+    /*
+    Given an integer array nums, return a list of all the leaders in the array. A leader in an array is an element whose value is strictly greater than all elements to its right in the given array. The rightmost element is always a leader. The elements in the leader array must appear in the order they appear in the nums array.
+
+Example 1
+
+Input: nums = [1, 2, 5, 3, 1, 2]
+
+Output: [5, 3, 2]
+
+Explanation:
+
+2 is the rightmost element, 3 is the largest element in the index range [3, 5], 5 is the largest element in the index range [2, 5]
+
+Example 2
+
+Input: nums = [-3, 4, 5, 1, -4, -5]
+
+Output: [5, 1, -4, -5]
+
+Explanation:
+
+-5 is the rightmost element, -4 is the largest element in the index range [4, 5], 1 is the largest element in the index range [3, 5] and 5 is the largest element in the range [2, 5]
+    */
+    public List<Integer> leaders(int[] nums) {
+        List<Integer> ans=new ArrayList<>();
+        ans.add(nums[nums.length-1]);
+        int rightMax=nums[nums.length-1];
+        for(int i=nums.length-2;i>0;i--)
+        {
+            if(nums[i]>rightMax)
+            {
+                ans.add(nums[i]);
+                rightMax=nums[i];
+            }
+        }
+
+        Collections.reverse(ans);
+
+        return ans;
+    }
 
     // leetcode 136
     public int singleNumber(int[] nums) {
@@ -262,7 +320,7 @@ class array{
         int maxWater=0; // brute force O(n^2)
         for(int i=0;i<height.length-1;i++)
         {
-            for(int j=i+1;j<height.length-1;i++)
+            for(int j=i+1;j<height.length-1;j++)
             {
                 int ht=Math.min(height[i],height[j]);
                 int wd=j-i;
@@ -565,6 +623,35 @@ class array{
         ans.add(p);
         return ans.toArray(new int[ans.size()][]);
     }
+// For rotation of matrix : 90 = transpose + reverse row
+// 180 = reverse row + reverse column
+// 270 = transpose + reverse col
+
+    // leetcode 48
+    public void rotate(int[][] matrix) {
+        // For rotation of matrix : 90 = transpose + reverse row
+        int m=matrix.length;
+        for(int i=0;i<m;i++)
+        {
+            for(int j=i;j<m;j++)
+            {
+                int s=matrix[i][j];
+                matrix[i][j]=matrix[j][i];
+                matrix[j][i]=s;
+            }
+        }
+
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<m/2;j++)
+            {
+                int s=matrix[i][j];
+                matrix[i][j]=matrix[i][m-1-j];
+                matrix[i][m-1-j]=s;
+            }
+        }
+    }
+
     // leetcode 88 Merge Sorted Array
     public void merge(int[] nums1, int m, int[] nums2, int n) {
         int a=m-1,b=n-1,c=m+n-1;

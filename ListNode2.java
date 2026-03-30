@@ -1,6 +1,5 @@
 import java.util.*;
 
-import org.w3c.dom.Node;
 public class ListNode2 {
     public class ListNode {
         int val;
@@ -368,6 +367,37 @@ public class ListNode2 {
                 
             }
             return head;
+        }
+        // remove duplicates from sorted DLL
+        // same appending pointer logic as above
+        public ListNode3 removeDuplicates(ListNode3 head) {
+            HashSet hs=new HashSet<>();
+        
+                ListNode3 cur=head;
+                while(cur!=null)
+                {
+                    if(hs.contains(cur.val))
+                    {
+                        ListNode3 pre=cur.prev;
+                        ListNode3 nex=cur.next;
+                        if(nex!=null)
+                        {
+                            nex.prev=pre;
+                        }
+                        if(pre!=null)
+                        {
+                            pre.next=nex;
+                        }
+                        cur=nex;
+                    }
+                    else
+                    {
+                        hs.add(cur.val);
+                        cur=cur.next;
+                    }
+                    
+                }
+                return head;
         }
 
         // find pairs with given sum in sll 
