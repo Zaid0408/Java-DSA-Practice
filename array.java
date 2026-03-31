@@ -424,6 +424,27 @@ Explanation:
         return true;
     }
 
+    // leetcode 287 
+    public int findDuplicate(int[] nums) {
+        // implement hare tortoise algo
+        // similar to checking from where cycle starts in leetcode 142
+    // Phase 1: Finding the intersection point in the cycle
+        int slow = nums[0];
+        int fast = nums[0];
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+        // Phase 2: Finding the entrance to the cycle (the duplicate)
+        slow = nums[0];
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+            
+        return slow;
+    }
+
     public int SerachInRotatedSortedArray(int[] nums, int target) {
         int start = 0, mid = 0, end = nums.length - 1;
     
