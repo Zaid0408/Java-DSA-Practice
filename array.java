@@ -50,7 +50,7 @@ class array{
     {
         int maxSum=Integer.MIN_VALUE;
         int currSum=0;
-        int prefixArray[]= new int[nums.length];//use curr sum and prefix sumarray to store the sum of all the elements uptil that index initially
+        int prefixArray[]= new int[nums.length];//use curr sum and prefix sum array to store the sum of all the elements up till that index initially
         prefixArray[0]=nums[0];
         for(int i=1;i<nums.length;i++)
         {
@@ -75,7 +75,7 @@ class array{
     // letcode 560 Subarray Sum Equals K 
     public int subarraySum(int[] nums, int k) {
         HashMap<Integer,Integer> map=new HashMap<>();
-            //(sum,index)
+            //(sum,occurence of the sum in the array which is same as total number of sub arrays with sum k.)
         map.put(0,1);
         int sum=0,ans=0;
         for(int j=0;j<nums.length;j++)
@@ -85,6 +85,22 @@ class array{
                 ans+=map.get(sum-k);
             map.put(sum,map.getOrDefault(sum,0)+1);
         }
+
+        /*
+        Here's how the algorithm works:
+
+            Initialize the cumulative sum sum to 0 and the answer ans to 0.
+            Add a key-value pair to the map with a key of 0 and a value of 1. This represents the fact that there is one subarray with a sum of 0 (the empty subarray).
+            Iterate through the array nums from index 0 to nums.length-1.
+            For each element nums[i], update the cumulative sum sum by adding nums[i].
+            Check if the map contains a key that is equal to sum - k. If it does, it means that there is a subarray with a sum equal to k ending at the current index i. The number of such subarrays is obtained from the map by retrieving the value associated with the key sum - k. 
+            This value represents the number of times the cumulative sum sum - k has occurred before the current index i.
+            Add the value obtained from the map to the answer ans.
+            Update the map by adding a new key-value pair with the current cumulative sum sum and incrementing the value by 1.
+            Repeat steps 4-7 for each element in the array nums.
+            Return the final value of ans, which represents the number of subarrays with a sum equal to k.
+        */
+
         // or we can do this : o(n^2) complexity O(N) space
         // int sum=0,ans=0;
         // int prefix[]=new int[nums.length+1];
@@ -104,6 +120,7 @@ class array{
 
         return ans;
     }
+    // leetocde 53
     public static void KadaneAlgo(int nums[])
     {//Maximum Sub Array Sum
         int currSum=0,maxSum=Integer.MIN_VALUE;
@@ -315,6 +332,28 @@ Explanation:
         System.out.println("Array is unique ");
 
     }
+    // leetcode 118 
+
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> ans=new ArrayList<>();
+        for(int i=0;i<numRows;i++)
+        {
+            List<Integer> row=new ArrayList<>();
+            for(int j=0;j<=i;j++)
+            {
+                if(j==0 || j==i){
+                    row.add(1);
+                }
+                else{
+                    List<Integer> prev=ans.get(i-1);
+                    row.add(prev.get(j)+prev.get(j-1));
+                }
+            }
+            ans.add(row);
+        }
+
+        return ans;
+    }
     // Container with most water leetcode 11
     public static int maxArea(int[] height) {
         int maxWater=0; // brute force O(n^2)
@@ -490,10 +529,102 @@ Explanation:
 //     Given an array nums of size n, return the majority element.
 //     The majority element is the element that appears more than ⌊n / 2⌋ times. 
 //     You may assume that the majority element always exists in the array.
-    public static int majorityElement(int[] nums) {
+//      Leetcode 169
+    public static int majorityElement(int[] nums) { // o(nlogn)
         Arrays.sort(nums);
         return nums[nums.length/2];
     }
+    public static int majorityElementOptimzed(int[] nums) {
+        // Moore Voting algo : find candidate to be a majority element, count will not turn to 0 if it is majority element
+        int count = 0, candidate = -1;
+        for(int i=0;i<nums.length;i++) // loop to find candidate with maximum occurences
+        {
+            if(count==0){ // select one candidate
+                candidate=nums[i];
+                count=1;
+            } // logic is that if the count of a candididate becomes 0 then it cannot be majority element ans it occures atleast n/2+1 times hence cannot be zeero
+            else if(candidate==nums[i])
+                count++; // increment of given candidate is majority element
+            else
+                count--; // decrement if not majority
+            
+        }
+        count=0;
+        for(int i=0;i<nums.length;i++)
+        {
+            if(candidate==nums[i])
+                count++;
+        } 
+        if(count>nums.length/2)
+            return candidate;   
+        return -1;
+    }
+
+    // leetcode 229 Majority Element 2
+    // return all elemnts who occure more than n/3
+    public List<Integer> majorityElement2(int[] nums) {
+        HashMap<Integer,Integer> hm=new HashMap<>();
+        List<Integer> ans=new ArrayList<>();
+        for(int num: nums){
+            hm.put(num,hm.getOrDefault(num,0)+1);
+        }
+        Set<Integer> st=hm.keySet(); 
+        for(Integer e: st)
+        {
+            if(hm.get(e)>nums.length/3)
+                ans.add(e);
+        }
+        return ans;
+    }
+
+    // there will be atmax 2 majority elements
+    // example for n=16 n/3=5 , for a majority element it shoud occur 6 times or more
+    // assuming a is majority ele and b is another majority element then a will occur 6 times and b will occur 6 times (minimum for both)
+    // 6+6 is 12 , 16-12=4 , so even though there are only 4 elemnts left and even if these 4 are same they are not majority hence there will be atmax 2 majority elements
+    public List<Integer> majorityElement2Optimized(int[] nums) {
+        // there will be atmax only 2 occurences pf the majority elements 
+        // same algo as majority element 1 but repeated twice as there are only 2 majority elements
+        int c1=0,c2=0,e1=-1,e2=-1; 
+        int n=nums.length;
+        List<Integer> ans=new ArrayList<>();
+        for(int i=0;i<n;i++)
+        {
+            if(c1==0 && nums[i]!=e2)
+            {
+                c1=1;e1=nums[i];
+            }
+            else if(c2==0 && nums[i]!=e1)
+            {
+                c2=1;e2=nums[i];
+            }
+            else if(e1==nums[i])
+                c1++;
+            else if(e2==nums[i])
+                c2++;
+            else {
+                c1--;c2--;}
+        }
+        // manual verification fo count being grater than n/3 impo step
+        c1=0;c2=0;
+        for(int i=0;i<n;i++)
+        {
+            if(nums[i]==e1){
+                c1++;
+            }
+            else if(nums[i]==e2){
+                c2++;
+            }
+        }
+        if(c1>n/3)
+            ans.add(e1);
+        if(c2>n/3)
+            ans.add(e2);
+
+        return ans;
+    
+        
+    }
+
     // sort given arrays of numbers 0,1,2 without using built in function
     // use count sort to count frequency and then store in original array
     // can be optimised by using dutch national flag algorithm
@@ -609,7 +740,7 @@ Explanation:
         reverse(nums,index+1,n-1);
 
     }
-    public void reverse(int[] nums,int i,int j)
+    public void reverse(int[] nums,int i,int j) // two pointers to reverse array
     {
         while (i < j) {
             int temp = nums[i];
@@ -683,6 +814,42 @@ Explanation:
                 nums1[c--] = nums1[a--];
             } else {
                 nums1[c--] = nums2[b--];
+            }
+        }
+    }
+
+    // leetcode 73
+
+    public void setZeroes(int[][] matrix) {
+        int n=matrix.length;
+        int m=matrix[0].length;
+        Set<Integer> r=new HashSet<>();
+        Set<Integer> c=new HashSet<>(); // unique elements
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(matrix[i][j]==0)
+                {
+                    r.add(i);c.add(j);
+                }
+            }
+        }
+        if(r.isEmpty() && c.isEmpty())
+            return;
+            
+        for(int i:r)
+        {
+            for(int j=0;j<matrix[0].length;j++)
+            {
+                matrix[i][j]=0;
+            }
+        }
+        for(int j:c)
+        {
+            for(int i=0;i<matrix.length;i++)
+            {
+                matrix[i][j]=0;
             }
         }
     }
