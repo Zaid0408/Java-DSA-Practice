@@ -72,6 +72,38 @@ class array{
         }
         System.out.println("Max Subarray Sum is "+maxSum);
     }
+
+    public int longestSubarray(int[] nums, int k) {
+        
+        // INTUITION: We need to find the longest subarray with sum = k
+// Use PREFIX SUM concept: if sum from 0 to j is S, and sum from 0 to i is (S-k),
+// then sum from i+1 to j equals k, and length = j - i
+
+        HashMap<Integer,Integer> map=new HashMap<>();
+        // HashMap stores: (prefixSum → firstIndex where this sum occurred)
+        // We store FIRST index because we want LONGEST subarray, so earliest occurrence gives max length
+        // Base case: prefixSum of 0 exists at index -1 (before array starts)
+        // This handles subarrays starting from index 0 that sum to k
+
+        map.put(0,-1);
+        int sum=0,ans=0;
+        for(int j=0;j<nums.length;j++)
+        {
+            sum+=nums[j];
+            if(map.containsKey(sum-k)){
+                // If (currentSum - k) exists in map, it means we found a subarray with sum = k
+                // Length = currentIndex (j) - indexWhereWesaw(sum-k)
+                ans = Math.max(ans, j - map.get(sum - k)); 
+            }
+            if(!map.containsKey(sum)) { 
+                // Only store FIRST occurrence of this sum to maximize subarray length
+                // Later occurrences would give shorter subarrays, so we ignore them
+                map.put(sum, j);
+            }
+        }
+
+        return ans;
+    }
     // letcode 560 Subarray Sum Equals K 
     public int subarraySum(int[] nums, int k) {
         HashMap<Integer,Integer> map=new HashMap<>();
@@ -855,7 +887,7 @@ Explanation:
     }
 
     public int longestConsecutive(int[] nums) {
-        // Solution os to sort and count . keep track of the curent sequence and the longest sequence . n log n time complexity.
+        // Solution is to sort and count . keep track of the curent sequence and the longest sequence . n log n time complexity.
         // if(nums.length==1)
         //     return 1;
         // Arrays.sort(nums);
@@ -876,7 +908,7 @@ Explanation:
         // return ans;
 
 
-        // Also correct soln: 
+        // Also correct soln: takes more time  
         HashSet<Integer> hs = new HashSet<>();
         for (int num : nums) {
             hs.add(num);
