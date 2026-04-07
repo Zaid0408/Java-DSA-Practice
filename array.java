@@ -936,6 +936,7 @@ Explanation:
     // leetcode 18 4 sum 
     public List<List<Integer>> fourSum(int[] nums, int target) {
         Arrays.sort(nums);
+        // understand 3 sum first then check
         long sum=-1;
         List<List<Integer>> ans=new ArrayList<>();
         for(int i=0;i<nums.length;i++)
@@ -953,7 +954,9 @@ Explanation:
                 // two pointers to solve for 3 sum since nums is sorted
                 while(left<right)
                 {
-                    sum=(long)nums[i]+nums[j]+nums[left]+nums[right];
+                    sum=(long)nums[i]+nums[j]+nums[left]+nums[right]; 
+                    // type casting to prevent integer overflow if sum exceeds integer limit
+                    // will convert to long then add as long
                     if(sum>target)
                         right--;
                     else if(sum<target)
@@ -999,6 +1002,33 @@ Explanation:
                         left++; // done to skip duplicates
                 }
             }
+        }
+        return ans;
+    }
+
+    // leetcode 152
+
+    public int maxProduct(int[] nums) {
+        int n=nums.length;
+        int s=1,p=1;
+        int ans=Integer.MIN_VALUE;
+        for(int i=0;i<nums.length;i++)
+        {
+            // similar to kadane algo but we multiply from both sides 
+
+            if(s==0)
+                s=1; // needed as 0 multiplied will be 0 and 0 will not form a subarray with maximum product 
+            if(p==0)
+                p=1;
+            
+            s*=nums[i];
+            p*=nums[n-1-i];
+            // getting product from both sides as 
+            // 2,3,4,-1 ans to be 24
+            // s goes 2,6,= then 24 
+            // p goes -1,1*4=4, 12,24
+            // so either way by traversing both sides there is atleast one posiblility  of either s or p having maximum product 
+            ans=Math.max(ans,Math.max(p,s));
         }
         return ans;
     }
