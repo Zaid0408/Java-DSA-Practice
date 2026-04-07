@@ -932,6 +932,76 @@ Explanation:
         }
         return ans;
     }
+
+    // leetcode 18 4 sum 
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        long sum=-1;
+        List<List<Integer>> ans=new ArrayList<>();
+        for(int i=0;i<nums.length;i++)
+        {
+            if(i>0 && nums[i]==nums[i-1])
+                continue;
+            
+            // 3 sum logic from below
+            for(int j=i+1;j<nums.length;j++)
+            {
+                if(j>i+1 && nums[j]==nums[j-1])
+                    continue;
+
+                int left=j+1,right=nums.length-1;
+                // two pointers to solve for 3 sum since nums is sorted
+                while(left<right)
+                {
+                    sum=(long)nums[i]+nums[j]+nums[left]+nums[right];
+                    if(sum>target)
+                        right--;
+                    else if(sum<target)
+                        left++;
+                    else
+                    {
+                        ans.add(new ArrayList<>(Arrays.asList(nums[i],nums[j], nums[left], nums[right])));
+                        left++; // increment left pointer post addition in list
+                        while(nums[left]==nums[left-1] && left<right)
+                            left++; // done to skip duplicates
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    // leetcode 15 3 sum
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        int sum=-1;
+        List<List<Integer>> ans=new ArrayList<>();
+        for(int i=0;i<nums.length;i++)
+        {
+            // impo check to see that if i is not a duplicate , after sorting duplicates may be present 
+            if(i>0 && nums[i]==nums[i-1])
+                continue;
+            int left=i+1,right=nums.length-1;
+            // two pointers to solve for 3 sum
+            while(left<right)
+            {
+                sum=nums[i]+nums[left]+nums[right];
+                if(sum>0)
+                    right--;
+                else if(sum<0)
+                    left++;
+                else
+                {
+                    ans.add(new ArrayList<>(Arrays.asList(nums[i], nums[left], nums[right])));
+                    left++; // increment left pointer post addition in list
+                    while(nums[left]==nums[left-1] && left<right)
+                        left++; // done to skip duplicates
+                }
+            }
+        }
+        return ans;
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
