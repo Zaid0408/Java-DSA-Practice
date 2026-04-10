@@ -4,7 +4,7 @@ import java.util.*;
 // For identifying binary searach : see this in question : SEARCH , SORT these keywords together then yes 
 // If we have to search andthe question has a sorrting tendency or exactly sorted then yes
 // aslo if we run out of time while solving for o(n) then yes
-// more than sorting also if we seeb any particular range in the question then yes we can use binary search ex: square root nth root koko eating bananas etc 
+// more than sorting also if we see any particular range in the question then yes we can use binary search ex: square root nth root koko eating bananas etc 
 public class BinSerach {
     
     // lowerbound problem to find the index of the smallest element greater than or equal to x. nums[i]>=x

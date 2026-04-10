@@ -1048,50 +1048,37 @@ Explanation:
             merge(nums, low, m, high);
         }
     }
-    public void merge(int[] nums, int l,int m,int r)
-    {
-        int n1 = m - l + 1;
-        int n2 = r - m;
-
-        // Create temp arrays
-        int L[] = new int[n1];
-        int R[] = new int[n2]; // inplace rotation of nums , TODO: Find a better soln with using one temp array
-
-        // Copy data to temp arrays
-        for (int i = 0; i < n1; ++i)
-            L[i] = nums[l + i];
-        for (int j = 0; j < n2; ++j)
-            R[j] = nums[m + 1 + j];
-
-        // Merge the temp arrays
-
-        // Initial indices of first and second subarrays
-        int i = 0, j = 0;
-
-        // Initial index of merged subarray array
-        int k = l;
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                nums[k] = L[i];
+    public void merge(int[] nums, int l, int m, int r) {
+        int n = r - l + 1;
+        int[] temp = new int[n];
+    
+        // Copy all elements from nums[l..r] into temp
+        for (int i = 0; i < n; i++)
+            temp[i] = nums[l + i];
+    
+        int i = 0;        // pointer for left half in temp
+        int j = m - l + 1; // pointer for right half in temp
+        int k = l;        // pointer for nums
+    
+        while (i <= m - l && j < n) {
+            if (temp[i] <= temp[j]) {
+                nums[k] = temp[i];
                 i++;
-            }
-            else {
-                nums[k] = R[j];
+            } else {
+                nums[k] = temp[j];
                 j++;
             }
             k++;
         }
-
-        // Copy remaining elements of L[] if any
-        while (i < n1) {
-            nums[k] = L[i];
+    
+        while (i <= m - l) {
+            nums[k] = temp[i];
             i++;
             k++;
         }
-
-        // Copy remaining elements of R[] if any
-        while (j < n2) {
-            nums[k] = R[j];
+    
+        while (j < n) {
+            nums[k] = temp[j];
             j++;
             k++;
         }
@@ -1163,6 +1150,50 @@ Explanation:
         }
     }
 
+    // leetcode 493 Reverse Pairs similar to above problem but find pairs such that arr[i]>2*arr[j] greater not greater thanequal to
+    // same logic as above just a separate function to count the pairs befor merging 
+
+    int count1 = 0;
+    
+    public int reversePairs(int[] nums) {
+        mergeSort(nums, 0, nums.length - 1);
+        return count1;
+    }
+    
+    public void mergeSortReversePair(int[] nums, int l, int r) {
+        if (l >= r) return;
+        int m = l + (r - l) / 2;
+        mergeSort(nums, l, m);
+        mergeSort(nums, m + 1, r);
+        countPairs(nums, l, m, r);
+        merge(nums, l, m, r);
+    }
+    
+    public void countPairs(int[] nums, int l, int m, int r) {
+        int j = m + 1;
+        for (int i = l; i <= m; i++) {
+            while (j <= r && nums[i] > 2L * nums[j])
+                j++;
+            count1 += j - (m + 1);
+        }
+    }
+    
+    public void mergReversePair(int[] nums, int l, int m, int r) {
+        int n = r - l + 1;
+        int[] temp = new int[n];
+        for (int i = 0; i < n; i++)
+            temp[i] = nums[l + i];
+
+        int i = 0, j = m - l + 1, k = l;
+
+        while (i <= m - l && j < n) {
+            if (temp[i] <= temp[j]) nums[k++] = temp[i++];
+            else nums[k++] = temp[j++];
+        }
+        while (i <= m - l) nums[k++] = temp[i++];
+        while (j < n) nums[k++] = temp[j++];
+    }
+
     // leetcode 645
 
     public int[] findErrorNums(int[] nums) {
@@ -1195,7 +1226,7 @@ Explanation:
         // int prices[]={7,1,5,3,6,4};
         // System.out.println("Max profit is "+BestTimeToBuySellStock(prices));
         int height[]={1,8,6,2,5,4,8,3,7};
-        //TrappedRainWater(height);
+        TrappedRainWater(height);
         int arr[]={1,2,3,4};
         System.out.println(generateSubarraysBruteForce(arr));
         System.out.println(generateSubarraysOptimized(arr));
