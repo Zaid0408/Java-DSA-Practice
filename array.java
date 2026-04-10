@@ -1055,6 +1055,71 @@ Explanation:
 
         // Create temp arrays
         int L[] = new int[n1];
+        int R[] = new int[n2]; // inplace rotation of nums , TODO: Find a better soln with using one temp array
+
+        // Copy data to temp arrays
+        for (int i = 0; i < n1; ++i)
+            L[i] = nums[l + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = nums[m + 1 + j];
+
+        // Merge the temp arrays
+
+        // Initial indices of first and second subarrays
+        int i = 0, j = 0;
+
+        // Initial index of merged subarray array
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                nums[k] = L[i];
+                i++;
+            }
+            else {
+                nums[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        // Copy remaining elements of L[] if any
+        while (i < n1) {
+            nums[k] = L[i];
+            i++;
+            k++;
+        }
+
+        // Copy remaining elements of R[] if any
+        while (j < n2) {
+            nums[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+
+    // count inversions : Count number of inversions such that arr[i]>arr[j] where i<j
+    // same to same as merge sort but add the counnt when we have a inversion 
+    long count =0;
+    public long numberOfInversions(int[] nums) {
+        mergeSort(nums,0,nums.length-1);
+        return count;
+    }
+    public void mergeSortInversion(int[] nums, int low,int high)
+    {
+        if (low < high) {
+            int m = low+(high - low) / 2;
+            mergeSort(nums, low, m);
+            mergeSort(nums, m + 1, high);
+            merge(nums, low, m, high);
+        }
+    }
+    public void mergeInversion(int[] nums, int l,int m,int r)
+    {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+
+        // Create temp arrays
+        int L[] = new int[n1];
         int R[] = new int[n2];
 
         // Copy data to temp arrays
@@ -1077,6 +1142,7 @@ Explanation:
             }
             else {
                 nums[k] = R[j];
+                count += (long)m-i+1; // increment the inversion count here arr[i]>arr[j] where i<j , only step to do in merge sort 
                 j++;
             }
             k++;
