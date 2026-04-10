@@ -1032,6 +1032,94 @@ Explanation:
         }
         return ans;
     }
+
+    // merge sort 
+
+    public int[] mergeSort(int[] nums) {
+        mergeSort(nums,0,nums.length-1);
+        return nums;
+    }
+    public void mergeSort(int[] nums, int low,int high)
+    {
+        if (low < high) {
+            int m = low+(high - low) / 2;
+            mergeSort(nums, low, m);
+            mergeSort(nums, m + 1, high);
+            merge(nums, low, m, high);
+        }
+    }
+    public void merge(int[] nums, int l,int m,int r)
+    {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+
+        // Create temp arrays
+        int L[] = new int[n1];
+        int R[] = new int[n2];
+
+        // Copy data to temp arrays
+        for (int i = 0; i < n1; ++i)
+            L[i] = nums[l + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = nums[m + 1 + j];
+
+        // Merge the temp arrays
+
+        // Initial indices of first and second subarrays
+        int i = 0, j = 0;
+
+        // Initial index of merged subarray array
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                nums[k] = L[i];
+                i++;
+            }
+            else {
+                nums[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        // Copy remaining elements of L[] if any
+        while (i < n1) {
+            nums[k] = L[i];
+            i++;
+            k++;
+        }
+
+        // Copy remaining elements of R[] if any
+        while (j < n2) {
+            nums[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+
+    // leetcode 645
+
+    public int[] findErrorNums(int[] nums) {
+        int n=nums.length;
+        int arr[]=new int[n+1];
+        int rep=-1,miss=-1;
+
+        for(int i=0;i<n;i++)
+        {
+            arr[nums[i]] += 1;
+        }
+
+        for(int i=0;i<=n;i++)
+        {
+            if(arr[i]==2)
+                rep=i;
+            else if(arr[i]==0)
+                miss=i;
+        }
+
+        return new int[]{rep,miss};
+
+    }
     
     public static void main(String[] args) {
         //int numbers[]={1,3,6,-1,3};
