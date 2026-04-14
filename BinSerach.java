@@ -214,6 +214,10 @@ public class BinSerach {
     public static int findMin(int[] nums) {
         // Find minimum element in a rotated sorted array
         // input: nums = [4,5,6,7,0,1,2] Output: 0 input: nums= [3,4,5,1,2] Output: 1
+        // Key Intuition (VERY IMPORTANT)
+        // One half is always sorted
+        //Minimum lies in the unsorted half
+        // If fully sorted → leftmost is min
         int mini=Integer.MAX_VALUE;
         int start=0,end=nums.length-1;
         while(start<=end)
@@ -242,6 +246,10 @@ public class BinSerach {
     public int findKRotation(ArrayList<Integer> nums) { // find the smallest number in the arry , the index at which it is present is the number of times the array is rotated
         int mini=-1;
         int start=0,end=nums.size()-1;
+                // Key Intuition (VERY IMPORTANT)
+        // One half is always sorted
+        //Minimum lies in the unsorted half
+        // If fully sorted → leftmost is min
         while(start<=end)
         {
             if(nums.get(start)<nums.get(end)) // when we reach a sorted subarray then the leftmost lement is the smallest element in the list
