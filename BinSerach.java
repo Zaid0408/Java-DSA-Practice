@@ -377,20 +377,20 @@ public class BinSerach {
         return -1;
     }
     public int func(int mid, int n, int m)
-    {
+    { // 13 3 27
         long ans=1;
-        for(int i=1;i<=n;i++)
+        for(int i=1;i<=n;i++) // multiply mid n times withitself so know which way to move 
         {
             ans=ans*mid;
-            if(ans> m)
+            if(ans> m) // return 2 immidiately to stop any more iterations 
                 return 2;
         }
-        if(ans==m)
+        if(ans==m) // if multiplying n times with itself is equal to m then this is the answer
             return 1;
         return 0;
     }
 
-// advanced binary search problems : they deal with search space more than search elements , finding the serach space is crucila for us to solve this problem
+// advanced binary search problems : they deal with search space more than search elements , finding the serach space is crucial for us to solve this problem
 
     // leetcode 875 Koko eating bananas
 
@@ -558,6 +558,24 @@ public class BinSerach {
         }
         noOfB += (cnt/k);
         return noOfB;
+    }
+
+    // leetcode 1539 Kth Missing Positive Number
+    public int findKthPositive(int[] arr, int k) {
+        int s = 0, e = arr.length - 1;
+        int mid=0;
+        while (s <= e) {
+            mid=s+(e-s)/2;
+            // number of missing numbers before arr[mid]
+            int missing = arr[mid]-(mid+1); // works in theory , please apply all scenarios and validate
+            if (missing < k) {
+                s=mid+1;
+            } else {
+                e=mid-1;
+            }
+        }
+        // s is the first index where missing >= k
+        return s+k;
     }
 
     public static int[] findPeakGrid(int[][] mat) { // same logic as peak element 1
