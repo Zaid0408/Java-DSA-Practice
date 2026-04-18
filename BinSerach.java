@@ -688,6 +688,153 @@ Place cows at positions 1, 4, 8 → minimum distance = 3, which is the best poss
         return ball>=m;
     }
 
+    // Book allocation problem in TUF sheet
+
+    public int findPages(int[] nums, int m) {
+        if(m > nums.length) return -1;
+        int s=1,e=0,mid=0;
+        for (int num : nums) {
+            s = Math.max(s, num); // max single book
+            e += num;             // total pages
+        }
+
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(AllocateBooks(nums,mid,m)) 
+            {
+                e=mid-1; // Minimize max → move left when valid
+            }
+            else
+            {
+                s=mid+1; 
+            }
+        }
+
+        return s; //here minimizing the maximum hence return s
+        
+    }
+    public boolean AllocateBooks(int nums[], int mid,int m)
+    {
+        int book=1;
+        int sum=nums[0];
+        for(int i=1;i<nums.length;i++)
+        {
+            if(sum+nums[i]>mid)
+            {
+                book++;
+                sum=nums[i];
+            }
+            else{
+                sum+=nums[i];
+            }
+        }
+        return book<=m;
+    }
+
+    // leetcode 410. split array
+
+    public int splitArray(int[] nums, int k) {
+        int s = 0, e = 0;
+
+        for (int num : nums) {
+            s = Math.max(s, num); // largest element
+            e += num;             // total sum
+        }
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (canSplit(nums, mid, k)) {
+                e = mid - 1; // try smaller max sum
+            } else {
+                s = mid + 1;
+            }
+        }
+
+        return s; // first valid
+    }
+
+    public boolean canSplit(int[] nums, int maxSum, int k) {
+        int count = 1;
+        int sum = 0;
+
+        for (int num : nums) {
+            if (sum + num > maxSum) {
+                count++;
+                sum = num;
+            } else {
+                sum += num;
+            }
+        }
+
+        return count <= k;
+    }
+
+    // Painters partition 
+
+    public int paint(int A, int B, int[] C) {
+        // Your code goes here
+        long s=0,e=0;
+        for(int num:C)
+        {
+            s=Math.max(num,s);
+            e+=num;
+        }
+        long ans=0;
+        while (s <= e) {
+            long mid = s + (e - s) / 2;
+
+            if (canPaint(C, mid, A)) {
+                ans = mid;
+                e = mid - 1; // minimize
+            } else {
+                s = mid + 1;
+            }
+        }
+
+        return (int)((ans * B) % 10000003);
+    }
+    public boolean canPaint(int[] C, long maxLen, int A) {
+        int painters = 1;
+        long sum = 0;
+
+        for (int len : C) {
+            if (sum + len > maxLen) {
+                painters++;
+                sum = len;
+            } else {
+                sum += len;
+            }
+        }
+
+        return painters <= A;
+    }
+
+    // leetcode 4 Median of 2 sorted array TODO: Apply the abovementioned pattern to this problem 
+
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        List<Integer> nums= new ArrayList<>();
+        for(int num:nums1)
+            nums.add(num);
+        for(int num:nums2)
+            nums.add(num);
+
+        Collections.sort(nums);
+
+        return median(nums);
+            
+    }
+    public double median(List<Integer> nums)
+    {
+        int n=nums.size();
+        if(n%2==0)
+        {
+            return ((double)nums.get(n/2) + nums.get(n/2-1))/2;
+        }
+        return (double)nums.get(n/2);
+    }
+
     public static int[] findPeakGrid(int[][] mat) { // same logic as peak element 1
         if(mat.length==1 && mat[0].length==1)
             return new int[]{0,0};
