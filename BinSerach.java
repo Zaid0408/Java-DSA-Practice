@@ -1,3 +1,4 @@
+import java.security.Key;
 import java.util.*;
 
 
@@ -6,7 +7,7 @@ import java.util.*;
 // aslo if we run out of time while solving for o(n) then yes
 // more than sorting also if we see any particular range in the question then yes we can use binary search ex: square root nth root koko eating bananas etc 
 public class BinSerach {
-    
+    // Pattern 1 : uperbound and lower bound
     // lowerbound problem to find the index of the smallest element greater than or equal to x. nums[i]>=x
     public int lowerBound(int[] nums, int x) {
         int ans=nums.length-1;
@@ -149,7 +150,7 @@ public class BinSerach {
 
         return ans;
     }
-
+    // pattern 2 : Rotatede sorted array problems 
     // leetcode 33 : Search in rotated sorted array
     public int search(int[] nums, int target) { 
         // Figure out the sorted part of the array left or right? then check if target comes in left part or right part based on relation with mid element
@@ -314,7 +315,7 @@ public class BinSerach {
         return -1;
 
     }
-
+    // leetcode 162 Find Peak Element
     public int findPeakElement(int[] nums) {
         int s=1,e=nums.length-2,mid=0;
         if(nums.length==1)
@@ -339,6 +340,7 @@ public class BinSerach {
 
         return -1;
     }
+    // Pattern 3 : Binary seqarch over search space instead of array , calculate s and e from the array or question and do bin search over search space
     // leetcode 69 Sqrt(x) 
     public int mySqrt(int x) {
         if(x<=1)
@@ -576,6 +578,114 @@ public class BinSerach {
         }
         // s is the first index where missing >= k
         return s+k;
+    }
+
+    // Pattern 4 Agressive Cows remeber this keyword in the question : maximum of minimum value or minimum of maximumvalue.
+    // Key takeaway (IMPORTANT for interviews)
+
+    //Pattern:
+
+    // Minimize max → move left when valid
+    // Maximize min → move right when valid
+    /*
+    Aggressive Cows — Problem Statement
+
+You are given an array of integers stalls[] representing the positions of stalls on a number line. You are also given an integer k, representing the number of cows.
+
+Your task is to place the k cows in these stalls such that the minimum distance between any two cows is as large as possible.
+
+Return the largest possible minimum distance between any two cows.
+
+Constraints
+Each stall can have only one cow
+Cows can only be placed in the given stall positions
+Stall positions may not be sorted
+📥 Input
+stalls[]: array of integers (positions of stalls)
+k: number of cows
+📤 Output
+An integer representing the maximum possible minimum distance
+
+Example
+Input:
+stalls = [1, 2, 4, 8, 9]
+k = 3
+
+Output:
+3
+Explanation (brief)
+
+Place cows at positions 1, 4, 8 → minimum distance = 3, which is the best possible.
+    */
+
+
+    public int AgressiveCows(int stalls[],int k)
+    {
+        Arrays.sort(stalls);
+        int s=1,e=stalls[stalls.length-1]-stalls[0],mid=0; // e has to be that value because we have to find the maximum possible minimum distance
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(isPossible(stalls,mid,k)) // possible to keep k cows in given mid stalls? if yes then try finding out the maximum value mid can be to be able to place all cows 
+            {
+                s=mid+1;// Maximize min → move right when valid
+            }
+            else
+            {
+                e=mid-1; // if we cannot place k cows among stalls for a given mid value then reduce the mid value
+            }
+        }
+        return e; // e will be pointing to the maximum possible minimum distance as s>e after binary search.
+    }
+    public boolean isPossible(int stalls[],int mid,int k)
+    {
+        int cows=1;
+        int lastPos=stalls[0];
+        for(int i=1;i<stalls.length;i++)
+        {
+            if(stalls[i]-lastPos>=mid) // can place a cow by checking the difference between stall positions is >=mid(min length of distance cows should be kept at)
+            {
+                cows++; // if true then we can add another cow
+                lastPos=stalls[i]; // last cow was placed at this distance
+            }
+        }
+        return cows>=k; // if cows count > k return true because we can place k cows in the stalls for the given mid values 
+    }
+
+    //leetcode 1552. Magnetic Force Between Two Balls , exactly same as above pattern
+    public int maxDistance(int[] position, int m) {
+        Arrays.sort(position);
+        int s=1,mid=0;
+        if(m<=2)
+            return position[position.length-1]-position[0];
+        int e=position[position.length-1]-position[0];
+        while(s<=e)
+        {
+            mid=(s+e)/2;
+            if(isPossibleMageneticForce(position,mid,m))
+            {
+                s=mid+1; // Maximize min → move right when valid
+            }
+            else
+                e=mid-1;
+        }
+
+        return e;
+    }
+    public boolean isPossibleMageneticForce(int position[],int mid,int m)
+    {
+        int ball=1;
+        int lastPos=position[0];
+        for(int i=1;i<position.length;i++)
+        {
+            if(position[i]-lastPos>=mid)
+            {
+                ball++;
+                lastPos=position[i];
+            }
+        }
+
+        return ball>=m;
     }
 
     public static int[] findPeakGrid(int[][] mat) { // same logic as peak element 1
