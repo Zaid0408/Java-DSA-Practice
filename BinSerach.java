@@ -864,7 +864,7 @@ Place cows at positions 1, 4, 8 → minimum distance = 3, which is the best poss
                 else
                     return new int[]{pos,mid};
             }
-            else if(mid+1<mat[0].length && mid-1<0)
+            else if(mid+1<mat[0].length && mid-1<0) // leftmost column ??
             {
                 if(mat[pos][mid+1]>mat[pos][mid])
                     s=mid+1;
