@@ -121,14 +121,14 @@ class strings {
                 if(c.length()>0){ // if space encountered then reverse the word
                     c=rev(c);
                     System.out.println(c);
-                    m= m+c+" ";
+                    m= m+c+" "; // very slow as it creates a new object everytme in java
                     c="";// store the reverse in m and reset c
                 }
             }
         }
         if(c.length() > 0) { // check for last word in the string as the else statement does not account for that 
             c = rev(c);
-            m = m + c;
+            m = m + c; // very slow as it creates a new object everytme in java
         } else {
             m = m.trim();   // Remove trailing space from last word added
         }
@@ -143,6 +143,25 @@ class strings {
             l=l+k.charAt(i);
         }
         return l;
+    }
+
+    public String reverseWordsOptimized(String s) {
+        StringBuilder ans = new StringBuilder(); // use string builder because of string problem mentioned above
+        int i = s.length() - 1;
+
+        while (i >= 0) {
+            // skip spaces
+            while (i >= 0 && s.charAt(i) == ' ') i--; 
+            if (i < 0) break;
+            int j = i;
+            // find start of word
+            while (i >= 0 && s.charAt(i) != ' ') i--; // i becomes start of new word and j becomes end of new word
+            // append word directly
+            ans.append(s.substring(i + 1, j + 1));
+            ans.append(" ");
+        }
+
+        return ans.toString().trim();
     }
     // leetcode 1903 Largest Odd Number in String
     public String largestOddNumber(String num) { 
@@ -431,7 +450,22 @@ class strings {
         return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);
     }
     // lc 14 Longest Common Prefix
-    // Compare each string character by chararcter wise with the first string, o(n^2)
+    // Compare each string character by chararcter wise with the first string, o(n^2) optimal soln 
+
+    /*
+    
+    Key Rule (VERY IMPORTANT)
+Always put boundary checks BEFORE access operations
+
+Simple Mental Model
+
+Wrong:
+
+access || boundary_check   ❌
+
+Correct:
+
+boundary_check || access   ✅*/
     public String longestCommonPrefix(String[] strs) {
         String ans="";
         for(int i=0;i<strs[0].length();i++)
