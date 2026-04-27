@@ -623,6 +623,34 @@ boundary_check || access   ✅*/
         }
         return -1;
     }
+
+    // leetcode 38 Count and Say
+    public String countAndSay(int n) {
+        StringBuilder res=new StringBuilder("1");
+
+        for(int i=1;i<n;i++)
+        {
+            int c=1;
+            StringBuilder s=new StringBuilder();
+            for(int j=1;j<res.length();j++)
+            {
+                if(res.charAt(j-1)==res.charAt(j))
+                    c++;
+                else
+                {
+                    s.append(c);
+                    s.append(res.charAt(j-1));
+                    c=1;
+                }
+            }
+            s.append(c);
+            s.append(res.charAt(res.length()-1));
+            res=s;
+        }
+
+        return res.toString();
+    }
+
     public static void main(String[] args) {
         String path="WNEENESENNN";
        // System.out.println(ShortestPath(path));
