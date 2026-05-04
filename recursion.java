@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 public class recursion {
 
     public static int fibo(int n)
@@ -98,6 +100,101 @@ public class recursion {
     }
     
 
+    // leetcode 50 Power of N
+
+    public double myPow(double x, int n) {
+        long N=n;// to handle interger overflow
+        if(N<0)
+        {
+            x=1/x;
+            N=-1*N;
+        }
+
+        return Power(x,N);
+    }
+    private double Power(double x, long N)
+    {
+        /**
+        Key Idea (O(log n))
+If n is even:
+x^n = (x^(n/2)) * (x^(n/2))
+If n is odd:
+x^n = x * (x^(n/2)) * (x^(n/2))
+         */
+        if(N==0) return 1;
+
+        if(N==1) return x;
+
+        double half = Power(x, N/2);
+        if(N%2==0)
+        {
+            return half*half;
+        }
+        else
+        {
+            return half*half*x;
+        }
+    }
+
+    // letcodee 1922 Count Good Numbers
+    private static long MOD= 1000000007;
+    public int countGoodNumbers(long n) {
+        long even = (n + 1) / 2;
+        long odd = n / 2;
+
+        long res = (long)(Power(5, even) * Power(4, odd)) % MOD; // use the same power function as above
+        return (int) res;
+    }
+
+    // reverse a stack using recursion
+
+    public void reverseStack(Stack<Integer> st) {
+        if(st.isEmpty())
+            return;
+
+        int top=st.pop();
+        reverseStack(st);
+        InsertStack2(st,top);
+
+    }
+    public void InsertStack2(Stack<Integer> st, int num)
+    {
+        if(st.isEmpty())
+        {
+            st.push(num);
+            return ;
+        }
+        int top=st.pop();
+        InsertStack2(st,num);
+        st.push(top);
+    }
+
+    // recursively sort stack in descending order same pattern as above
+
+    public void sortStack(Stack<Integer> st) {
+        if(st.isEmpty())
+            return;
+
+        int top=st.pop();
+        sortStack(st);
+        InsertStack(st,top);
+
+    }
+    public void InsertStack(Stack<Integer> st, int num)
+    {
+        if(st.isEmpty() || st.peek()<=num)
+        {
+            st.push(num);
+            return ;
+        }
+
+        int top=st.pop();
+        InsertStack(st,num);
+
+        st.push(top);
+
+    }
+
     public static int PowerOfN(int x, int n)// x^n in log n time
     {
         if(n==0 )
@@ -106,7 +203,7 @@ public class recursion {
             return x;
         else{
             if(n%2==0)
-                return PowerOfN(x, n/2)*PowerOfN(x, n/2);
+                return PowerOfN(x, n/2)*PowerOfN(x, n/2); // incorrect assign a variable to it and then multiply otehrwise tales a lot of time 
             else
                 return x* PowerOfN(x, n/2)*PowerOfN(x, n/2);
         }
