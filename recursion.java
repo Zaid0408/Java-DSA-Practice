@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class recursion {
@@ -139,9 +141,10 @@ x^n = x * (x^(n/2)) * (x^(n/2))
     // letcodee 1922 Count Good Numbers
     private static long MOD= 1000000007;
     public int countGoodNumbers(long n) {
+        // must use long to prevent interg overflow
         long even = (n + 1) / 2;
         long odd = n / 2;
-
+        // Mathematically derived formula to calculate the number of good numbers
         long res = (long)(Power(5, even) * Power(4, odd)) % MOD; // use the same power function as above
         return (int) res;
     }
@@ -178,7 +181,6 @@ x^n = x * (x^(n/2)) * (x^(n/2))
         int top=st.pop();
         sortStack(st);
         InsertStack(st,top);
-
     }
     public void InsertStack(Stack<Integer> st, int num)
     {
@@ -187,12 +189,9 @@ x^n = x * (x^(n/2)) * (x^(n/2))
             st.push(num);
             return ;
         }
-
         int top=st.pop();
         InsertStack(st,num);
-
         st.push(top);
-
     }
 
     public static int PowerOfN(int x, int n)// x^n in log n time
@@ -283,6 +282,85 @@ x^n = x * (x^(n/2)) * (x^(n/2))
             int ans1= longestCommonSubsequence(text1.substring(0,text1.length()-1), text2);
             int ans2= longestCommonSubsequence(text1,text2.substring(0,text2.length()-1));
             return Math.max(ans1,ans2);
+        }
+
+    }
+
+    // Generate Binary Strings Without Consecutive 1s 
+
+    /*
+    Given an integer n, return all binary strings of length n that do not contain consecutive 1s. Return the result in lexicographically increasing order.
+A binary string is a string consisting only of characters '0' and '1'.
+
+Example 1
+
+Input: n = 3
+Output: ["000", "001", "010", "100", "101"]
+Explanation: All strings are of length 3 and do not contain consecutive 1s.
+
+Example 2
+
+Input: n = 2
+Output: ["00", "01", "10"]
+    */
+
+    List<String> ans=new ArrayList<>();
+    public List<String> generateBinaryStrings(int n) {
+        StringBuilder s=new StringBuilder();
+        helper(n,'0', s);
+        return ans;
+    }
+    public void helper(int n,char prev,StringBuilder s)
+    {
+        if(s.length()==n)
+        {
+            ans.add(s.toString());
+            return;
+        }
+        s.append('0');
+        helper(n,'0',s);
+        s.deleteCharAt(s.length()-1);
+
+        if (prev != '1') {
+            s.append('1');
+            helper(n,'1',s);
+            s.deleteCharAt(s.length() - 1);
+        }
+        
+
+    }
+
+    // leetcode 22 Generate Parentheses
+
+    public List<String> generateParenthesis(int n) {
+        StringBuilder s=new StringBuilder();
+        helper(n,0,0, s);
+        return ans;
+    }
+    public void helper(int n, int i, int j,StringBuilder s )
+    {
+        /* 
+        Three rules: 
+        1. Only add open parenthesis when i < n
+        2. Only add closed parenthesis when j<i
+        3. return the string when open == close ==n
+         */
+        if(i==j && i==n)
+        {
+            ans.add(s.toString());
+            return;
+        }
+        if(i<n)
+        {
+            s.append('(');
+            helper(n,i+1,j,s);
+            s.deleteCharAt(s.length()-1);
+        }
+        if(j<i)
+        {
+            s.append(')');
+            helper(n,i,j+1,s);
+            s.deleteCharAt(s.length()-1);
         }
 
     }
