@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -307,30 +308,30 @@ Output: ["00", "01", "10"]
     List<String> ans=new ArrayList<>();
     public List<String> generateBinaryStrings(int n) {
         StringBuilder s=new StringBuilder();
-        helper(n,'0', s);
+        helper(n,'0', s); //  assume prev char is 0
         return ans;
     }
     public void helper(int n,char prev,StringBuilder s)
     {
-        if(s.length()==n)
+        if(s.length()==n) // string of length n reached add to list
         {
             ans.add(s.toString());
             return;
         }
         s.append('0');
-        helper(n,'0',s);
-        s.deleteCharAt(s.length()-1);
+        helper(n,'0',s); // when 000 gets added in the string it comes back here then: 
+        s.deleteCharAt(s.length()-1); // last character gets removed making it 00 then adding 1 making it 001 and calling recursion again 
 
         if (prev != '1') {
             s.append('1');
-            helper(n,'1',s);
+            helper(n,'1',s); // since we append 1 here we pass the prev appended char as 1
             s.deleteCharAt(s.length() - 1);
         }
         
 
     }
 
-    // leetcode 22 Generate Parentheses
+    // leetcode 22 Generate Parentheses same pattern as above 
 
     public List<String> generateParenthesis(int n) {
         StringBuilder s=new StringBuilder();
@@ -345,7 +346,7 @@ Output: ["00", "01", "10"]
         2. Only add closed parenthesis when j<i
         3. return the string when open == close ==n
          */
-        if(i==j && i==n)
+        if(i==j && i==n) // either open len = n ex : ((( or open len= close len (()) (if i=j=2) 
         {
             ans.add(s.toString());
             return;
@@ -354,7 +355,7 @@ Output: ["00", "01", "10"]
         {
             s.append('(');
             helper(n,i+1,j,s);
-            s.deleteCharAt(s.length()-1);
+            s.deleteCharAt(s.length()-1); // same deletion logic as previous problem 
         }
         if(j<i)
         {
@@ -364,23 +365,114 @@ Output: ["00", "01", "10"]
         }
 
     }
+    static List<List<Integer>> ans1= new ArrayList<>();
+    public static List<List<Integer>> powerSet(int[] nums) {
+        helper(0, nums, new ArrayList<>());
+        return ans1;
+    }
+    private static void helper(int index, int[] nums, List<Integer> current) {
+        ans1.add(new ArrayList<>(current));
+        // two choices :
+        /*
+        1. Add to the subset 
+        2. Dont add to the subset
+        []
+       /  \
+     [1]   []
+    /  \   / \
+ [1,2] [1] [2] []
+
+        */
+        for (int i = index; i < nums.length; i++) {
+            // include nums[i]
+            current.add(nums[i]);
+            // move forward
+            helper(i + 1, nums, current);
+            // backtrack or remove nums[i]
+            current.remove(current.size() - 1);
+        }
+    }
+
+    // leetcode 78 Subsets similar to the above 
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<Integer> subset=new ArrayList<>();
+        List<List<Integer>> temp=new ArrayList<>();
+        Subsets(nums,0, subset,temp);
+        return temp;
+    }
+    public void Subsets(int nums[],int i,List<Integer> subset,List<List<Integer>> temp)
+    {
+        if(i==nums.length)
+        {
+            temp.add(new ArrayList<>(subset));
+            return;
+        }
+        // Two choices
+        // First include current element while making subset
+        subset.add(nums[i]);
+        Subsets(nums,i+1, subset,temp); 
+        // Second not to include the current element while making subset
+        subset.remove(subset.size()-1);
+        Subsets(nums,i+1, subset,temp);
+
+
+    }
+
+    // leetcode 90 Subsets II same problem as above but no duplicates allowed
+    public static List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        helper( nums,0, new ArrayList<>());
+        return ans1;
+    }
+    private static void helper( int[] nums, int i,List<Integer> curr)
+    {
+        if(i==nums.length)
+        {
+            ans1.add(new ArrayList<>(curr));
+            return;
+        }
+        // include current nums[i]
+        curr.add(nums[i]);
+        helper(nums,i+1,curr);
+        // remove the current num from the subset to generate new 
+        curr.remove(curr.size()-1);
+        // b4 generating new patterns by not considering nums[i] we must skip the duplicates in the nums array so that no duplicates will get added while append to the curr list
+        while(i+1<nums.length && nums[i]==nums[i+1])
+        {
+            i++;
+        }
+
+        helper(nums,i+1,curr);
+    }
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
         //permutation("ZAID", "");
         // SubstringsOf("ZAID", "");
-        Boolean map[]=new Boolean[26];
-        for(int i=0;i<map.length;i++)
-        {
-            map[i]=false;
-        }
+        // Boolean map[]=new Boolean[26];
+        // for(int i=0;i<map.length;i++)
+        // {
+        //     map[i]=false;
+        // }
        //System.out.println(Pairingfriends(7));
         //removeDup("zzzaaiiiidddd",0,new StringBuilder(""),map);
         //replacePI("pippxxpipxpxpi");
         //BinaryString(4, 0, "");
         //ToH(3, 'A','B','C');
-        int W=7;
-        int val[]={15,14,10,45,30};
-        int weight[]={2,5,1,3, 4};
-        System.out.println(knapsack(weight, val, W, val.length));
+        // int W=7;
+        // int val[]={15,14,10,45,30};
+        // int weight[]={2,5,1,3, 4};
+        //System.out.println(knapsack(weight, val, W, val.length));
+
+        int nums[]={1,2,3,4};
+        powerSet(nums);
+        for(int i=0;i<ans1.size();i++)
+        {
+            for(int j=0;j<ans1.get(i).size();j++)
+            {
+                System.out.print(ans1.get(i).get(j)+" ");
+            }
+            System.out.println();
+        }
     }
 }

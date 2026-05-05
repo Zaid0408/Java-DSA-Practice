@@ -475,7 +475,7 @@ boundary_check || access   ✅*/
                 if(i==str.length() || str.charAt(i)!=strs[0].charAt(i))
                 { // i==str.length() to make sure that we dont go out of bounds if a given string is leeser than the first string
                     return ans;
-                }
+                } // i==str.length() gets checked first by the compiler and if true ignores the second condition
             }
             ans= ans + strs[0].charAt(i);
         }
@@ -625,27 +625,34 @@ boundary_check || access   ✅*/
     }
 
     // leetcode 38 Count and Say
+
+    /*
+    Start from the first term as "1".
+For each new term, scan the previous term from left to right and count how many times the current digit appears consecutively.
+Append the count followed by the digit to build the next term.
+Repeat this process until reaching the required term.
+    */
     public String countAndSay(int n) {
         StringBuilder res=new StringBuilder("1");
 
-        for(int i=1;i<n;i++)
+        for(int i=1;i<n;i++) // Generate the sequence up to the nth term
         {
             int c=1;
             StringBuilder s=new StringBuilder();
-            for(int j=1;j<res.length();j++)
+            for(int j=1;j<res.length();j++)             // Traverse the previous result
             {
-                if(res.charAt(j-1)==res.charAt(j))
+                if(res.charAt(j-1)==res.charAt(j))                 // If current character matches previous, increment count
                     c++;
-                else
+                else  // Append count and character to current result
                 {
                     s.append(c);
                     s.append(res.charAt(j-1));
                     c=1;
                 }
             }
-            s.append(c);
+            s.append(c); // Append the last group
             s.append(res.charAt(res.length()-1));
-            res=s;
+            res=s; // Update result for next iteration
         }
 
         return res.toString();

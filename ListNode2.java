@@ -178,23 +178,25 @@ public class ListNode2 {
     // post that set fast to head and increment each pointer once eventually they will reach the start of cycle
     // mathematical proof : https://leetcode.com/problems/linked-list-cycle-ii/description/comments/1567596/ 
     public ListNode detectCycle(ListNode head) {
-        ListNode fast = head;
-        ListNode slow = head;
-
-        while(fast != null && fast.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
-            if(fast==slow){ // cycle found
-                fast=head;
-                while(fast != slow) { // keep incrementing until they reach the start of cycle
-                    slow = slow.next;
-                    fast = fast.next;
-                }
-                // mathe=matically possible
-                return fast;
-            }
+        ListNode slow=head;
+        ListNode fast=head;
+        while(fast!=null && fast.next!=null)
+        {
+            slow=slow.next;
+            fast=fast.next.next;
+            if(slow==fast) // cycle found
+                break;
         }
-        return null;
+        if (fast == null || fast.next == null) 
+            return null;
+        fast=head;
+        while(fast!=slow)
+        {
+            fast=fast.next;
+            slow=slow.next;
+        }
+
+        return fast;
     }
 
     //leetcode 2
@@ -229,10 +231,6 @@ public class ListNode2 {
         if(head.next==null ){
             return null;
         }
-        if(n==1){
-            temp.next=null;
-            return head;
-        }
         while(temp!=null){
             temp=temp.next;
             size++;
@@ -252,26 +250,49 @@ public class ListNode2 {
         t.next=t.next.next;
         return head;
     }
-    public ListNode sortList(ListNode head) { // leetcode 148
-        if(head==null || head.next==null)
-            return head;
-        ListNode temp=head;
-        List<Integer> ans=new ArrayList<>();
-        while(temp!=null)
-        {
-            ans.add(temp.val);
-            temp=temp.next;
-        }
-        Collections.sort(ans);
-        int i=0;
-        temp=head;
-        while(temp!=null)
-        {
-            temp.val=ans.get(i++);
-            temp=temp.next;
-        }
-        return head;
+    // leetcode 148 Sort list
+    public ListNode sortList(ListNode head) {
 
+        if (head == null || head.next == null)
+            return head;
+        ListNode slow=head;
+        ListNode fast=head;
+        ListNode prev=head;
+        while(fast!=null && fast.next!=null)
+        {
+            prev=slow;
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+
+        prev.next=null;
+
+        ListNode l1= sortList(head);
+        ListNode l2= sortList(slow);
+        return merge(l1, l2);
+    }
+    public ListNode merge(ListNode l1,ListNode l2)
+    {
+        ListNode l=new ListNode(-1),p=l;
+        while(l1!=null && l2!=null)
+        {
+            if (l1.val < l2.val)
+            {
+                p.next =l1;
+                l1=l1.next;
+            }
+            else 
+            {
+                p.next=l2;
+                l2= l2.next;
+            }
+            p=p.next;
+        }
+        if (l1 != null)
+            p.next = l1;
+        if (l2 != null)
+            p.next = l2;
+        return l.next;
     }
     // leetcode 160 Intersection of Two Linked Lists
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
