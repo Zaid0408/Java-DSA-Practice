@@ -296,7 +296,7 @@ A binary string is a string consisting only of characters '0' and '1'.
 Example 1
 
 Input: n = 3
-Output: ["000", "001", "010", "100", "101"]
+Output: ["000", "001", "010", "100", "101"] in lexicographic order
 Explanation: All strings are of length 3 and do not contain consecutive 1s.
 
 Example 2
@@ -346,7 +346,7 @@ Output: ["00", "01", "10"]
         2. Only add closed parenthesis when j<i
         3. return the string when open == close ==n
          */
-        if(i==j && i==n) // either open len = n ex : ((( or open len= close len (()) (if i=j=2) 
+        if(i==j && i==n)
         {
             ans.add(s.toString());
             return;
@@ -365,8 +365,42 @@ Output: ["00", "01", "10"]
         }
 
     }
+// leetcode 17 Letter Combinations of a Phone Number
+
+    // example 1:
+    // Input: digits = "23"
+    // Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+    // example 2:
+    // Input: digits = "2"
+    // Output: ["a","b","c"]
+
+    List<String> ans3 = new ArrayList<>();
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0) return ans;
+
+        String[] map = {"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+        helper(0, digits, new StringBuilder(), map);
+        return ans3;
+    }
+
+    private void helper(int i, String digits, StringBuilder sb, String[] map) {
+        if (i == digits.length()) {
+            ans3.add(sb.toString());
+            return;
+        }
+        String letters = map[digits.charAt(i) - '0'];
+        // supose digits.charAt(i) was '9' then letters will be "wxyz"
+        for (char ch : letters.toCharArray()) {
+            sb.append(ch);                  // choose
+            helper(i + 1, digits, sb, map); // explore
+            sb.deleteCharAt(sb.length() - 1);   // backtrack
+        }
+    }
+
     static List<List<Integer>> ans1= new ArrayList<>();
     public static List<List<Integer>> powerSet(int[] nums) {
+        // get all subsets of nums not to be confused with sub arrays
         helper(0, nums, new ArrayList<>());
         return ans1;
     }
@@ -437,13 +471,54 @@ Output: ["00", "01", "10"]
         helper(nums,i+1,curr);
         // remove the current num from the subset to generate new 
         curr.remove(curr.size()-1);
-        // b4 generating new patterns by not considering nums[i] we must skip the duplicates in the nums array so that no duplicates will get added while append to the curr list
-        while(i+1<nums.length && nums[i]==nums[i+1])
+        // before generating new patterns by not considering nums[i] we must skip the duplicates in the nums array so that no duplicates will get added while append to the curr list
+        while(i+1<nums.length && nums[i]==nums[i+1]) // why i+1<nums.length  because we need to validate the condition after &&
         {
             i++;
         }
 
         helper(nums,i+1,curr);
+    }
+
+    /*
+    Count all subsequences with sum K
+
+Given an array nums and an integer k.Return the number of non-empty subsequences of nums such that the sum of all elements in the subsequence is equal to k.
+
+Example 1
+Input : nums = [4, 9, 2, 5, 1] , k = 10
+Output : 2
+Explanation : The possible subsets with sum k are [9, 1] , [4, 5, 1].
+
+Example 2
+
+Input : nums = [4, 2, 10, 5, 1, 3] , k = 5
+Output : 3
+Explanation : The possible subsets with sum k are [4, 1] , [2, 3] , [5].
+
+    */
+    int ans2=0;
+    public int countSubsequenceWithTargetSum(int[] nums, int k) {
+
+        helper(nums,0,0,k);
+        return ans2;
+    }
+    public void helper(int[] nums,int i,int s,int k)
+    {
+        if(i==nums.length)
+        {
+            if(s==k)
+            {
+                ans2+=1;
+            }
+            return;
+        }
+
+        s+=nums[i];
+        helper(nums,i+1,s,k);
+
+        s-=nums[i];
+        helper(nums,i+1,s,k);
     }
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
