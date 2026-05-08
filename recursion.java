@@ -520,6 +520,45 @@ Explanation : The possible subsets with sum k are [4, 1] , [2, 3] , [5].
         s-=nums[i];
         helper(nums,i+1,s,k);
     }
+    // Combination Sum leetcode 39
+    /*
+    Example 1:
+
+Input: candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+Explanation:
+2 and 3 are candidates, and 2 + 2 + 3 = 7. Note that 2 can be used multiple times.
+7 is a candidate, and 7 = 7.
+These are the only two combinations.
+    */
+    List<List<Integer>> sex= new ArrayList<>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        helperCombinationSum(candidates,0,target,new ArrayList<>());
+
+        return sex;
+    }
+    public void helperCombinationSum(int[] candidates,int i,int target,List<Integer> list)
+    {
+        if(target==0 )
+        {
+            sex.add(new ArrayList<>(list));
+            return;
+        }
+
+        if(i>=candidates.length || target<candidates[i])
+            return;
+
+
+        // Two choices
+        // 1. Include the current element but repeatedly to find out if this sums up to target, for it to sum up pass target-candidates[i] as the new target 
+        // 2. Not to include the current element , when not including use the next index then and target to remain unchanged
+        list.add(candidates[i]);
+        helperCombinationSum(candidates,i,target-candidates[i],list); // one index can be considered multiple times
+
+        list.remove(list.size()-1);
+        helperCombinationSum(candidates,i+1,target,list);
+    }
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
         //permutation("ZAID", "");
