@@ -559,6 +559,86 @@ These are the only two combinations.
         list.remove(list.size()-1);
         helperCombinationSum(candidates,i+1,target,list);
     }
+
+    // combination sum 2 leetcode 40 same as above but NO DUPLICATE PAIRS ALLOWED,  duplicate numbers inside a pair are allowed
+    //  Ex: [[1,1,6]] is allowed but [[1,1,6],[1,6,1]] is not
+
+    List<List<Integer>> sex1= new ArrayList<>();
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        helperCombinationSum2(candidates,0,target,new ArrayList<>());
+
+        return sex1;
+    }
+    public void helperCombinationSum2(int[] candidates,int i,int target,List<Integer> list)
+    {
+        if(target==0 )
+        {
+            sex1.add(new ArrayList<>(list));
+            return;
+        }
+        
+        if(i>=candidates.length || target<candidates[i])
+            return;
+
+        list.add(candidates[i]);
+        helperCombinationSum2(candidates,i+1,target-candidates[i],list);
+
+        list.remove(list.size()-1);
+        // skip duplicates before not taking
+        while(i + 1 < candidates.length && candidates[i] == candidates[i+1]) {
+            i++;
+        }
+        helperCombinationSum2(candidates,i+1,target,list);
+    }
+
+    // combination sum 3 leetcode 216
+
+    /*
+    Find all valid combinations of k numbers that sum up to n such that the following conditions are true:
+
+Only numbers 1 through 9 are used.
+Each number is used at most once.
+Return a list of all possible valid combinations. The list must not contain the same combination twice, and the combinations may be returned in any order.
+
+ 
+
+Example 1:
+
+Input: k = 3, n = 7
+Output: [[1,2,4]]
+Explanation:
+1 + 2 + 4 = 7
+There are no other valid combinations.
+
+    */
+
+    List<List<Integer>> and=new ArrayList<>();
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        if(k>n)
+            return and;
+        
+        helperCombinationSum3(k,n,1,new ArrayList<>());
+        return and;
+    }
+    public void helperCombinationSum3(int k, int n,int i,List<Integer> list)
+    {
+        if(k==0 && n==0) 
+        {
+            and.add(new ArrayList<>(list));
+            return;
+        }
+
+        if(i>9 || n<0)
+            return;
+
+        list.add(i);
+        helperCombinationSum3(k-1,n-i,i+1,list); // include i in range of 1-9 to make the number, reduce k by 1 and n by i as k-1 means since i added i to my list i need k-1 numbers only to complete the list
+        // n-i means that if i is 5 then i need to make 5-1=4 and so on to include the next numbers who can sum up to 4
+
+        list.remove(list.size()-1);
+        helperCombinationSum3(k,n,i+1,list);
+    }
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
         //permutation("ZAID", "");
