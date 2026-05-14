@@ -680,7 +680,7 @@ There are no other valid combinations.
     /*
     Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
 
- 
+Intution is that we should not pick each and every characteer in the string but we have to pick substrings which are pallindrome
 
 Example 1:
 
@@ -728,6 +728,34 @@ Output: [["a"]]
                 right--;
             }
             return true;
+        }
+    }
+
+    // leetcode 46 Permutations , remember this is permutations and not subsets , this is different from picking and non picking pattern in subsets 
+
+    /*
+    Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+    */
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> list=new ArrayList<>(); 
+        permutations(nums,new ArrayList<Integer>(),list);
+        return list;
+    }
+    public void permutations(int[] nums,List<Integer> q,List<List<Integer>> list){
+        
+        if(q.size()==nums.length){
+            list.add(new ArrayList<>(q));
+        }
+        else{
+            for(int i=0;i<nums.length;i++)
+            {
+                if(!q.contains(nums[i])){
+                    q.add(nums[i]);
+                    permutations(nums,q,list);
+                    q.remove(q.size()-1);
+                }
+            }
         }
     }
     
