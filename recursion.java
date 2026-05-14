@@ -639,6 +639,98 @@ There are no other valid combinations.
         list.remove(list.size()-1);
         helperCombinationSum3(k,n,i+1,list);
     }
+
+    // leetcode 79 
+
+    
+    public boolean exist(char[][] board, String word) {
+        boolean visited[][]= new boolean[board.length][board[0].length]; // boolean values to show that the char at board[i][j] has been visited
+        for(int i=0;i<board.length;i++)
+        {
+            for(int j=0;j<board[0].length;j++)
+            {
+                if(dfs(i,j,board,word,0,visited)) // dfs on each char in the matrix post that do the finding 
+                    return true;
+            }
+        }
+        return false;
+    }
+    public boolean dfs(int r,int c,char[][] board, String word,int i,boolean visited[][])
+    {
+        if(i==word.length())
+            return true;
+        if(r>=board.length || r<0 || c>=board[0].length || c<0 ) // row or column have gone out of bound hence no cheking further
+            return false;
+        if(word.charAt(i) != board[r][c] || visited[r][c]) // dfs not successful
+            return false;
+        
+        visited[r][c]=true; // character visited
+        boolean ans= dfs(r+1,c,board,word,i+1,visited) ||
+                        dfs(r-1,c,board,word,i+1,visited) ||
+                        dfs(r,c+1,board,word,i+1,visited) ||
+                        dfs(r,c-1,board,word,i+1,visited) ;
+                    
+        visited[r][c]=false; // character to be made not visited  same as pick and not pick logic 
+        // this is done for other characters to be checked
+        return ans;
+    }
+
+    // leetcode 131 palindrome partitioning
+
+    /*
+    Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+
+ 
+
+Example 1:
+
+Input: s = "aab"
+Output: [["a","a","b"],["aa","b"]]
+Example 2:
+
+Input: s = "a"
+Output: [["a"]]
+    */
+
+    class Solution {
+        List<List<String>> ans = new ArrayList<>();
+    
+        public List<List<String>> partition(String s) {
+            helperPallindromePartition(s, 0, new ArrayList<>());
+            return ans;
+        }
+    
+        private void helperPallindromePartition(String s, int i, List<String> current) {
+            if (i == s.length()) {
+                ans.add(new ArrayList<>(current));
+                return;
+            }
+            // try every possible substring
+            for (int j = i; j < s.length(); j++) {
+                // pick only if palindrome
+                if (isPalindrome(s, i, j)) {
+    
+                    current.add(s.substring(i, j + 1));  // key idea is to add substring here instead of character (substring is a valid pallindrome )
+                    helperPallindromePartition(s, j + 1, current);
+    
+                    // backtrack
+                    current.remove(current.size() - 1);
+                }
+            }
+        }
+    
+        private boolean isPalindrome(String s, int left, int right) {
+            while (left < right) {
+                if (s.charAt(left) != s.charAt(right))
+                    return false;
+    
+                left++;
+                right--;
+            }
+            return true;
+        }
+    }
+    
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
         //permutation("ZAID", "");
