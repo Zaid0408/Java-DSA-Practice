@@ -98,7 +98,7 @@ public class recursion {
         char ch=s.charAt(0);
         String ros=s.substring(1);
     
-        SubstringsOf(ros,ans);
+        SubstringsOf(ros,ans); // pick and dont pick substring logic
         SubstringsOf(ros,(ans+ch));
     }
     
@@ -758,6 +758,106 @@ Output: [["a"]]
             }
         }
     }
+
+    // leetcode 51 N queens : The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.
+
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> ans=new ArrayList<>();
+        char[][] board= new char[n][n];
+        for(int i=0;i<n;i++)
+        {
+            Arrays.fill(board[i],'.');
+        }
+
+        nQueensHelper(0,n,board,ans);
+
+        return ans;
+    }
+    public void nQueensHelper(int row,int n,char[][] board,List<List<String>> ans )
+    {
+        if(row==n)
+        {
+            List<String> list = new ArrayList<>();
+            for (char[] rows : board) {
+                list.add(new String(rows));
+            }
+            ans.add(list);
+            return;
+        }
+
+        for(int i=0;i<n;i++)
+        {
+            if(isSafeSpace(board,row,i,n))
+            {
+                board[row][i]='Q';
+                nQueensHelper(row+1,n,board,ans);
+                board[row][i]='.'; // backtracking step to remove the queen form the board 
+            }
+        }
+    }
+    public boolean isSafeSpace(char[][] board, int row, int col,int n)
+    {
+        for(int i=0;i<n;i++)// check particular row
+        {
+            if(board[i][col]=='Q') 
+                return false;
+        }
+
+        for(int i=row-1,j=col-1;i>=0 && j>=0;i--,j--)// check upper left diagnol
+        {
+            if(board[i][j]=='Q') 
+                return false;
+        }
+
+        for(int i=row-1,j=col+1;i>=0 && j<n;i--,j++)// check upper right diagnol
+        {
+            if(board[i][j]=='Q') 
+                return false;
+        }
+
+        return true;
+
+        
+    }
+
+    // rat in a maze
+
+    public List<String> findPath(int[][] grid) {
+        List<String> ans=new ArrayList<>();
+        int n=grid.length;
+        if(grid[n-1][n-1]==0 || grid[0][0]==0)
+            return ans;
+
+        helperrat(ans,new StringBuilder(),grid,0,0,n);
+
+        return ans;
+
+    }
+    public void helperrat(List<String> ans, StringBuilder s,int[][] grid,int i,int j,int n)
+    {
+        if(i==n-1 && j==n-1) // 0 based indexing hence should be same as n-1 
+        {
+            ans.add(s.toString());
+            return;
+        }
+
+        if(i+1<n && grid[i+1][j]==1)
+        {
+            s.append('D');
+            helperrat(ans,s,grid,i+1,j,n);
+            s.deleteCharAt(s.length() - 1);
+        }
+
+        if(j+1<n && grid[i][j+1]==1)
+        {
+            s.append('R');
+            helperrat(ans,s,grid,i,j+1,n);
+            s.deleteCharAt(s.length() - 1);
+        }
+
+    }
+
+    // leetcode 139 word break
     
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
