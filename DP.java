@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class DP {
@@ -550,6 +551,51 @@ public class DP {
             rob2=temp;
         }
         return rob2;
+    }
+
+    //leetcode 139 word break
+    /*
+    Is there a combination of words in wordDict that can be used to recreate the original string s.
+    Notice that I mentioned the word combination, this does not mean that you will need all the words in wordDict to recreate s (Using some words from wordDict as long as they perfectly recreate the string s; is a valid solution or word break).
+    Also note that you can use the words in wordDict more than once.
+
+Take this example for reference:
+
+Input: "bb", ["a","b","bbb","bbbb"]
+Expected: true
+
+Here, word "b" from wordDict can be used to perfectly to recreate the string s = "b" + "b" , which is why the expected output is True. Note that we did not use all the words in the dictionary and still found a valid word break.
+
+Now, let's take another example:
+Input: s = "catsandog", wordDict = ["cats","dog","sand","and","cat"]
+Output: false
+
+
+    */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        // dp memoization 
+        // check for each letter in S keep appending and check of they are in the dictionary or not 
+        // if we get our first true reset the substring we check upon and start from there
+        // substring start is i-word.length() where i is current index in the string s and word is a word in the dict 
+        // make the dp array position i true when s.substring(start,i) is the same as word . 
+        // we reach the end of string and array. Check the last value of the array, then return it.
+
+        boolean arr[]=new boolean[s.length()+1];
+        arr[0]=true;
+        for(int i=1;i<=s.length();i++)
+        {
+            for(String word:wordDict)
+            {
+                int start=i-word.length();
+                if(start>=0 && s.substring(start,i).equals(word) && arr[start])
+                { // arr[start] should be true 
+                    arr[i]=true;
+                    break; // break is necessary to go to the next word as the word in the dict was found in the string s so go back and c heck for new word 
+                }
+            }
+        }
+
+        return arr[s.length()]; 
     }
     public static void main(String[] args) {
         int W=7;

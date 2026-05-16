@@ -857,8 +857,53 @@ Output: [["a"]]
 
     }
 
-    // leetcode 139 word break
-    
+    // m colouring proeblem in graph
+
+    /*
+    Given an integer M and an undirected graph with N vertices (zero indexed) and E edges. 
+    The goal is to determine whether the graph can be coloured with a maximum of M colors so that no two of its adjacent vertices have the same colour applied to them.
+    In this context, colouring a graph refers to giving each vertex a different colour. If the colouring of vertices is possible then return true, otherwise return false.
+    */
+    boolean graphColoring(int[][] edges, int m, int n) {
+        //your code goes here
+        int[] colour=new int[n];// to store the colour at each node 
+        // 0 means uncoloured nd 1..m can mean any of the m colours
+        if(graphhelper(edges,m,n,0,colour))
+            return true;
+        
+        return false;
+    }
+    boolean graphhelper(int[][] edges, int m, int n,int node,int[] colour)
+    {
+        if(node ==n) // traveresed all nodes in graph meaning all colours have been assigned 
+            return true;
+
+        for(int i=1;i<=m;i++) // trying all possible colors for a node 
+        {
+            if(isSafeColour(edges,i,n,node,colour)) // safe to use that particular colour on the node then
+            {
+                colour[node]=i; //assign colour i at node 
+                if(graphhelper(edges,m,n,node+1,colour)== true) // go to the next node to assign colour
+                    return true;
+                colour[node] =0; // remove colour from the node if the recursion does not give true for that particular colour i used
+            }
+        }
+        return false; // no possible combination
+    }
+    boolean isSafeColour(int[][] edges, int i, int n,int node,int colour[]) // check if it is safe to assign colour i to node
+    {
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            // if current node connected
+            if (u == node && colour[v] == i)
+                return false;
+            if (v == node && colour[u] == i)
+                return false;
+        }
+
+        return true;
+    }
     public static void main(String[] args) {
         // System.out.println(PowerOfN(5, 9));
         //permutation("ZAID", "");
