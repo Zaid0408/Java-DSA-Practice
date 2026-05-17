@@ -1,5 +1,51 @@
 import java.util.*;
 public class QueueB {
+
+    static class ArrayQueue { // implement queue using array
+        int arr[];
+        int front, rear, size;
+        int capacity = 100;
+    
+        public ArrayQueue() {
+            arr = new int[capacity];
+            front = 0;
+            rear = -1;
+            size = 0;
+        }
+    
+        public void push(int x) {
+            if (size == capacity)
+                return; // Queue full
+    
+            rear++;
+            arr[rear] = x;
+            size++;
+        }
+    
+        public int pop() {
+            if (isEmpty())
+                return -1;
+    
+            int k = arr[front];
+            front++;
+            size--;
+    
+            return k;
+        }
+    
+        public int peek() {
+            if (isEmpty())
+                return -1;
+    
+            return arr[front];
+        }
+    
+        public boolean isEmpty() {
+            return size == 0;
+        }
+    }
+    
+    
     static class queue{ // Circular Queue using array
         static int size,front,rear;
         static int arr[];
@@ -47,6 +93,17 @@ public class QueueB {
                 return -1;
             }
             return arr[front];
+        }
+        public int Front() {
+            if(front==-1)
+                return -1;
+            return arr[front];
+        }
+        
+        public int Rear() {
+            if(rear==-1)
+                return -1;
+            return arr[rear];
         }
     }
     static class StackQueue{ // using 2 stacks to implement queue

@@ -79,7 +79,7 @@ public class recursion {
             System.out.println(ans);
             return;
         }
-        for (int i = 0; i < s.length(); i++)
+        for (int i = 0; i < s.length(); i++) // Permutatition logic looping then recursion important for below patterns 
         {
             char ch= s.charAt(i);
             String ros=s.substring(0,i)+ s.substring(i+1);
@@ -102,8 +102,8 @@ public class recursion {
         SubstringsOf(ros,(ans+ch));
     }
     
-
-    // leetcode 50 Power of N
+    // Pattern 1 
+    // leetcode 50 Power of N: find x^n using recursion
 
     public double myPow(double x, int n) {
         long N=n;// to handle interger overflow
@@ -129,7 +129,7 @@ x^n = x * (x^(n/2)) * (x^(n/2))
         if(N==1) return x;
 
         double half = Power(x, N/2);
-        if(N%2==0)
+        if(N%2==0) // is power is even
         {
             return half*half;
         }
@@ -152,7 +152,7 @@ x^n = x * (x^(n/2)) * (x^(n/2))
 
     // reverse a stack using recursion
 
-    public void reverseStack(Stack<Integer> st) {
+    public void reverseStack(Stack<Integer> st) { 
         if(st.isEmpty())
             return;
 
@@ -269,6 +269,8 @@ x^n = x * (x^(n/2)) * (x^(n/2))
             return knapsack(wt, val, cap, n-1);
         }
     }
+    //leetcode 1143 Longest Common Subsequence
+    // this appreoach gives tle but important to understand from dp approach
     char ch1,ch2;
     public int longestCommonSubsequence(String text1, String text2) {
         

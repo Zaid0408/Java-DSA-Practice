@@ -33,6 +33,61 @@ public class stack {
             push(val);
         }
     }
+    static class ArrayStack { // implement stack using array
+        int arr[];
+        int top=0;
+        public ArrayStack() {
+            arr=new int[100];
+        }
+        public void push(int x) {
+           arr[top++]=x;
+        }
+        public int pop() {
+            if(isEmpty())
+                return -1;
+            int k=arr[top-1];
+            arr[top-1]=0;
+            top--;
+            return k;
+        }
+        public int top() {
+            if(isEmpty())
+                return -1;
+    
+            return arr[top-1];
+        }
+        public boolean isEmpty() {
+            return top==0;
+        }
+    }
+
+    static class QueueStack { // implement stack using queue
+        Queue<Integer> q;
+        public QueueStack() {
+            q = new LinkedList<>();
+        }
+    
+        public void push(int x) {
+            q.offer(x);
+    
+            for (int i = 0; i < q.size() - 1; i++) {
+                q.offer(q.poll());
+            }
+        }
+    
+        public int pop() {
+            return q.isEmpty() ? -1 : q.poll();
+        }
+    
+        public int top() {
+            return q.isEmpty() ? -1 : q.peek();
+        }
+    
+        public boolean isEmpty() {
+            return q.isEmpty();
+        }
+    }
+
     static class Node{
         int data;
         Node next;
