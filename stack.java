@@ -167,6 +167,113 @@ public class stack {
 
     }
 
+    public static int priorityOfOperand(char ch){
+        if(ch=='^')
+            return 3;
+        else if(ch=='/' || ch=='*')
+            return 2;
+        else if(ch=='+' || ch=='-')
+            return 1;
+        else
+            return -1;
+    }
+
+    // Expression and their conversions
+
+    /* Infix means basic expression where operators come in the middle fo operands
+    ex : a+b*(c-d)
+
+    Postfix means expression where operators come after operands 
+    ex : abc*+- // note that there are no parenthesis in the output
+
+    Prefix means expression where operators come before operands
+    ex : +*abc-d
+    */
+
+    // Infix to Postfix
+
+    /*
+    1. Create an empty stack. and follow the below rules
+    2. Read an expression in Reverse Polish Notation.
+    3. If the symbol is an operand, push it onto the stack.
+    4. If the symbol is ')', pop the stack and add until you see a '('.
+    5. if the symbol is an operator , pop the stack and add it to the expression until you see an operator with higher precedence.
+    */
+
+    public static String infixToPostFix(String exp){ // O(n)+ O(n) time 
+        Stack<Character> s=new Stack<>();
+        int n=exp.length();
+
+        StringBuilder sb=new StringBuilder();
+
+        for(int i=0;i<n;i++){
+            char ch=exp.charAt(i);
+
+            // Operand
+            if (Character.isLetterOrDigit(ch)) {
+                sb.append(ch);
+            }
+            if(ch=='('){
+                s.push(ch);
+            }
+            else if(ch==')'){
+                while( !s.isEmpty() && s.peek()!='('){
+                    sb.append(s.pop());
+                }
+                if (!s.isEmpty()) {
+                    s.pop(); // remove '('
+                }
+            }
+            else
+            {
+                while(!s.isEmpty() && (priorityOfOperand(ch)<=priorityOfOperand(s.peek()) || (priorityOfOperand(ch) == priorityOfOperand(s.peek()) && ch != '^'))){
+                    sb.append(s.pop());
+                }
+                s.push(ch);
+            }
+        }
+
+        while(!s.isEmpty()){
+            sb.append(s.pop());
+        }
+        System.out.println(sb);
+
+        return sb.toString();
+
+    }
+
+    // Infix to Prefix 
+
+    /*
+    1. reverse the expression
+        a. Swap the brackets as well if brack is ')' then make it '(' and vice versa 
+    2. get the postfix expression
+    3. reverse the postfix expression
+    */
+
+    public static void infixToPrefix(String exp){
+        // Step 1: Reverse
+        StringBuilder reversed = new StringBuilder(exp).reverse();
+
+        // Step 2: Swap brackets
+        for (int i = 0; i < reversed.length(); i++) {
+
+            if (reversed.charAt(i) == '(')
+                reversed.setCharAt(i, ')');
+
+            else if (reversed.charAt(i) == ')')
+                reversed.setCharAt(i, '(');
+        }
+
+        // Step 3: Get postfix
+        String postfix = infixToPostFix(reversed.toString());
+
+        // Step 4: Reverse postfix = prefix
+        String prefix = new StringBuilder(postfix).reverse().toString();
+
+        System.out.println(prefix);
+    }
+
     //Stock Span Problem
     public static void stockSpan(int stocks[],int span[]){
         Stack<Integer> s= new Stack<>();
@@ -187,6 +294,37 @@ public class stack {
             s.push(i);
 
         }
+    }
+
+    // leetcode 150 Evaluate Reverse Polish Notation
+
+    public int evalRPN(String[] tokens) {
+        int ans=0,p1,p2;
+        Stack<Integer> s=new Stack<>();
+        
+        for(int i=0;i<tokens.length;i++)
+        {
+            if(Character.isDigit(tokens[i].charAt(tokens[i].length()-1)))
+            {
+                ans=Integer.parseInt(tokens[i]);
+                s.push(ans);
+            }
+            else
+            {
+                p1=s.pop();
+                p2=s.pop();
+                if(tokens[i].equals("+"))
+                    s.push(p1+p2);
+                else if(tokens[i].equals("-"))
+                    s.push(p2-p1);
+                else if(tokens[i].equals("/"))
+                    s.push(p2/p1);
+                else if(tokens[i].equals("*"))
+                    s.push(p2*p1);
+            }
+        }
+
+        return s.peek();
     }
 
     //Valid parenthesis
