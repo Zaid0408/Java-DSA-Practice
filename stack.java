@@ -70,7 +70,7 @@ public class stack {
         public void push(int x) {
             q.offer(x);
     
-            for (int i = 0; i < q.size() - 1; i++) {
+            for (int i = 0; i < q.size() - 1; i++) { // reversing the queue 
                 q.offer(q.poll());
             }
         }
@@ -112,6 +112,7 @@ public class stack {
             newNode.next=head;
             head=newNode;
         }
+        // Since head of LL is same as top of stack pop head and move head to next
         public static int pop(){
             if(IsEmpty()){
                 return -1;
@@ -149,6 +150,7 @@ public class stack {
         System.out.println(ans);
     }
     public static void pushBottom(Stack<Character> s,char ch){
+        // similar pattern in one of the recursive problems
         if(s.isEmpty()){
             s.push(ch);
             return;
@@ -158,6 +160,7 @@ public class stack {
         s.push(c);
     }
     public static void ReverseStack(Stack<Character> s){
+        // similar pattern in one of the recursive problems : order stack by descending order
         if(s.isEmpty()){
             return;
         }
@@ -194,8 +197,8 @@ public class stack {
 
     /*
     1. Create an empty stack. and follow the below rules
-    2. Read an expression in Reverse Polish Notation.
-    3. If the symbol is an operand, push it onto the stack.
+    2. If the symbol is a '(', push it onto the stack.
+    3. If the symbol is an operand, push it into the string.
     4. If the symbol is ')', pop the stack and add until you see a '('.
     5. if the symbol is an operator , pop the stack and add it to the expression until you see an operator with higher precedence.
     */
@@ -272,6 +275,65 @@ public class stack {
         String prefix = new StringBuilder(postfix).reverse().toString();
 
         System.out.println(prefix);
+    }
+
+    // PostFix To Infix : Simple Logic
+
+    /*
+    Steps
+    1. If operand push into the stack as is
+    2. If operator pop twice from the stack  
+        a.make an expression with the two string popped with the operator as the middle
+            ex if in stack we have a,b then expression is (a+b) where b is top
+        b.push the string expression into the stack 
+        c. keep repeating step 2 until the expression is traversed
+    3. return the top of the stack 
+    */
+
+    public String postfixToInfix(String exp){
+        Stack<String> s=new Stack<>();
+
+        for(int i=0;i<exp.length();i++){
+            if(Character.isLetterOrDigit(exp.charAt(i))){
+                s.push(exp.charAt(i)+""); // pushing char as string 
+            }
+            else{
+                String op1=s.pop();
+                String op2=s.pop();
+                s.push("("+op2+exp.charAt(i)+op1+")");
+            }
+        }
+
+        return s.peek();
+    }
+
+    // Prefix to infix
+
+    /*
+    Similar pattern as above
+    1. Start from the end of the expression
+    2. If operand push into the stack as is
+    3. If operator pop twice from the stack  
+        a.make an expression with the two string popped with the operator as the middle
+            ex if in stack we have b,a then expression is (a+b) where a is top // THIS IS THE DIFFERENCE BETWEEN PREFIX AND POSTFIX
+        b.push the string expression into the stack 
+        c. keep repeating step 2 until the expression is traversed
+    4. return the top of the stack 
+    */
+
+    public String prefixToInfix(String exp){
+        Stack<String> s=new Stack<>();
+        for(int i=exp.length()-1;i>=0;i--){
+            if(Character.isLetterOrDigit(exp.charAt(i))){
+                s.push(exp.charAt(i)+""); // pushing char as string
+            }
+            else{
+                String op1=s.pop();
+                String op2=s.pop();
+                s.push("("+op1+exp.charAt(i)+op2+")"); // THIS IS THE DIFFERENCE BETWEEN PREFIX AND POSTFIX
+            }
+        }
+        return s.peek();
     }
 
     //Stock Span Problem
@@ -467,6 +529,44 @@ public class stack {
         return ans;
     }
     
+
+    // leetcode 1381
+    // increment to the k bottom elements of the stack with val
+    class CustomStack {
+        int n,top=0;
+        int stack[];
+        public CustomStack(int maxSize) {
+            stack=new int[maxSize];
+            n=maxSize;
+        }
+        
+        public void push(int x) {
+            if(top==n)
+                return;
+    
+            stack[top++]=x;
+        }
+        
+        public int pop() {
+            if(isEmpty())
+                return -1;
+    
+            int val=stack[top-1];
+            stack[top-1]=0;
+            top--;
+            return val;
+        }
+        
+        public void increment(int k, int val) {
+            int limit = Math.min(k, top);
+            for (int i = 0; i < limit; i++) {
+                stack[i] += val;
+            }
+        }
+        private boolean isEmpty() {
+            return top==0;
+        }
+    }
 
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
