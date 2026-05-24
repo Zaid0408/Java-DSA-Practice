@@ -568,6 +568,129 @@ public class stack {
         }
     }
 
+    // Min stack leetcode 155
+
+    /*
+    List to store the min as well 
+    The way it works is create a node with min and val and next
+    And store the numbers in such a way that the val gets added at head 
+    Ex stack has top -> 1,2,3 and we have a list 2->3 so to store 1
+    we create a node with 1 and min=1 and next=2->3 so it becomes 1->2->3
+
+    */
+    class MinStack {
+        private class Node{
+            Node next;
+            int min,val;
+    
+            Node(int val,int min, Node nex)
+            {
+                this.min=min;
+                this.val=val;
+                this.next=nex;
+            }
+        }
+    
+        Node list;
+        public MinStack() {
+            
+        }
+        
+        public void push(int val) {
+            if(list==null)
+            {
+                list=new Node(val,val,null);
+            }
+            else{
+                int mon = Math.min(val,list.min);
+                list=new Node(val,mon,list); // create new node on top of the exiting list and store the stack there 
+            }
+        }
+        
+        public void pop() {
+            list=list.next;
+        }
+        
+        public int top() {
+            return list.val;
+        }
+        
+        public int getMin() {
+            return list.min;
+        }
+    }
+
+    // Monotonic stack problems
+
+    // leetcode 496 next greater element
+
+    /*
+    Monotonic stack : A stack where the elements are in increasing or decreasing order 
+    ans to store the next greater element of nums 1 by comparing nums 2
+    nge to store next greater of all the elments in nums 2
+    Stack has to be in decreasing order so that we can get the next greater element where top is the smallest element and the bottom is the greatest
+    By ensuring that stack is in decreasing order of elemnts post index i , the next gretaer of nums2[i] will be the top of the stack
+    */
+
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        Stack s=new Stack<>();
+        int ans[]=new int[nums1.length];
+        int nge[]=new int[nums2.length];
+
+        for(int i=nums2.length-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && (int)s.peek()<=nums2[i])
+                s.pop(); // done to preserve the decreasing order ex if stack has 1,2,4,6 and we get 5 then stack will be 5,6
+
+            if(s.isEmpty())
+                nge[i]=-1;
+            else{
+                nge[i]=(int)s.peek();
+            }
+            s.push(nums2[i]);
+        }
+
+        for(int i=0;i<nums1.length;i++){
+            for(int j=0;j<nums2.length;j++){
+                if(nums1[i]==nums2[j])
+                    ans[i]=nge[j];
+            }
+        }
+
+        return ans;
+    }
+
+    // leetcode 503 next greater element 2
+
+    /*
+    Same pattern as above , but since the array is circular instead of cheking 0...n we have to check i...i+n for each i 
+    and nge[i] is the next greater elemnt while traversing among i...i+n
+    REMEBER ITS JUST A MOD N CHANGE
+    */
+
+    public int[] nextGreaterElements(int nums[]){
+        int n=nums.length;
+        int nge[]=new int[2*n];
+        Stack s=new Stack<>();
+        for(int i=2*n-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && (int)s.peek()<=nums[i%n])
+                s.pop();
+
+            if(s.isEmpty())
+                nge[i]=-1;
+            else{
+                nge[i]=(int)s.peek();
+            }
+            s.push(nums[i%n]);
+        }
+        int ans[]=new int[n];
+        for(int i=0;i<n;i++)
+            ans[i]=nge[i];
+
+        // Copy the nge array from 0 to n only to get the correct answer. first n elements in the nge array is the answer
+        return ans;
+    }
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
         StackUsingLL s1=new StackUsingLL();// LinkedList implementation
