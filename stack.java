@@ -430,6 +430,23 @@ public class stack {
         }
         return false;
     }
+    //leetcode 921 Minimum Add to Make Parentheses Valid
+    // same problem solved with strings also
+    public int minAddToMakeValid(String s) {
+        Stack<Character> st= new Stack<>();
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            if(!st.isEmpty() && (ch==')' && st.peek()=='('))
+            {
+                st.pop();
+                continue;
+            }
+            st.add(ch);
+        }
+
+        return st.size();
+    }
     // Generate Parenthesis
     public void backTrack(int n,int open,int close,StringBuilder s, List<String> ans)
     {
@@ -690,6 +707,67 @@ public class stack {
 
         // Copy the nge array from 0 to n only to get the correct answer. first n elements in the nge array is the answer
         return ans;
+    }
+    // next smaller element problem
+    // exactly same as next greater element pattern
+    public int[] nextSmallerElements(int[] arr) { 
+        int n=arr.length;
+        int nse[]=new int[n];
+        Stack<Integer> s=new Stack<>();
+        for(int i=n-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && (s.peek()>=arr[i]))
+                s.pop();
+            if(s.isEmpty())
+                nse[i]=-1;
+            else
+                nse[i]=s.peek();
+            s.push(arr[i]);
+        }
+
+        return nse;
+
+    }
+    // Count the number of NGE in an array for a given indice
+
+    /*
+    Example 1
+
+Input: arr = [3, 4, 2, 7, 5, 8, 10, 6], indices = [0, 5]
+Output: [6, 1]
+Explanation:
+
+For index 0 → arr[0] = 3, elements greater than 3 to its right are [4, 7, 5, 8, 10, 6] → count = 6.
+For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1.
+    */
+    public List<Integer> count_NGE(int[] arr, int[] indices) {
+        int n=arr.length;
+        int nse[]=new int[n];
+        Stack<Integer> s=new Stack<>();
+        for(int i=n-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && (s.peek()<=arr[i]))
+                s.pop();
+            if(s.isEmpty())
+                nse[i]=-1;
+            else
+                nse[i]=s.peek();
+            s.push(arr[i]);
+        }
+        List<Integer> zeze= new ArrayList<>();
+        for(int i:indices)
+        {
+            int count=0;
+            for(int j=i;j<nse.length;j++)
+            {
+                if(nse[j]==-1)
+                    break;
+                count++;
+            }
+            zeze.add(count);
+        }
+
+        return zeze;
     }
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
