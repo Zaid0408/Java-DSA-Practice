@@ -526,7 +526,7 @@ public class stack {
         System.out.println(maxArea);
     }
 
-    // Trapping Rain Water using Stack
+    // Trapping Rain Water using Stack , Similar to NGE problem
     public static int trap(int height[]){
         Stack<Integer> stack = new Stack<>();
         int n = height.length;
@@ -728,6 +728,26 @@ public class stack {
         return nse;
 
     }
+
+    // Previous smaller element  
+    public int[] previousSmallerElements(int[] arr) { 
+        int n=arr.length;
+        int pse[]=new int[n];
+        Stack<Integer> s=new Stack<>();
+        for(int i=n-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && (s.peek()>arr[i]))
+                s.pop();
+            if(s.isEmpty())
+                pse[i]=-1;
+            else
+                pse[i]=s.peek();
+            s.push(arr[i]);
+        }
+
+        return pse;
+
+    }
     // Count the number of NGE in an array for a given indice
 
     /*
@@ -769,6 +789,55 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
 
         return zeze;
     }
+
+    // leetcode 902 Sum of Subarray Minimums 
+
+    // PLEASE GO THOUGH THE LOGIC AGIN
+
+    public int sumSubarrayMins(int[] arr) {
+        int mod = 1000000007;
+        int[] nse = nextSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
+        int[] pse = previousSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
+
+        long ans = 0;
+        for (int i = 0; i < arr.length; i++) {
+
+            long left = i - pse[i];
+            long right = nse[i] - i;
+            ans = (ans + (left * right % mod) * arr[i] % mod) % mod;
+        }
+        return (int) ans;
+        
+    }
+
+    // leetcode 735 Asteroid Collison
+
+    public int[] asteroidCollision(int[] asteroids) {
+        
+        Stack<Integer> st=new Stack<>();
+        int n=asteroids.length;
+        for(int i=0;i<n;i++)
+        {
+            if(asteroids[i]>0)
+            {
+                st.push(asteroids[i]);
+            }
+            else
+            {
+                while(!st.isEmpty() && st.peek()>0 && st.peek()<(int)Math.abs(asteroids[i]))
+                    st.pop();
+
+                if(!st.isEmpty() && st.peek()==(int)Math.abs(asteroids[i]))
+                    st.pop();
+                else if(st.isEmpty() || st.peek()<0)
+                    st.push(asteroids[i]);
+            }
+        }
+
+        int[] arr = st.stream().mapToInt(Integer::intValue).toArray();
+        return arr;
+    }
+
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
         StackUsingLL s1=new StackUsingLL();// LinkedList implementation
