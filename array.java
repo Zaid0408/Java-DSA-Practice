@@ -29,7 +29,7 @@ class array{
         }
         return result;
     }
-    public long subArrayRanges(int[] nums) { // Leetcode 2104 , refer to above code for finding all sub arrays
+    public long subArrayRanges(int[] nums) { // Leetcode 2104 , refer to above code for finding all sub arrays, optimal solution in Stack.java
         int n = nums.length;
         long answer=0;
         for (int i = 0; i < n; i++) { // Start index of the subarray

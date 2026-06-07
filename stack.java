@@ -748,6 +748,31 @@ public class stack {
         return pse;
 
     }
+
+    // previous greater element
+
+    public int[] previousGreaterElements(int[] arr) {
+
+        int n = arr.length;
+        int[] pge = new int[n];
+        Stack<Integer> s = new Stack<>();
+    
+        for (int i = 0; i < n; i++) {
+    
+            while (!s.isEmpty() && s.peek() < arr[i]) {
+                s.pop();
+            }
+    
+            if (s.isEmpty())
+                pge[i] = -1;
+            else
+                pge[i] = s.peek();
+    
+            s.push(arr[i]);
+        }
+    
+        return pge;
+    }
     // Count the number of NGE in an array for a given indice
 
     /*
@@ -798,6 +823,7 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
         int mod = 1000000007;
         int[] nse = nextSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
         int[] pse = previousSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
+        // CHECK IN CLASS class Solution 
 
         long ans = 0;
         for (int i = 0; i < arr.length; i++) {
@@ -836,6 +862,136 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
 
         int[] arr = st.stream().mapToInt(Integer::intValue).toArray();
         return arr;
+    }
+
+    // Leetcode 2104 
+
+    // Please go through the logic again
+
+    /*
+    The idea is:
+
+Answer =
+(sum of contribution as maximum)
+-
+(sum of contribution as minimum)
+
+For every element:
+
+Contribution as Maximum
+=
+arr[i] * (# subarrays where arr[i] is max)
+
+Contribution as Minimum
+=
+arr[i] * (# subarrays where arr[i] is min)
+
+So we need:
+
+PSE + NSE  -> minimum contribution
+PGE + NGE  -> maximum contribution
+    */
+
+    class Solution {
+
+        public long subArrayRanges(int[] nums) { // this method has similar pattern as leetcode 902 sum of subarray minimum written above 
+    
+            int[] nse = nextSmallerElements(nums); // STORING INDICES INSTEAD OF ELEMENTS
+            int[] pse = previousSmallerElements(nums);// STORING INDICES INSTEAD OF ELEMENTS
+    
+            int[] nge = nextGreaterElements(nums);// STORING INDICES INSTEAD OF ELEMENTS
+            int[] pge = previousGreaterElements(nums);// STORING INDICES INSTEAD OF ELEMENTS 
+    
+            long minSum = 0;
+            long maxSum = 0;
+    
+            for (int i = 0; i < nums.length; i++) {
+    
+                long leftMin = i - pse[i];
+                long rightMin = nse[i] - i;
+    
+                minSum += (long) nums[i] * leftMin * rightMin;
+    
+                long leftMax = i - pge[i];
+                long rightMax = nge[i] - i;
+    
+                maxSum += (long) nums[i] * leftMax * rightMax;
+            }
+    
+            return maxSum - minSum;
+        }
+    
+        public int[] nextSmallerElements(int[] arr) {
+            int n = arr.length;
+            int[] nse = new int[n];
+            Stack<Integer> s = new Stack<>();
+    
+            for (int i = n - 1; i >= 0; i--) {
+    
+                while (!s.isEmpty() && arr[s.peek()] >= arr[i])
+                    s.pop();
+    
+                nse[i] = s.isEmpty() ? n : s.peek();
+    
+                s.push(i);
+            }
+    
+            return nse;
+        }
+    
+        public int[] previousSmallerElements(int[] arr) {
+            int n = arr.length;
+            int[] pse = new int[n];
+            Stack<Integer> s = new Stack<>();
+    
+            for (int i = 0; i < n; i++) {
+    
+                while (!s.isEmpty() && arr[s.peek()] > arr[i])
+                    s.pop();
+    
+                pse[i] = s.isEmpty() ? -1 : s.peek();
+    
+                s.push(i);
+            }
+    
+            return pse;
+        }
+    
+        public int[] nextGreaterElements(int[] arr) {
+            int n = arr.length;
+            int[] nge = new int[n];
+            Stack<Integer> s = new Stack<>();
+    
+            for (int i = n - 1; i >= 0; i--) {
+    
+                while (!s.isEmpty() && arr[s.peek()] <= arr[i])
+                    s.pop();
+    
+                nge[i] = s.isEmpty() ? n : s.peek();
+    
+                s.push(i);
+            }
+    
+            return nge;
+        }
+    
+        public int[] previousGreaterElements(int[] arr) {
+            int n = arr.length;
+            int[] pge = new int[n];
+            Stack<Integer> s = new Stack<>();
+    
+            for (int i = 0; i < n; i++) {
+    
+                while (!s.isEmpty() && arr[s.peek()] < arr[i])
+                    s.pop();
+    
+                pge[i] = s.isEmpty() ? -1 : s.peek();
+    
+                s.push(i);
+            }
+    
+            return pge;
+        }
     }
 
     public static void main(String[] args) {
