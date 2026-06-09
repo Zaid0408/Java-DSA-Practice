@@ -818,7 +818,35 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
     // leetcode 902 Sum of Subarray Minimums 
 
     // PLEASE GO THOUGH THE LOGIC AGIN
+    /*
+    LC 907 - Sum of Subarray Minimums
 
+        PSE
+        NSE
+        One final traversal
+        Time
+        PSE : O(n)
+        NSE : O(n)
+        Final Contribution Loop : O(n)
+
+        Total = O(n)
+
+        Why not O(n²)?
+
+        Because in monotonic stack:
+
+        Each index is pushed once
+        Each index is popped once
+
+        So total stack operations are at most 2n.
+
+        Space
+        PSE array : O(n)
+        NSE array : O(n)
+        Stack     : O(n)
+
+        Total = O(n)
+    */
     public int sumSubarrayMins(int[] arr) {
         int mod = 1000000007;
         int[] nse = nextSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
@@ -864,6 +892,41 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
         return arr;
     }
 
+    //Leetcode 402 Remove K Digits
+
+    public String removeKdigits(String num, int k) {
+        if(num.length()==k)
+            return "0";
+        
+        Stack<Character> st=new Stack<>();
+        for (int i = 0; i < num.length(); i++) {
+            char ch = num.charAt(i);
+            while (k > 0 && !st.isEmpty() && st.peek() > ch) {
+                st.pop();
+                k--;
+            }
+            st.push(ch);
+        }
+
+        // remove remaining digits from end
+        while (k > 0 && !st.isEmpty()) {
+            st.pop();
+            k--;
+        }
+        StringBuilder ans = new StringBuilder();
+        while (!st.isEmpty()) {
+            ans.append(st.pop());
+        }
+        ans.reverse();
+        int fir=0;
+        while(fir<ans.length()-1 && ans.charAt(fir)=='0')
+            fir++;
+        
+        if(fir>0)
+            ans.delete(0,fir);
+        return ans.isEmpty()?"0":ans.toString();
+    }
+
     // Leetcode 2104 
 
     // Please go through the logic again
@@ -893,6 +956,42 @@ PGE + NGE  -> maximum contribution
     */
 
     class Solution {
+
+        /*
+            LC 2104 - Sum of Subarray Ranges
+
+            You compute:
+
+            PSE
+            NSE
+            PGE
+            NGE
+            Contribution Loop
+            Time
+            PSE : O(n)
+            NSE : O(n)
+            PGE : O(n)
+            NGE : O(n)
+            Final Loop : O(n)
+
+            Total:
+
+            O(5n)
+            =
+            O(n)
+            Space
+            PSE : O(n)
+            NSE : O(n)
+            PGE : O(n)
+            NGE : O(n)
+            Stack : O(n)
+
+            Total:
+
+            O(5n)
+            =
+            O(n)
+        */
 
         public long subArrayRanges(int[] nums) { // this method has similar pattern as leetcode 902 sum of subarray minimum written above 
     
