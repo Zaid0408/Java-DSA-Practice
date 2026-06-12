@@ -161,6 +161,34 @@ public class QueueB {
             
         }
     }
+
+    // leetcode 239 Sliding Window Maximum
+
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int n=nums.length;
+        if (n == 0)
+            return new int[0];
+        int[] ans = new int[n - k + 1];
+        Deque<Integer> dq = new LinkedList<>();
+        int idx = 0;
+        for (int i = 0; i < n; i++) { // Queue is in decreasing order always
+        // fromt of the queue is alway tha maximum of the given window 
+            // Remove elements outside current window
+            while (!dq.isEmpty() && dq.peekFirst() <= i - k) {
+                dq.pollFirst();
+            }
+            // Maintain decreasing order
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+                dq.pollLast();
+            }
+            dq.offerLast(i);
+            // Window formed
+            if (i >= k - 1) {
+                ans[idx++] = nums[dq.peekFirst()];
+            }
+        }
+        return ans;
+    }
     
     
     public static void main(String[] args) {

@@ -847,7 +847,7 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
 
         Total = O(n)
     */
-    public int sumSubarrayMins(int[] arr) {
+    public int sumSubarrayMins(int[] arr) { // almost the same as largest rectangle in histogram
         int mod = 1000000007;
         int[] nse = nextSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
         int[] pse = previousSmallerElements(arr); // HERE IN NSE AND PSE WE ARE STORING INDICES IN THE STACK AND NOT ELEMENTS 
@@ -879,7 +879,7 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
             else
             {
                 while(!st.isEmpty() && st.peek()>0 && st.peek()<(int)Math.abs(asteroids[i]))
-                    st.pop();
+                    st.pop(); // pse/nse/nge pattern 
 
                 if(!st.isEmpty() && st.peek()==(int)Math.abs(asteroids[i]))
                     st.pop();
@@ -1092,6 +1092,161 @@ PGE + NGE  -> maximum contribution
             return pge;
         }
     }
+
+    // leetcode 901 online stock span
+
+    class StockSpanner {
+        List<Integer> prices;
+        Stack<Integer> st;
+        public StockSpanner() {
+            prices = new ArrayList<>();
+            st = new Stack<>();
+        }
+        public int next(int price) { // this is done because the code is running for one ele at one time no need for the outer for loop , PGE logic 
+        // This method will add a new element everytime and use the existing stack and list to the PGE finding 
+        // Span = index of price in the list - pge (top of the stack)
+    
+            prices.add(price);
+            int idx = prices.size() - 1;
+            while (!st.isEmpty() && prices.get(st.peek()) <= price) {
+                st.pop();
+            }
+            int pge = st.isEmpty() ? -1 : st.peek();
+            st.push(idx);
+    
+            return idx - pge;
+        }
+    }
+
+    // largest area in histogram  leetcode 84
+
+    public int largestRectangleArea(int[] heights) {
+        int maxArea=0;
+        // need nse and pse for width that can be accounted for a particular height
+        Stack<Integer> s=new Stack<>();
+        int nsr[]=nextSmallEle(s,heights);
+        s=new Stack<>(); // empty current stack
+        int nsl[]=previousSmallEle(s,heights);
+
+        for(int i=0;i<heights.length;i++){
+            int height=heights[i];
+            int width= nsr[i]-nsl[i]-1; 
+            // will be guranteed to make the calc max width including right and left side  for a particular height[i]
+            int currArea= height* width;
+            maxArea=Math.max(maxArea,currArea);
+        }
+        return maxArea;
+    }
+    public int[] previousSmallEle(Stack<Integer> s,int[] heights )
+    {
+        int pse[]=new int[heights.length];
+        for(int i=0;i<heights.length;i++)
+        {
+            while(!s.isEmpty() && heights[s.peek()]>= heights[i])
+                s.pop();
+
+            if(s.isEmpty())
+                pse[i]=-1;
+            else
+                pse[i]=s.peek();
+            s.push(i);
+            
+        }
+
+        return pse;
+    }
+    public int[] nextSmallEle(Stack<Integer> s,int[] heights )
+    {
+        int nse[]=new int[heights.length];
+        for(int i=heights.length-1;i>=0;i--)
+        {
+            while(!s.isEmpty() && heights[s.peek()]>= heights[i])
+                s.pop();
+
+            if(s.isEmpty())
+                nse[i]=heights.length;
+            else
+                nse[i]=s.peek();
+            s.push(i);
+            
+        }
+
+        return nse;
+    }
+
+
+
+    public int largestRectangleAreaOptimized(int[] heights) {
+        Stack<Integer> st = new Stack<>();
+        int maxArea = 0;
+        int n = heights.length;
+        // only pse logic is applied here
+        // but if else under the loop 
+        for (int i = 0; i <= n; i++) {
+            int currHeight = (i == n) ? 0 : heights[i];
+            while (!st.isEmpty() && currHeight < heights[st.peek()]) {
+                int height = heights[st.pop()];
+                int width;
+                if (st.isEmpty()) {
+                    width = i;
+                } else {
+                    width = i - st.peek() - 1;
+                }
+                maxArea = Math.max(maxArea, height * width);
+            }
+            st.push(i);
+        }
+        return maxArea;
+    }
+
+    // leetcode 85 
+    public int maximalRectangle(char[][] matrix) {
+        int rowArea=0; int ans=0;
+        int rows=matrix.length;
+        int cols=matrix[0].length;
+        int[] prefixArr=new int[cols];
+        
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<cols;j++)
+            {
+                if(matrix[i][j] == '1')
+                    prefixArr[j]++;
+                else
+                    prefixArr[j] = 0;
+
+                System.out.print(prefixArr[j]+" ");
+            }
+            rowArea=largestRectangleAreaOptimized(prefixArr);
+            ans=Math.max(rowArea,ans);
+        }
+
+        return ans;
+    }
+    public int largestRectangleAreaOpt(int[] heights) {
+        Stack<Integer> st = new Stack<>();
+        int maxArea = 0;
+        int n = heights.length;
+        // only pse logic is applied here
+        // but if else under the loop 
+        for (int i = 0; i <= n; i++) {
+            int currHeight = (i == n) ? 0 : heights[i]; // going till nand not n-1
+            while (!st.isEmpty() && currHeight < heights[st.peek()]) {
+                int height = heights[st.pop()];
+                int width;
+                if (st.isEmpty()) {
+                    width = i;
+                } else {
+                    width = i - st.peek() - 1;
+                }
+                maxArea = Math.max(maxArea, height * width);
+            }
+            st.push(i);
+        }
+        return maxArea;
+    }
+
+    
 
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
