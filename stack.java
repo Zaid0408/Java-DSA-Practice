@@ -864,6 +864,23 @@ For index 5 → arr[5] = 8, greater elements to the right are [10] → count = 1
         
     }
 
+    /*
+    Example for calculation
+
+  arr=   3,1,2,4
+
+pse = -1,-1,1,2
+nse = 1,4,4,4
+
+long left = i - pse[i];
+            long right = nse[i] - i;
+            ans = (ans + (left * right  * arr[i]) ;
+I=0  ans=3;
+I=1   ans=3+(2*3*1)=3+6=9
+I=2  ans= 9+(1*2*2)=13
+I=3  ans=13+(1*1*4)=17
+    */
+
     // leetcode 735 Asteroid Collison
 
     public int[] asteroidCollision(int[] asteroids) {
