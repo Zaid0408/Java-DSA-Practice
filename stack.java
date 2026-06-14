@@ -336,7 +336,7 @@ public class stack {
         return s.peek();
     }
 
-    //Stock Span Problem
+    //Stock Span Problem , lc 901 implementation is below , follows PGE approach
     public static void stockSpan(int stocks[],int span[]){
         Stack<Integer> s= new Stack<>();
         span[0]=1;
@@ -526,12 +526,12 @@ public class stack {
         System.out.println(maxArea);
     }
 
-    // Trapping Rain Water using Stack , Similar to NGE problem
+    // Trapping Rain Water using Stack , Similar to PSE problem
     public static int trap(int height[]){
         Stack<Integer> stack = new Stack<>();
         int n = height.length;
         int ans = 0;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) { // PSE approach
             while ((!stack.isEmpty())&& (height[stack.peek()] < height[i])) {
                 int pop_height = height[stack.peek()]; 
                 stack.pop();
