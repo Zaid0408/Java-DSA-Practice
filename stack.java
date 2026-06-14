@@ -1,5 +1,7 @@
 import java.util.*;
 
+import org.w3c.dom.Node;
+
 public class stack {
     static class StackUsingArrayList{// Implement Stack using ArrayList
         static ArrayList<Integer> list=new ArrayList<>();
@@ -1263,8 +1265,147 @@ PGE + NGE  -> maximum contribution
         return maxArea;
     }
 
+
+
+     class NodeLRU{
+        int key, value;
+        NodeLRU next,prev;
+        NodeLRU(int key, int value)
+        {
+            this.key=key;
+            this.value=value;
+        }
+    }
+    /*
+    * The Least Recently Used (LRU) Cache is a data structure that removes the "oldest" (least recently accessed) item when it reaches its capacity.
+    
+    To achieve O(1) time complexity for both get and put, we combine two data structures:
+    
+    HashMap: Provides O(1) lookups for any key.
+    Doubly Linked List: Maintains the order of access. We move "fresh" items to the front and "stale" items stay at the back.
+    By using Dummy Head and Dummy Tail nodes, we avoid null pointer checks during node removal or insertion, making the code much cleaner.
     
 
+    Map contains key, Node(key,value); 
+
+    Most optimal approach and best for interview 
+
+    DLL is used to move the Recenetly used key value to the front so that the least recently used get shitft to the back
+
+    head -> recently used .... least recently used -> tail
+         <-                                        <-
+    // this is why remove and insert front is done , remove will remove either least recently used or remove the key,value pair if provided , check get implementation
+     */
+    class LRUCache {
+        NodeLRU head,tail;
+        Map<Integer,NodeLRU> map; 
+        final int capacity; // do no chnage capacity value while insertion/deletion
+        public LRUCache(int capacity) {
+            this.capacity=capacity;
+            this.map=new HashMap<>();
+            head=new NodeLRU(-1,-1);
+            tail=new NodeLRU(-1,-1);
+            head.next=tail;
+            tail.prev=head;
+        }
+        
+        public int get(int key) {
+            if(!map.containsKey(key))
+                return -1;
+            // make the key value pair the recently used one 
+            NodeLRU lru=map.get(key);
+            remove(lru); // remove the key from current position 
+            insertFront(lru);// and place at start
+            return lru.value;
+        }
+        
+        public void put(int key, int value) {
+            if(map.containsKey(key)) // already contains the key but the value must be updated 
+            {
+                NodeLRU updateNode=map.get(key);
+                updateNode.value=value;
+                remove(updateNode);
+                insertFront(updateNode);
+            }
+            else // adding new key
+            {
+                if(map.size()==capacity) // if capacity full delete least recently used key 
+                {
+                    NodeLRU toBeRemoved=tail.prev;
+                    remove(toBeRemoved);
+                    map.remove(toBeRemoved.key); // delete key also very important
+    
+                    NodeLRU toBeInserted=new NodeLRU(key,value);
+                    insertFront(toBeInserted);
+                    map.put(key,toBeInserted); // add new key 
+                }
+                else
+                {
+                    NodeLRU toBeInserted=new NodeLRU(key,value);
+                    insertFront(toBeInserted);
+                    map.put(key,toBeInserted); // add new key
+                }
+            }
+        }
+        public void remove(NodeLRU node)
+        {
+            // remove node fron the DLL 
+            // needed for two things 1. Remove Least recently used while put operation when cappacity is full
+            // 2. when get is performed put that into the front of the DLL as it was recently used 
+            node.prev.next=node.next;
+            node.next.prev=node.prev;
+        }
+        public void insertFront(NodeLRU node)
+        {
+            // insert into the front og the DLL
+            // This is only done when a prticular key value pair is used recently either in get or put operation
+            node.next=head.next;
+            head.next.prev=node;
+    
+            head.next=node;
+            node.prev=head;
+        }
+    }
+    
+
+    // leetcode 895 maximum frequency stack
+
+    class FreqStack {
+        int maxi;
+        HashMap<Integer, Stack<Integer>> m;
+        HashMap<Integer, Integer> freq;
+        public FreqStack() {
+            freq = new HashMap<>();
+            m = new HashMap<>();
+            maxi=0;
+        }
+        
+        public void push(int val) {
+            int f=freq.getOrDefault(val,0)+1;
+            freq.put(val,f);
+            maxi=Math.max(f,maxi);
+            if(!m.containsKey(f))
+            {
+                m.put(f,new Stack<Integer>());
+            }
+            m.get(f).add(val);
+        }
+        
+        public int pop() {
+            int ab=m.get(maxi).pop();
+            freq.put(ab,maxi-1); // reduce frequency in the frequency hashmap post removal
+            if(m.get(maxi).size()==0) // post pop operation if there are no elements havoing a max frequency then max frequency has to reduce by 1 . 
+                maxi--;
+            return ab;
+        }
+    }
+    
+    /**
+     * Your FreqStack object will be instantiated and called as such:
+     * FreqStack obj = new FreqStack();
+     * obj.push(val);
+     * int param_2 = obj.pop();
+     */
     public static void main(String[] args) {
         //StackUsingArrayList s1=new StackUsingArrayList();// ArrayList implementation
         StackUsingLL s1=new StackUsingLL();// LinkedList implementation
