@@ -1,6 +1,8 @@
 import java.util.Queue;
 import java.util.Stack;
 
+import javax.swing.tree.TreeNode;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -269,7 +271,34 @@ public class BinTree {
             int right=heightOfTree(root.right);
             return Math.max(left,right)+1;
         }
-        // Diameter of root = max (height of left subtree + height of right subtree+1 , max(diameter of left subtree , diameter of right subtree))
+
+        // leetcode 110 balanced binary tree
+        // similar approach to calculating height but if diiference is more than 1 directly return -1;
+        public boolean isBalanced(node root) {
+        if(root==null || (root.left ==null && root.right==null))
+            return true;
+        
+        if(depthDiff(root)==-1)
+            return false;
+
+        return true;
+        }
+        private int depthDiff(node root)
+        {
+            if(root==null)
+                return 0;
+            
+            int lh=depthDiff(root.left);
+            int rh=depthDiff(root.right);
+            if(lh ==-1 || rh ==-1)
+                return -1;
+            
+            if(Math.abs(rh-lh)>1)
+                return -1;
+
+            return Math.max(lh,rh)+1;
+        }
+        // Diameter of root = max (height of left subtree + height of right subtree) , max(diameter of left subtree , diameter of right subtree))
         public static int diameterOfTree(node root){ // o(n^2) time complexity
             if(root==null)
                 return 0;
@@ -279,6 +308,25 @@ public class BinTree {
             int rightDiameter=diameterOfTree(root.right);
             int rightHeight=heightOfTree(root.right);
             return Math.max(Math.max(leftDiameter,rightDiameter),leftHeight+rightHeight);
+        }
+        // alternate soln O(n)
+        int diameter=0; // has to be global
+
+        // Intuition: Calulate the height and diameter at the same time instead of looping again and again
+        // same formula as above for height and diameter
+        public int diameterOfBinaryTree(node root) {
+            height(root);
+            return diameter;
+        }
+        private int height(node root)
+        {
+            if(root==null)
+                return 0;
+            int lh= height(root.left);
+            int rh= height(root.right);
+    
+            diameter= Math.max(diameter , lh+rh);
+            return Math.max(lh,rh)+1;
         }
         static class Info{
             int ht,diameter;
