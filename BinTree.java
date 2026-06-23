@@ -392,9 +392,203 @@ public class BinTree {
         
         
     }
+
+    // lc 110 balanced binary tree
+    public boolean isBalanced(node root) {
+        if(root==null || (root.left ==null && root.right==null))
+            return true;
+        
+        if(depthDiff(root)==-1)
+            return false;
+
+        return true;
+    }
+    private int depthDiff(node root)
+    {
+        if(root==null)
+            return 0;
+        
+        int lh=depthDiff(root.left);
+        int rh=depthDiff(root.right);
+        if(lh ==-1 || rh ==-1)
+            return -1;
+        
+        if(Math.abs(rh-lh)>1)
+            return -1;
+
+        return Math.max(lh,rh)+1;
+    }
+
+    // lc 662 maximum width of binary tree
+    class Pair {
+        node node;
+        long index;
+        Pair(node node, long index){
+            this.node=node;
+            this.index=index;
+        }
+    }
+    public int widthOfBinaryTree(node root) {
+        if(root==null)
+            return 0;
+        Queue<Pair> q=new LinkedList<>();
+        q.offer(new Pair(root,0));
+        int maxi=0;
+        while(!q.isEmpty())
+        {
+            long first=0,last=0;
+            long minIdx=q.peek().index;
+            int size=q.size();
+            for(int i=0;i<size;i++)
+            {
+                Pair cur=q.poll();
+                long idx=cur.index- minIdx;
+                if(i==0)
+                    first=idx;
+
+                if(i==size-1)
+                    last=idx;
+                if(cur.node.left!=null)
+                    q.offer(new Pair(cur.node.left, 2*idx +1));
+                
+                if(cur.node.right!=null)
+                    q.offer(new Pair(cur.node.right, 2*idx +2));
+
+                maxi=Math.max(maxi, (int)(last-first+1));
+            }
+        }
+        return maxi;
+        
+    }
+
+    // lc 236 lowest common ancestor of a binary tree
+    public node lowestCommonAncestor(node root, node p, node q) {
+        if(root==null || root==p || root==q)
+            return root;
+        node left=lowestCommonAncestor(root.left, p, q);
+        node right=lowestCommonAncestor(root.right, p, q);
+        if(left==null)
+            return right;
+        if(right==null)
+            return left;
+        return root;
+    }
+
+    // All paths of root to all leaf nodes , each list conatins path from the root to one leaf node
+    List<List<Integer>> ans=new ArrayList<>();
+    public List<List<Integer>> allRootToLeaf(node root) {
+        dfs(root ,new ArrayList<>());
+        return ans;
+    }
+    public void dfs(node root,List<Integer> path)
+    {
+        if(root==null)
+            return;
+        path.add(root.data);
+        if(root.left==null && root.right==null)
+        {
+            ans.add(new ArrayList<>(path));
+        }
+        else{
+            dfs(root.left,path);
+            dfs(root.right,path);
+        }
+        path.remove(path.size()-1); // similar to recursion probelms , backtracking step
+// Remember:
+//Choose → Explore → Undo similar to recursion
+    }
+
+    // lc 129 same pattern as above 
+
+    List<Integer> ans1=new ArrayList<>();
+    public int sumNumbers(node root) {
+        dfs(root,0);
+        int sum=0;
+        for(int i=0;i<ans.size();i++)
+        {
+            sum+= ans1.get(i);
+        }
+        return sum;
+    }
+    public void dfs(node root,int path)
+    {
+        if(root==null)
+            return;
+        path= path*10+root.data;
+        if(root.left==null && root.right==null)
+        {
+            ans1.add(path);
+        }
+        else{
+            dfs(root.left,path);
+            dfs(root.right,path);
+        }
+        path=path-root.data;
+        path= path /10; // similar to recursion probelms , backtracking step
+
+    }
+
+    // lc 257 Binary tree paths 
+    // same pattern as above 
+    List<String> ans2=new ArrayList<>();
+    public List<String> binaryTreePaths(node root) {
+        dfs(root, new StringBuilder());
+        return ans2;
+    }
+    public void dfs(node root, StringBuilder sb)
+    {
+        if(root==null)
+        {
+            return;
+        }
+        int len = sb.length();// important step to use legth as to help enable backtracking and removal later
+        if(root.left==null && root.right ==null){
+            sb.append(root.data+"");
+            ans2.add(sb.toString());
+        }
+        else{
+            sb.append(root.data+""+"->");
+            dfs(root.left,sb);
+            dfs(root.right,sb);
+        }
+        sb.setLength(len);
+    }
+
+    // lc 1161 
+
+    public int maxLevelSum(node root) {
+        int gh=Integer.MIN_VALUE;
+        List<Integer> ll=new ArrayList<>();
+        levelOrder(root,ll,0);
+        int k=-1;
+        for(int i=0;i<ll.size();i++)
+        {
+            if(ll.get(i) >gh)
+            {
+                gh=ll.get(i);k=i+1;
+            }      
+        }
+        return k;
+
+    }
+    public void levelOrder(node root,List<Integer> l, int level)
+    {
+        if(root==null)
+            return;
+
+        if(l.size()==level)
+        {
+            l.add(root.data);
+        }
+        else{
+            l.set(level,l.get(level)+root.data);
+        }
+        levelOrder(root.left,l,level+1);
+        levelOrder(root.right,l,level+1);
+    }
     
     public static void main(String[] args) {
-        int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
+        // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
         BinaryTree tree=new BinaryTree();
         //node root=tree.maketreePre(nodes);
         //tree.PreOrder(root);
