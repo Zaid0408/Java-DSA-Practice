@@ -328,6 +328,54 @@ public class BinTree {
             diameter= Math.max(diameter , lh+rh);
             return Math.max(lh,rh)+1;
         }
+
+        // similar to diameter lc 647 - longest univalue path 
+        int an=0;
+        public int longestUnivaluePath(node root) {
+            if(root==null)
+                return 0;
+            helper(root,root.data);
+            return an;
+        }
+        public int helper(node root,int val)
+        {
+            if(root==null)
+                return 0;
+    
+            int lh=helper(root.left,root.data);
+            int rh=helper(root.right,root.data);
+    
+            an=Math.max(an,lh+rh);
+            if(root.data==val)
+                return Math.max(lh,rh)+1;
+            return 0;
+        }
+        // lc 124 binary tree maximum path sum
+        int out=Integer.MIN_VALUE;
+        public int maxPathSum(node root) {
+            if(root==null)
+                return 0;
+            if(root.left==null && root.right==null)
+                return root.data;
+            maxSum(root);
+            return out;
+        }
+        public int maxSum(node root)
+        {
+            if(root==null)
+                return 0;
+                
+            int leftSum=maxSum(root.left);
+            int rightSum=maxSum(root.right);
+    
+            leftSum=Math.max(0,leftSum); // change negative sums to zero so that they dont have a say in the final answer
+            rightSum=Math.max(0,rightSum);
+    
+            int rootSum=leftSum+rightSum+root.data;
+            out=Math.max(out,rootSum);
+    
+            return Math.max(leftSum,rightSum)+root.data; // either on of the max because it helps us find path we cannot consider both right and left for one path 
+        }
         static class Info{
             int ht,diameter;
             Info(int ht,int diameter){
