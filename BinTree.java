@@ -1,11 +1,10 @@
 import java.util.Queue;
 import java.util.Stack;
-
-import javax.swing.tree.TreeNode;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class BinTree {
     static class node{
@@ -110,6 +109,7 @@ public class BinTree {
         }
         public void dfs(node root) {
             // dfs traversal on tree iterative
+            // dfs uses stack and bfs uses queue
             if (root == null) return;
 
             Stack<node> stack = new Stack<>();
@@ -145,6 +145,24 @@ public class BinTree {
     
             // Recursively visit the right subtree
             dfs2(root.right, depth + 1,result);
+        }
+        public void bfs(node root) {
+            // bfs using a queue
+            if(root==null){
+                return;
+            }
+            Queue<node> q=new LinkedList<>();
+            q.add(root);
+            while(!q.isEmpty()){
+                node curr=q.remove(); // pop the parent 
+                System.out.print(curr.data+" ,");
+                if(curr.left!=null){ // add left child to the queue
+                    q.add(curr.left);
+                }
+                if(curr.right!=null){ // add right child 
+                    q.add(curr.right);
+                }
+            }
         }
         public static node lowestCommonAncestor(node root, node p, node q) {
             ArrayList<node> path1=new ArrayList<>();
@@ -482,14 +500,14 @@ public class BinTree {
         Queue<Pair> q=new LinkedList<>();
         q.offer(new Pair(root,0));
         int maxi=0;
-        while(!q.isEmpty())
+        while(!q.isEmpty()) // BFS ALGO 
         {
             long first=0,last=0;
             long minIdx=q.peek().index;
             int size=q.size();
             for(int i=0;i<size;i++)
             {
-                Pair cur=q.poll();
+                Pair cur=q.poll(); //using quque means bfs
                 long idx=cur.index- minIdx;
                 if(i==0)
                     first=idx;
@@ -633,6 +651,94 @@ public class BinTree {
         }
         levelOrder(root.left,l,level+1);
         levelOrder(root.right,l,level+1);
+    }
+
+    // children sum property
+    // check if the children of a given node sum to the value of the node , true foe all nodes in a tree except leaf nodes
+    boolean checkChildrenSum(node root) { 
+        if (root == null) {
+            return true;
+        }
+        if (root.left == null && root.right == null) {
+            return true;
+        }
+
+        int left = (root.left != null) ? root.left.data : 0;
+        int right = (root.right != null) ? root.right.data : 0;
+
+        if (root.data != left + right) {
+            return false;
+        }
+        return checkChildrenSum(root.left) && checkChildrenSum(root.right);
+    }
+
+    // NOTE : When you have to traverse back use a map to store the parent node
+    // turned a Binary Tree into an Undirected Graph, this method is incredible and extremely useful.
+    // this loigic is used here 
+
+    // leetcode 863 All nodes distance k in binary tree
+
+    public List<Integer> distanceK(node root, node target, int k) {
+        Map<node,node> parent_track= new HashMap<>();
+        markParents(root,target,parent_track);
+        Map<node,Boolean> visited=new HashMap<>();
+        Queue<node> vi=new LinkedList<>();
+        vi.offer(target);
+        visited.put(target,true);
+        int cur=0;
+        while(!vi.isEmpty())
+        {
+            if(k==cur) break;
+            cur++;
+            int size=vi.size();
+            for(int i=0;i<size;i++)
+            {
+                node no=vi.poll();
+                if(no.left!=null && visited.get(no.left)==null)
+                {
+                    visited.put(no.left,true);
+                    vi.offer(no.left);
+                }
+                if(no.right!=null && visited.get(no.right)==null)
+                {
+                    visited.put(no.right,true);
+                    vi.offer(no.right);
+                }
+                if(parent_track.get(no)!=null && visited.get(parent_track.get(no))==null)
+                {
+                    vi.offer(parent_track.get(no));
+                    visited.put(parent_track.get(no),true);
+                }
+            }
+            
+        }
+
+        List<Integer> ans=new ArrayList<>();
+        while(!vi.isEmpty())
+        {
+            node no=vi.poll();
+            ans.add(no.data);
+        }
+        return ans;
+    }
+    private void markParents(node root, node target, Map<node,node> parent_track)
+    {
+        Queue<node> qu=new LinkedList<>();
+        qu.offer(root);
+        while(!qu.isEmpty())
+        {
+            node no=qu.poll();
+            if(no.left!=null)
+            {
+                parent_track.put(no.left,no);
+                qu.offer(no.left);
+            }
+            if(no.right!=null)
+            {
+                parent_track.put(no.right,no);
+                qu.offer(no.right);
+            }
+        }
     }
     
     public static void main(String[] args) {
