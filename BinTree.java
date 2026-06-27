@@ -740,6 +740,131 @@ public class BinTree {
             }
         }
     }
+
+    /*
+    Relationship between the problems
+1. LeetCode 863 coded just above 
+Step 1:
+Build parent pointers
+
+Step 2:
+Start BFS from target
+
+Step 3:
+Stop when distance == K
+
+Return remaining nodes.
+2. Burn Tree
+Step 1:
+Build parent pointers
+
+Step 2:
+Start BFS from target
+
+Step 3:
+DO NOT STOP
+    */
+
+// Minimum time taken to burn the BT from a given Node 
+// Minimum operations required to burn the BT from a given Node
+    public int timeToBurnTree(node root, int start) {
+        //your code goes here
+        Map<node,node> parent_track= new HashMap<>();
+        node cur=markParents(root,parent_track,start);
+        Map<node,Boolean> visited=new HashMap<>();
+        Queue<node> vi=new LinkedList<>();
+        vi.offer(cur);
+        visited.put(cur, true);
+        int count=0;
+        while(!vi.isEmpty())
+        {
+            int s=vi.size();
+            count++;
+            for(int i=0;i<s;i++)
+            {
+                node no=vi.poll();
+                if(no.left!=null && visited.get(no.left)==null)
+                {
+                    vi.offer(no.left);
+                    visited.put(no.left,true);
+                }
+                if(no.right!=null && visited.get(no.right)==null)
+                {
+                    vi.offer(no.right);
+                    visited.put(no.right,true);
+                }
+                if(parent_track.get(no)!=null && visited.get(parent_track.get(no))==null)
+                {
+                    vi.offer(parent_track.get(no));
+                    visited.put(parent_track.get(no),true);
+                }
+
+            }
+        }
+        
+        return count-1;
+
+    }
+    private node markParents(node root, Map<node,node> parent_track,int start)
+    {
+        Queue<node> qu=new LinkedList<>();
+        qu.offer(root);
+        node cur=null;
+        while(!qu.isEmpty())
+        {
+            node no=qu.poll();
+            if(no.data==start)
+            {
+                cur=no; // needed to get the start node from value 
+            }
+            if(no.left!=null)
+            {
+                parent_track.put(no.left,no);
+                qu.offer(no.left);
+            }
+            if(no.right!=null)
+            {
+                parent_track.put(no.right,no);
+                qu.offer(no.right);
+            }
+        }
+        return cur;
+    }
+
+    public int countNodes(node root) { // to use O(log N) soln
+    // for complete binary tree , number of nodes 2*height-1 remember property
+    // binary tree is guranteed to be complete
+        if(root==null)
+            return 0;
+        int l=heightLeft(root);
+        int r=heightRight(root);
+        if(l==r) // the subtree is complete binary tree 
+            return (2<<l)-1;
+        else
+            return countNodes(root.left)+countNodes(root.right)+1;
+        
+    }
+    public int heightLeft(node root)
+    { // this can only be applied in case of complete binary tree
+        // where this will guranteed to be go to leaf node 
+        int sex=0;
+        while(root.left!=null)
+        {
+            sex++;
+            root=root.left;
+        }
+        return sex;
+    }
+    public int heightRight(node root)
+    {
+        int sex=0;
+        while(root.right!=null)
+        {
+            sex++;
+            root=root.right;
+        }
+        return sex;
+    }
     
     public static void main(String[] args) {
         // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
