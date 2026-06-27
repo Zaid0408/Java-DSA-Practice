@@ -865,6 +865,30 @@ DO NOT STOP
         }
         return sex;
     }
+
+    public node buildTree(int[] preorder, int[] inorder) {
+        Map<Integer,Integer> map=new HashMap<>();
+        for(int i=0;i<inorder.length;i++)
+        {
+            map.put(inorder[i],i);
+        }
+
+        node root=buildtree(preorder,inorder,map,0,preorder.length-1,0,inorder.length-1);
+        return root;
+    }
+    public node buildtree(int[] preorder, int[] inorder,Map<Integer,Integer> map,int pre_start,int pre_end,int in_start,int in_end)
+    {
+        if(pre_start>pre_end || in_start>in_end)
+            return null;
+        node root=new node(preorder[pre_start]);
+        int in_root=map.get(root.data);
+        int nums_left=in_root- in_start;
+
+        root.left=buildtree(preorder,inorder,map,pre_start+1,pre_start+nums_left,in_start,in_root-1);
+        root.right=buildtree(preorder,inorder,map,pre_start+nums_left+1,pre_end,in_root+1,in_end);
+
+        return root;
+    }
     
     public static void main(String[] args) {
         // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
