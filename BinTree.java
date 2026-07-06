@@ -866,6 +866,26 @@ DO NOT STOP
         return sex;
     }
 
+    // leetcode 108  Convert Sorted Array to Binary Search Tree
+
+    public node sortedArrayToBST(int[] nums) {
+     node root=arrToBst(nums,0,nums.length-1);
+        return root;
+    }
+    private node arrToBst(int nums[], int start, int end)
+    {
+        if(start<=end)
+        {
+            int mid=(start+end)/2;
+            node node=new node(nums[mid]);
+            node.left=arrToBst(nums,start,mid-1);
+            node.right=arrToBst(nums,mid+1,end);
+            return node;
+        }
+        return null;
+    }
+
+    // Leetcode 105 Construct Binary Tree from Preorder and Inorder Traversal
     public node buildTree(int[] preorder, int[] inorder) {
         Map<Integer,Integer> map=new HashMap<>();
         for(int i=0;i<inorder.length;i++)
@@ -882,12 +902,67 @@ DO NOT STOP
             return null;
         node root=new node(preorder[pre_start]);
         int in_root=map.get(root.data);
-        int nums_left=in_root- in_start;
+        int nums_left=in_root- in_start;// how many nodes in left subtree
 
         root.left=buildtree(preorder,inorder,map,pre_start+1,pre_start+nums_left,in_start,in_root-1);
         root.right=buildtree(preorder,inorder,map,pre_start+nums_left+1,pre_end,in_root+1,in_end);
 
         return root;
+    }
+
+    // Leetcode 297 Serialize and Deserialize Binary Tree
+    public class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(node root) { // BFS approach to serialize a tree 
+            if(root==null) return "null";
+    
+            StringBuilder sb=new StringBuilder();
+            Queue<node> q=new LinkedList<>();
+            q.offer(root);
+            while(!q.isEmpty())
+            {
+                node node=q.poll();
+                if(node==null)
+                {
+                    sb.append("null,"); 
+                    continue;
+                }
+                q.offer(node.left); // here we just need to append and not check for not null
+                q.offer(node.right);
+                sb.append(node.data).append(",");
+            }
+            return sb.toString();
+        }
+    
+        // Decodes your encoded data to tree.
+        public node deserialize(String data) { // BFS Approach to deserialize a tree 
+            if(data.equals("null"))
+                return null;
+            
+            String nodes[]=data.split(","); // split bases on , 
+            node root=new node(Integer.parseInt(nodes[0])); // make root with first node 
+            Queue<node> q=new LinkedList<>();
+            q.offer(root);
+            int i=1;
+            while(i<nodes.length && !q.isEmpty())
+            {
+                node node=q.poll();
+                if(!nodes[i].equals("null"))
+                {
+                    node.left=new node(Integer.parseInt(nodes[i]));
+                    q.offer(node.left);
+                }
+                i++;
+                if(i<nodes.length && !nodes[i].equals("null"))
+                {
+                    node.right=new node(Integer.parseInt(nodes[i]));
+                    q.offer(node.right);
+                }
+                i++;
+            }
+            return root;
+        }
     }
     
     public static void main(String[] args) {

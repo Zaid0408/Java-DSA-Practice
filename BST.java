@@ -22,6 +22,12 @@ public class BST {
         }
         return root;
     }
+    // Difference between BST and BT is that 
+    /*
+        In a BST, the left subtree is always smaller than the right subtree.
+        Left Subtree and right subtree are also BST in case of a BST 
+        L<N<R should be the format of the BST. 
+    */
     public static void InOrder(Node root)// print inorder of bst . Should always be in ascending order.
     {
         if(root==null){
