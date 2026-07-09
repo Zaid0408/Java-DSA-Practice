@@ -10,6 +10,7 @@ public class BST {
             this.right=null;
         }
     }
+    // leetcode 701 Insert into a Binary Search Tree
     public static Node insert(Node root, int data){
         if(root==null){
             return new Node(data);
@@ -27,7 +28,63 @@ public class BST {
         In a BST, the left subtree is always smaller than the right subtree.
         Left Subtree and right subtree are also BST in case of a BST 
         L<N<R should be the format of the BST. 
+        in case of duplicates L<=N<R something similar but very rare
+
+        height of BST O(log n)
     */
+
+    public List<Integer> floorCeilOfBST(Node root, int key) {
+        List<Integer> ans=new ArrayList<>();
+        int floor=floorOfBST(root,key);
+        int ceil = ceilOfBST(root,key);
+
+        ans.add(floor);
+        ans.add(ceil);
+
+        return ans;
+    }
+    public int floorOfBST(Node root, int key)
+    {
+        int floor=-1;
+        while(root!=null)
+        {
+            if(root.data==key)
+            {
+                floor=root.data;
+                return floor;
+            }
+            if(root.data < key)
+            {
+                floor=root.data;
+                root=root.right;
+            }
+            else{
+                root=root.left;
+            }
+        }
+        return floor<key?floor:-1;
+    }
+    public int ceilOfBST(Node root, int key)
+    {
+        int ceil=-1;
+        while(root!=null)
+        {
+            if(root.data==key)
+            {
+                ceil=root.data;
+                return ceil;
+            }
+            if(root.data < key)
+            {
+                ceil=root.data;
+                root=root.right;
+            }
+            else{
+                return root.data;
+            }
+        }
+        return ceil>key?ceil:-1;
+    }
     public static void InOrder(Node root)// print inorder of bst . Should always be in ascending order.
     {
         if(root==null){
@@ -58,7 +115,11 @@ public class BST {
         }
         return root;
     }
+    // leetcode 450 Delete Node in a BST
     public static Node delete(Node root, int data){
+        if(root == null){
+            return null;
+        }
         if(root.data>data){
             root.left=delete(root.left,data);
         }
@@ -139,6 +200,93 @@ public class BST {
         
     }
 
+    //leetcode 230 Kth Smallest Element in a BST
+    public int kthSmallest(Node root, int k) {
+        List<Integer> oa=new ArrayList<>();
+        kthSmall(root, oa);
+        return oa.get(k-1);
+    }
+    private void kthSmall(Node root, List<Integer> oa)
+    {
+        // inorder traversal of a BST
+        // this traversal will ensure that all numbers in the list are always in ascending/nondecreaseing order hence kth smallest is at k-1th posistion
+        if(root==null)
+            return;
+        
+        kthSmall(root.left,oa);
+        oa.add(root.data);
+        kthSmall(root.right,oa);
+        
+    }
+
+    // leetcode 98 Validate Binary Search Tree
+    // intuition:
+    /*
+        Every node has an allowed range. Initially: (-∞, +∞)
+Suppose the root is 5. Then:
+          5
+      (-∞,+∞)
+
+      /       \
+ (-∞,5)[3]    (5,+∞)[7]
+      \
+ (3,5)[4]
+
+Now suppose we go left to 3.
+Its range becomes
+(-∞,5)
+
+Go right to 4. Its range becomes
+(3,5)
+
+Every recursive call narrows the valid range. If any node falls outside its range, it's not a BST.
+    *
+     */
+    public boolean isValidBST(Node root) {
+        return dfs(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    private boolean dfs(Node node, long low, long high) {
+        if(node == null)
+            return true;
+        if(node.data <= low || node.data >= high)
+            return false;
+        return dfs(node.left, low, node.data) && dfs(node.right, node.data, high);
+    }
+
+    // leetcode 235  Lowest Common Ancestor of a Binary Search Tree
+    /* here three things which make the time smaller that normal bst
+    1. If p.data and q.data are both less than root.data, then the lowest common ancestor must be in the left subtree. so check left only
+    2. If p.data and q.data are both greater than root.data, then the lowest common ancestor must be in the right subtree. so check right only
+    3. Otherwise due to BST property of left being the smallest and right being largest, either p or q is smallest hence root is the LCA
+     */
+    public Node lowestCommonAncestor(Node root, Node p, Node q) {
+        if( root==p || root==q|| root==null){
+            return root;
+        }
+        Node node=null;
+        if(root.data>p.data && root.data>q.data)
+            return lowestCommonAncestor(root.left, p, q);
+        else if(root.data<p.data && root.data<q.data)
+            return lowestCommonAncestor(root.right, p, q);
+        return root;
+    }
+
+    // leetcode 1008 Construct Binary Search Tree from Preorder Traversal 
+    // check strivers video
+
+    public Node bstFromPreorder(int[] preorder) {
+        return  bstFromPreorder(preorder,Integer.MAX_VALUE,new int[]{0});
+    }
+    public Node bstFromPreorder(int[] preorder, int upperBound, int z[])
+    {
+        if(z[0]==preorder.length || preorder[z[0]]>upperBound)
+            return null;
+        
+        Node node=new Node(preorder[z[0]++]);
+        node.left=bstFromPreorder(preorder,node.data,z);
+        node.right=bstFromPreorder(preorder,upperBound,z);
+        return node;
+    }
     /*
      * Note: Convert BST to Balanced BST
      *  To convert unbalanced bst to a balanced bst , take inorder of that tree store it in arraylist
