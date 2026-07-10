@@ -1,4 +1,6 @@
 import java.util.*;
+
+import javax.swing.tree.TreeNode;
 public class BST {
     static class Node{
         int data;
@@ -287,6 +289,101 @@ Every recursive call narrows the valid range. If any node falls outside its rang
         node.right=bstFromPreorder(preorder,upperBound,z);
         return node;
     }
+    // leetcode 173 Binary Search Tree Iterator
+    // tc O(N) space complexity O(H)
+    class BSTIterator {
+        Stack<Node> st=new Stack<>();
+        public BSTIterator(Node root) {
+            Node node=root;
+            while(node!=null)
+            {
+                st.push(node);
+                node=node.left;
+            }
+        }
+        
+        public int next() {
+            Node cur = st.peek();
+            st.pop();
+            if(cur.right!=null)
+            {
+                Node x=cur.right;
+                while(x!=null)
+                {
+                    st.push(x);
+                    x=x.left;
+                }
+            }
+            return cur.data;
+        }
+        
+        public boolean hasNext() {
+            if(st.isEmpty()==true)
+                return false;
+            return true;
+        }
+    }
+
+    // leetcode 653 Two SUm in binary search tree
+
+    // please check video soln 
+
+    class BSTIterator1 {
+        Stack<Node> st=new Stack<>();
+        boolean reverse=true;
+        public BSTIterator1(Node root, boolean rev) {
+            reverse=rev;
+            pushAll(root);
+        }
+        public void pushAll(Node node)
+        {
+            while(node!=null)
+            {
+                st.push(node);
+                if(reverse==true)
+                    node=node.right;
+                else
+                    node=node.left;
+            }
+        }
+        
+        public int next() {
+            Node cur = st.pop();
+            if(reverse==false)
+                pushAll(cur.right);
+            else
+                pushAll(cur.left);
+            return cur.data;
+        }
+        
+        public boolean hasNext() {
+            return !st.isEmpty();
+        }
+    }
+    
+    class Solution {
+        public boolean findTarget(Node root, int k) {
+            if(root==null) return false;
+    
+            BSTIterator1 l=new BSTIterator1(root,false);
+            BSTIterator1 r=new BSTIterator1(root,true);
+    
+            int i=l.next();int j=r.next();
+    
+            while(i<j)
+            {
+                if(i+j ==k) return true;
+                else if(i+j <k)
+                    i=l.next();
+                else
+                    j=r.next();
+            }
+    
+            return false;
+        }
+    }
+
+
     /*
      * Note: Convert BST to Balanced BST
      *  To convert unbalanced bst to a balanced bst , take inorder of that tree store it in arraylist
