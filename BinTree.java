@@ -290,7 +290,59 @@ public class BinTree {
             return Math.max(left,right)+1;
         }
 
+    /*
+    A few "golden templates" to remember
+
+These patterns cover most tree interview questions:
+
+/*
+1. Top-Down DFS:
+Parent passes information to children.
+Examples:
+- Validate BST (Range)
+- Path Sum
+- Root-to-Leaf problems
+*/
+/*
+2. Bottom-Up DFS:
+Children return information to parent.
+Examples:
+- Diameter
+- Balanced Tree
+- Maximum Path Sum
+- House Robber III
+*/
+/*
+Tree + BFS:
+Process level by level.
+Examples:
+- Level Order
+- Zigzag
+- Max Level Sum
+- Right View
+*/
+/*
+3. Tree -> Graph:
+Build parent pointers first.
+Then perform BFS from any node.
+Examples:
+- Distance K
+- Burning Tree
+- Infection problems
+
+
+These short comments are usually enough to reconstruct the full solution during revision without rereading the entire algorithm.
+
+*/
+
         // leetcode 110 balanced binary tree
+        /*
+Intuition:
+- Every node asks its children for their heights.
+- If |leftHeight - rightHeight| > 1, tree is unbalanced.
+- Return height upwards while checking balance.
+- Bottom-up postorder traversal.
+*/
         // similar approach to calculating height but if diiference is more than 1 directly return -1;
         public boolean isBalanced(node root) {
         if(root==null || (root.left ==null && root.right==null))
@@ -332,6 +384,14 @@ public class BinTree {
 
         // Intuition: Calulate the height and diameter at the same time instead of looping again and again
         // same formula as above for height and diameter
+        // lc 543 diameter of binary tree
+        /*
+Intuition:
+- Diameter through a node = leftHeight + rightHeight.
+- While calculating height, update the maximum diameter.
+- Return height = 1 + max(leftHeight, rightHeight).
+- One DFS computes both height and diameter.
+*/
         public int diameterOfBinaryTree(node root) {
             height(root);
             return diameter;
@@ -369,6 +429,13 @@ public class BinTree {
             return 0;
         }
         // lc 124 binary tree maximum path sum
+        /*
+Intuition:
+- Each node receives the maximum gain from left and right.
+- Ignore negative gains by taking max(0, gain).
+- Update answer using left + root + right.
+- Return root + max(leftGain, rightGain) upwards.
+*/
         int out=Integer.MIN_VALUE;
         public int maxPathSum(node root) {
             if(root==null)
@@ -401,6 +468,7 @@ public class BinTree {
                 this.diameter=diameter;
             }
         }
+        // 
         public static Info diameterOfTree2(node root){ // o(n) time complexity
             if(root==null)
                 return new Info(0,0);
@@ -459,33 +527,14 @@ public class BinTree {
         
     }
 
-    // lc 110 balanced binary tree
-    public boolean isBalanced(node root) {
-        if(root==null || (root.left ==null && root.right==null))
-            return true;
-        
-        if(depthDiff(root)==-1)
-            return false;
-
-        return true;
-    }
-    private int depthDiff(node root)
-    {
-        if(root==null)
-            return 0;
-        
-        int lh=depthDiff(root.left);
-        int rh=depthDiff(root.right);
-        if(lh ==-1 || rh ==-1)
-            return -1;
-        
-        if(Math.abs(rh-lh)>1)
-            return -1;
-
-        return Math.max(lh,rh)+1;
-    }
-
     // lc 662 maximum width of binary tree
+    /*
+Intuition:
+- Assign indices as if the tree were complete.
+- Left = 2*i+1, Right = 2*i+2.
+- Width = lastIndex - firstIndex + 1.
+- Normalize indices at each level to avoid overflow.
+*/
     class Pair {
         node node;
         long index;
@@ -541,6 +590,13 @@ public class BinTree {
     }
 
     // All paths of root to all leaf nodes , each list conatins path from the root to one leaf node
+    /*
+Intuition:
+- Carry a list representing the current path.
+- Add node before recursion.
+- At a leaf, save a copy of the path.
+- Remove the last node while backtracking.
+*/
     List<List<Integer>> ans=new ArrayList<>();
     public List<List<Integer>> allRootToLeaf(node root) {
         dfs(root ,new ArrayList<>());
@@ -596,6 +652,13 @@ public class BinTree {
 
     // lc 257 Binary tree paths 
     // same pattern as above 
+    /*
+Intuition:
+- Maintain the current root-to-node path.
+- On reaching a leaf, save the current path.
+- Backtrack after exploring each child.
+- Choose -> Explore -> Undo.
+*/
     List<String> ans2=new ArrayList<>();
     public List<String> binaryTreePaths(node root) {
         dfs(root, new StringBuilder());
@@ -677,6 +740,14 @@ public class BinTree {
     // this loigic is used here 
 
     // leetcode 863 All nodes distance k in binary tree
+
+    /*
+Intuition:
+- Convert the tree into an undirected graph using parent pointers.
+- Start BFS from the target node.
+- Explore left, right, and parent.
+- Stop after reaching distance K.
+*/
 
     public List<Integer> distanceK(node root, node target, int k) {
         Map<node,node> parent_track= new HashMap<>();
@@ -767,6 +838,15 @@ DO NOT STOP
 
 // Minimum time taken to burn the BT from a given Node 
 // Minimum operations required to burn the BT from a given Node
+
+/*
+Intuition:
+- Same approach as Distance K.
+- Build parent pointers first.
+- Start BFS from the target node.
+- Every BFS level represents one second of burning.
+- Continue until all nodes are visited.
+*/
     public int timeToBurnTree(node root, int start) {
         //your code goes here
         Map<node,node> parent_track= new HashMap<>();
@@ -886,6 +966,13 @@ DO NOT STOP
     }
 
     // Leetcode 105 Construct Binary Tree from Preorder and Inorder Traversal
+    /*
+Intuition:
+- Preorder always gives the root first.
+- Find the root in inorder to split left and right subtrees.
+- Number of nodes on the left = inRoot - inStart.
+- Recursively build left subtree first, then right subtree.
+*/
     public node buildTree(int[] preorder, int[] inorder) {
         Map<Integer,Integer> map=new HashMap<>();
         for(int i=0;i<inorder.length;i++)
@@ -908,6 +995,38 @@ DO NOT STOP
         root.right=buildtree(preorder,inorder,map,pre_start+nums_left+1,pre_end,in_root+1,in_end);
 
         return root;
+    }
+
+    /* Leetcode 106 Construct Binary Tree from Inorder and Postorder Traversal
+Intuition:
+- Postorder always gives the root last.
+- Find the root in inorder to split left and right subtrees.
+- Number of left subtree nodes = inRoot - inStart.
+- Build left and right using the corresponding postorder ranges.
+*/
+    public node buildTree2(int[] inorder, int[] postorder) {
+        Map<Integer,Integer> map=new HashMap<>();
+        for(int i=0;i<inorder.length;i++)
+        {
+            map.put(inorder[i],i);
+        }
+
+        node root=buildtreefrompostorder(inorder,postorder,map,0,postorder.length-1,0,inorder.length-1);
+        return root;
+    }
+    private node buildtreefrompostorder(int[] inorder, int[] postorder, Map<Integer,Integer> map,int post_start, int post_end, int in_start, int in_end)
+    {
+        if(post_start>post_end || in_start>in_end)
+            return null;
+        
+        node node= new node(postorder[post_end]);
+        int in_root=map.get(node.data);
+        int nums_left= in_root-in_start;
+
+        node.left= buildtreefrompostorder(inorder,postorder,map,post_start,post_start+nums_left-1,in_start,in_root-1);
+        node.right= buildtreefrompostorder(inorder,postorder,map,post_start+nums_left,post_end-1,in_root+1,in_end);
+
+        return node;
     }
 
     // Leetcode 297 Serialize and Deserialize Binary Tree

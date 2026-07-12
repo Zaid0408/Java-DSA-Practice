@@ -242,6 +242,12 @@ Go right to 4. Its range becomes
 (3,5)
 
 Every recursive call narrows the valid range. If any node falls outside its range, it's not a BST.
+
+Intuition:
+- Inorder traversal of a BST is always strictly increasing.
+- Keep track of the previously visited node.
+- If prev.val >= current.val, BST property is violated.
+- Traverse Left -> Root -> Right.
     *
      */
     public boolean isValidBST(Node root) {
@@ -383,6 +389,27 @@ Every recursive call narrows the valid range. If any node falls outside its rang
         }
     }
 
+    // Leetcode 114 Flatten Binary Tree to Linked List
+    // Preorder traversal bit we start to build the llist from the rightmost side of the tree 
+    /*
+Intuition:
+- Final tree should follow preorder (Root -> Left -> Right).
+- Build the answer backwards using reverse preorder (Right -> Left -> Root).
+- 'helper' always points to the already flattened list.
+- Flatten right first, then left, so when processing root, its next node is already known.
+- Connect root.right = helper, root.left = null, then move helper = root.
+*/
+    private Node helper=null;
+    public void flatten(Node root) {
+        if(root==null)
+            return;
+        
+        flatten(root.right);
+        flatten(root.left);
+        root.right=helper;
+        root.left=null;
+        helper=root;
+    }
 
     /*
      * Note: Convert BST to Balanced BST
