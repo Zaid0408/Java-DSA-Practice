@@ -619,4 +619,97 @@ R R R
         return image;
 
     }
+    // Detect cycle in undirected graph using BFS
+    // Store (node, parent) in the BFS queue.
+// If a neighbor is unvisited, visit it and remember the current node as its parent.
+// If a neighbor is already visited and is NOT the parent,
+// then we have reached the same node through another path,
+// which means the undirected graph contains a cycle.
+// Run BFS/DFS from every unvisited node to handle disconnected graphs.
+    public boolean isCycle(int V, List<Integer>[] adj) {
+        boolean vis[]=new boolean[V];
+        // impo to use this loop to check all nodes in the graph similar to countComponents implementation
+        for(int i=0;i<V;i++) 
+        { // this loop is impo as we have to traverse all egdes 
+          // isCycleHelper will only traverse nodes starting from a particular src and that not necessary will have cyclic nature hence all nodes to be checked
+            if(!vis[i])
+            {
+                if(isCycleHelper(i,adj,vis))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isCycleHelper(int src, List<Integer>[] adj, boolean vis[]) {
+        Queue<Pair> q=new LinkedList<>();
+        vis[src]=true;
+        q.offer(new Pair(src,-1));
+        while(!q.isEmpty())
+        {
+            Pair p=q.poll();
+            int i=p.a;int j=p.b;
+            // here p.a means source/node currently and p.b means the parent of the current node. 
+            // parent node is needed because if parent is already visited we can mark it as cyclic
+
+            for(int nbr:adj[i])
+            {
+                if(vis[nbr]==false)
+                {
+                    vis[nbr]=true;
+                    q.add(new Pair(nbr,i));
+                }
+                else if( j!=nbr)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    // lc 207
+
+    /*
+    Intuition : Kahns Algo BFS Topological sorting 
+
+Imagine every course is locked.
+Whenever all its prerequisites disappear,
+it becomes unlocked.
+If some courses remain locked forever,
+they are part of a cycle.
+    */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for(int i=0;i<numCourses;i++)
+            graph.add(new ArrayList<>());
+
+        int[] indegree = new int[numCourses];
+        for(int[] edge : prerequisites)
+        {
+            int course = edge[0];
+            int prereq = edge[1];
+
+            graph.get(prereq).add(course);
+            indegree[course]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for(int i=0;i<numCourses;i++)
+        {
+            if(indegree[i]==0)
+                q.offer(i);
+        }
+        int count=0;
+        while(!q.isEmpty())
+        {
+            int node=q.poll();
+            count++;
+            for(int nbr:graph.get(node))
+            {
+                indegree[nbr]--;
+                if(indegree[nbr]==0)
+                    q.offer(nbr);
+            }
+        }
+        return count==numCourses;
+    }
 }
