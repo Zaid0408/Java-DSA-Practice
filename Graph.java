@@ -335,7 +335,7 @@ import java.util.*;
 
 public class Graph {
 
-    /*
+    /*  Count Components
         Problem Statement: Given an undirected Graph consisting of V vertices numbered from 0 to V-1 and E edges. The ith edge is represented by [ai,bi], denoting a edge between vertex ai and bi. We say two vertices u and v belong to a same component if there is a path from u to v or v to u. Find the number of connected components in the graph.
 A connected component is a subgraph of a graph in which there exists a path between any two vertices, and no vertex of the subgraph shares an edge with a vertex outside of the subgraph.
 Same to same as lc 547 number of connected components
@@ -505,5 +505,118 @@ Therefore, the graph has 3 connected components: {0, 1, 2, 3}, {4, 5}, and the i
                 dfs(neighbor, isConnected, visited);
             }
         }
+    }
+    // leetcode 998 Rotten Oranges
+    // rotten problem, check commens for understanding
+    class Pair{
+        int a;int b;
+
+        Pair(int a, int b)
+        {
+            this.a=a;
+            this.b=b;
+        }
+    }
+    public int orangesRotting(int[][] grid) {
+        int minutes=0;int fresh=0;
+        int n=grid.length;int m=grid[0].length;
+        Queue<Pair> q=new LinkedList<Pair>();
+        // Find all the rotten oranges and push in queue as bfs should start from there
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(grid[i][j]==2)
+                {
+                    q.offer(new Pair(i,j));
+                }
+                else if(grid[i][j]==1)
+                {
+                    fresh++;
+                }
+            }
+        }
+        if(fresh==0) return 0; // no fresh oranges no answer
+        // BFS
+        int[] dRow = {-1, 1, 0, 0}; // helping in direction traversal 
+        int[] dCol = {0, 0, -1, 1}; // use a pair of drow[i] or dcol[i] to go in a certain direction
+        while (!q.isEmpty()) {
+            int size = q.size(); // Number of oranges rotting at this current minute
+            // Instead of maintaining a separate boolean[][] rotten array, you can modify the grid directly
+            boolean rottedThisMinute = false; // instead of maintaining a list check if any rotting occurred at this minute in this loop
+            for (int k = 0; k < size; k++) {
+                Pair p=q.poll();
+                int r=p.a;
+                int c=p.b;
+
+                // Check all 4 adjacent sides
+                for (int d = 0; d < 4; d++) {
+                    int nRow = r + dRow[d];
+                    int nCol = c + dCol[d];
+
+                    // Boundary check and verifying if it's a fresh orange
+                    if (nRow >= 0 && nRow < n && nCol >= 0 && nCol < m && grid[nRow][nCol] == 1) {
+                        grid[nRow][nCol] = 2; // Mark it as rotten directly in the grid
+                        fresh--;       // One less fresh orange left
+                        q.offer(new Pair(nRow, nCol));
+                        rottedThisMinute = true;
+                    }
+                }
+            }
+            
+            // Only increment time if this layer actually spread the rot further
+            if (rottedThisMinute) {
+                minutes++;
+            }
+        }
+        return fresh==0?minutes:-1;
+    }
+    /*
+    Why Rotten Oranges needs size but Flood Fill doesn't
+Rotten Oranges
+Minute 0
+R F F
+
+↓
+
+Minute 1
+R R F
+
+↓
+
+Minute 2
+R R R
+    */
+
+    // leetcode 733 Flood fill: Similar to rotten oranges
+    public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+        int[] dRow = {-1, 1, 0, 0}; // helping in direction traversal 
+        int[] dCol = {0, 0, -1, 1};
+        Queue<Pair> q=new LinkedList<>();
+        int n=image.length;int m=image[0].length;
+        int orignal=image[sr][sc];
+        if(orignal==color)
+            return image;
+        image[sr][sc]=color;
+        q.offer(new Pair(sr,sc));
+        while(!q.isEmpty())
+        {
+            int size=q.size();
+            Pair p=q.poll();
+            int r=p.a;int c=p.b;
+            for(int d=0;d<4;d++)
+            {
+                int row=r+dRow[d];
+                int col=c+dCol[d];
+                if(row<n && row>=0 && col<m && col>=0 && image[row][col]==orignal)
+                {
+                    image[row][col]=color;
+                    q.offer(new Pair(row,col));
+                }
+            }
+        }
+
+        return image;
+
     }
 }
