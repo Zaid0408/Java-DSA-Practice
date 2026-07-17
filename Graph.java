@@ -640,7 +640,7 @@ R R R
         }
         return false;
     }
-    
+    // always remember :In an undirected graph, a cycle exists if while traversing the graph, we encounter a node that has already been visited and it is not the parent of the current node.
     private boolean isCycleHelper(int src, List<Integer>[] adj, boolean vis[]) {
         Queue<Pair> q=new LinkedList<>();
         vis[src]=true;
@@ -666,6 +666,20 @@ R R R
 
         return false;
     }
+    // dfs implementation for the same 
+    private boolean isCycleHelper(int src,int parent, List<Integer>[] adj, boolean vis[]) {
+        vis[src]=true;
+        for(int nbr:adj[src])
+        {
+            if(!vis[nbr]){
+                if (isCycleHelper(nbr,src,adj,vis))
+                    return true;
+            }
+            else if(nbr!=parent)
+                return true;
+        }
+        return false;
+    }
 
     // lc 207
 
@@ -677,6 +691,9 @@ Whenever all its prerequisites disappear,
 it becomes unlocked.
 If some courses remain locked forever,
 they are part of a cycle.
+indegree: simply the number of incoming edges
+indegree here means the prerequisite count of coursese to be completed befroe taking a particular course
+ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2 
     */
     public boolean canFinish(int numCourses, int[][] prerequisites) {
         List<List<Integer>> graph = new ArrayList<>();
@@ -712,4 +729,116 @@ they are part of a cycle.
         }
         return count==numCourses;
     }
+
+    // leetcode 542 01 Matrix 
+    // Similar to rotten oranges 
+    public int[][] updateMatrix(int[][] mat) {
+        int n=mat.length;int m=mat[0].length;
+        int ans[][]=new int[n][m];
+        boolean vis[][]=new boolean[n][m];
+        Queue<int[]> q=new LinkedList<int[]>();
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(mat[i][j]==0)
+                {
+                    q.offer(new int[]{i,j,0});
+                    vis[i][j]=true;
+                    ans[i][j]=0;
+                }
+            }
+        }
+        int[] dRow = {-1, 1, 0, 0}; // helping in direction traversal 
+        int[] dCol = {0, 0, -1, 1};
+        while(!q.isEmpty())
+        {
+            int sh[]=q.poll();
+            int row=sh[0];int col=sh[1];int dist=sh[2];
+
+            ans[row][col]=dist;
+            for(int d=0;d<dRow.length;d++)
+            {
+                int r=row+dRow[d];
+                int c=col+dCol[d];
+                if(r>=0 &&r<n && c>=0 && c<m && !vis[r][c])
+                {
+                    if(mat[r][c]==1)
+                    {
+                        vis[r][c]=true;
+                        q.offer(new int[]{r,c,dist+1});
+                    }
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    // lc 130 Surronded regions 
+    /*
+    The problem is about converting all 'O' regions that are completely surrounded by 'X' into 'X'. However, any 'O' that is connected to the boundary cannot be converted, since it's not fully surrounded.
+So the key idea is:
+
+Mark all 'O's that are connected to the boundary as safe.
+At the end, flip all other 'O's (unvisited ones) into 'X'.
+Approach
+Use DFS (or BFS) starting from boundary cells. Whenever we see an 'O' on the boundary, perform DFS/BFS to mark all connected 'O's as visited (safe).
+After this traversal, all boundary-connected 'O's remain as they are, because they cannot be surrounded.
+Traverse the entire matrix:
+If an 'O' is visited, leave it as 'O'.
+If an 'O' is not visited, convert it into 'X'.
+    */
+    public void solve(char[][] board) {
+        int m = board.length;
+        int n = board[0].length;
+        // visited matrix to mark all 'O's connected to the boundary
+        boolean[][] vis = new boolean[m][n];
+
+        // 1. DFS from first/last columns
+        for(int i =0;i<m;i++){
+            if(board[i][0] == 'O' && vis[i][0] == false){
+                dfs(i,0,board,vis);
+            }
+            if(board[i][n-1] == 'O' && vis[i][n-1] == false){
+                dfs(i,n-1,board,vis);
+            }
+        }
+        // 2. DFS from first/last rows
+        for(int j = 0;j<n;j++){
+            if(board[0][j] == 'O' && vis[0][j] == false){
+                dfs(0,j,board,vis);
+            }
+            if(board[m-1][j] == 'O' && vis[m-1][j] == false){
+                dfs(m-1,j,board,vis);
+            }
+        }
+
+        // 3. Flip surrounded 'O's
+        for(int i =0;i<m;i++){
+            for(int j =0;j<n;j++){
+                // Flip 'O' if it's not marked as visited (i.e., not connected to border)
+                if(board[i][j] == 'O' && vis[i][j] == false){
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+
+    public void dfs(int i, int j, char[][] board, boolean[][] vis){
+        int m = board.length;
+        int n = board[0].length;
+        // Base case: out of bounds, already visited, or 'X'
+        if(i<0 || j<0 || i>=m || j>=n || vis[i][j] == true || board[i][j] == 'X'){
+            return;
+        }
+        vis[i][j] = true;
+        // DFS in all 4 directions
+        dfs(i+1,j,board,vis);
+        dfs(i,j+1,board,vis);
+        dfs(i-1,j,board,vis);
+        dfs(i,j-1,board,vis);
+    }
+
+    // lc 1020
 }
