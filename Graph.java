@@ -905,4 +905,58 @@ Count these enclaves and return the result.
         return ans;
 
     }
+    // lc 127 word ladder
+    /*
+        intuition
+            Breadth-First Search (BFS) ensures the shortest path is found from startWord to targetWord.
+    Initialize a queue with a pair {startWord, 1} representing the word and its current transformation steps.
+    Insert all words from wordList into a unordered_set for O(1) lookups.
+    While the queue is not empty:
+    Pop a word and its step count.
+    If this word is the targetWord, return the step count.
+    For each character in the word, try replacing it with all letters 'a' to 'z':
+        If the new word exists in the set, erase it from the set and push it into the queue with steps + 1.
+    If no transformation sequence is found, return 0.
+
+    */
+    class Pair2<K, V> {
+        private K key;
+        private V value;
+        public Pair2(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+        public K getKey() { return key; }
+        public V getValue() { return value; }
+    }
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Queue<Pair2<String, Integer>> q = new LinkedList<>();
+        q.add(new Pair2<>(beginWord, 1));
+        Set<String> st = new HashSet<>(wordList);
+        st.remove(beginWord);
+        while (!q.isEmpty()) {
+            String word = q.peek().getKey();
+            int steps = q.peek().getValue();
+            q.poll();
+
+            // If target word is found
+            if (word.equals(endWord)) return steps;
+
+            // Try changing every character
+            for (int i = 0; i < word.length(); i++) {
+                char[] arr = word.toCharArray();
+                char original = arr[i];
+                for (char ch = 'a'; ch <= 'z'; ch++) {
+                    arr[i] = ch;
+                    String newWord = new String(arr);
+                    if (st.contains(newWord)) {
+                        st.remove(newWord);
+                        q.add(new Pair2<>(newWord, steps + 1));
+                    }
+                }
+                arr[i] = original;
+            }
+        }
+        return 0;
+    }
 }
