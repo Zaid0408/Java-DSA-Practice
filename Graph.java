@@ -841,4 +841,68 @@ If an 'O' is not visited, convert it into 'X'.
     }
 
     // lc 1020
+    /*
+    Intuition
+    Initialize a queue for BFS and a vis array to track visited cells.
+Traverse the boundary of the grid. For every boundary land cell (grid[i][j] == 1), mark it visited and push it into the queue.
+Run BFS from these boundary land cells:
+At each step, pop a cell and explore its 4 neighbors (up, right, down, left).
+If the neighbor is land and not yet visited, mark it visited and push it into the queue.
+After BFS, iterate over the entire grid. Any land cell (grid[i][j] == 1) that remains unvisited is an enclave.
+Count these enclaves and return the result.
+    */
+    public int numEnclaves(int[][] grid) {
+        Queue<Pair> q=new LinkedList<>();
+        int n=grid.length;int m=grid[0].length;
+        boolean vis[][]=new boolean[n][m];
+
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if((i==0 || j==0 || i==n-1 || j==m-1))
+                {
+                    if(grid[i][j]==1)
+                    {
+                        q.offer(new Pair(i,j));
+                        vis[i][j]=true;
+                    }
+                }
+            }
+        }
+        int[] dRow = {-1, 1, 0, 0}; // helping in direction traversal 
+        int[] dCol = {0, 0, -1, 1};
+        while(!q.isEmpty())
+        {
+            Pair p=q.poll();
+            int i=p.a;int j=p.b;
+            for(int d=0;d<4;d++)
+            {
+                int r=i+dRow[d];
+                int c=j+dCol[d];
+                if(r<n && r>=0 && c<m && c>=0 && grid[r][c]==1)
+                {
+                    if(!vis[r][c]) {
+                        vis[r][c]=true;
+                        q.offer(new Pair(r,c));
+                    }
+                }
+            }
+
+        }
+
+        int ans=0;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(grid[i][j]==1 && !vis[i][j])
+                {
+                   ans++;
+                }
+            }
+        }
+        return ans;
+
+    }
 }
