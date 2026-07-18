@@ -879,6 +879,45 @@ If an 'O' is not visited, convert it into 'X'.
         dfs(i,j-1,board,vis);
     }
 
+    // lc 785 check if graph is bipartite or not
+    /*
+    For DFS traversal, we need a start node and a visited array but in this case, instead of a visited array, we will take a colour array where all the nodes are initialised to -1 indicating they are not coloured yet.
+In the DFS function call, make sure to pass the value of the assigned colour, and assign the same in the colour array. We will try to colour with 0 and 1, but you can choose other colours as well. We will start with the colour 0, you can start with 1 as well, just make sure for the adjacent node, it should be opposite of what the current node has. 
+In DFS traversal, we travel in-depth to all its uncoloured neighbours using the adjacency list. For every uncoloured node, initialise it with the opposite colour to that of the current node.
+If at any moment, we get an adjacent node from the adjacency list which is already coloured and has the same colour as the current node, we can say it is not possible to colour it, hence it cannot be bipartite. Thereby return a false indicating the given graph is not bipartite; otherwise, keep on returning true.
+    */
+    public boolean isBipartite(int[][] graph) {
+        int V=graph.length;
+        int color[]=new int[V];
+        for(int i=0;i<V;i++) 
+            color[i]=-1;
+
+        for(int i=0;i<V;i++) 
+        {
+            if(color[i]==-1)
+            {
+                if(dfsBipartite(graph,color,i,0)==false)
+                    return false; // returning false because code may early exit so no need of checking again and again
+            }
+        }
+        return true;
+        
+    }
+    private boolean dfsBipartite(int[][] graph,int color[],int i,int col)
+    {
+        color[i]=col;
+        for(int nbr:graph[i])
+        {
+            if(color[nbr] == -1) {
+                if(dfsBipartite(graph,color,nbr,1-col)==false) 
+                    return false; 
+            }
+            else if(color[i]==color[nbr])
+                return false;
+        }
+        return true;
+    }
+
     // lc 1020
     /*
     Intuition
