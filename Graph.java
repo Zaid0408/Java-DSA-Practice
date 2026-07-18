@@ -775,6 +775,45 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
         return ans;
     }
 
+    // Leetcode 200 Number of islands 
+    /*
+    Intuition : Dfs here because we need to go to every neighbour as all neighbours conected make one island
+    For each row and col index do dfs from there
+    if i and j are outside bounds and grid[i][j] is not water then return ie not '0'
+    for every dfs call mark this as visited by making it '0' from '1' otherwise subsequent calls in the for loop will consider visisted values again
+    post that do dfs on all 4 neigbours 
+
+    for every succesful dfs completed one island has been discovered hence increment counter
+    */
+    public int numIslands(char[][] grid) {
+        int island=0;
+        int n=grid.length;int m=grid[0].length;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(grid[i][j]=='1')
+                {
+                    dfs(grid,i,j);
+                    island++;
+                }
+            }
+        }
+        return island;
+
+    }
+    private void dfs(char[][] grid, int i, int j)
+    {
+        if(i>=grid.length || i<0 || j>=grid[0].length || j<0 || grid[i][j]=='0') // impo conditions to check otherwise infinite loop
+            return;
+        grid[i][j]='0';// mark this as visited
+
+        dfs(grid,i+1,j);
+        dfs(grid,i-1,j);
+        dfs(grid,i,j+1);
+        dfs(grid,i,j-1);
+    }
+
     // lc 130 Surronded regions 
     /*
     The problem is about converting all 'O' regions that are completely surrounded by 'X' into 'X'. However, any 'O' that is connected to the boundary cannot be converted, since it's not fully surrounded.
@@ -825,7 +864,7 @@ If an 'O' is not visited, convert it into 'X'.
         }
     }
 
-    public void dfs(int i, int j, char[][] board, boolean[][] vis){
+    public void dfs(int i, int j, char[][] board, boolean[][] vis){ // dfs here is similar to leetcode 200
         int m = board.length;
         int n = board[0].length;
         // Base case: out of bounds, already visited, or 'X'
