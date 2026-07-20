@@ -1224,4 +1224,61 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
         return new int[0];
     }
 
+    // lc 802
+    /*
+    Step 1: Reverse all edges of the graph so we can apply topological sort based on indegrees.
+    Step 2: Create an indegree[] array initialized to 0. Count the incoming edges for each node and store them accordingly.
+    Step 3: Initialize a queue and enqueue all nodes with indegree 0 — these are now our terminal nodes in the reversed graph.
+    Step 4: Create an empty list safeNodes[] to store all safe nodes.
+    Step 5: While the queue is not empty:
+        Pop a node u from the queue and add it to safeNodes.
+        For each neighbor v of node u in the reversed graph, reduce indegree[v] by 1.
+        If indegree[v] becomes 0, push it into the queue.
+    Step 6: Repeat this process until the queue is empty.
+    Step 7: The safeNodes list now contains all the nodes that are not part of any cycle and do not connect into one.
+    Step 8: Sort the safeNodes array before returning it, as the problem requires output in ascending order.
+    */
+
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int V=graph.length;
+        List<Integer>[] adjRev = new List[V];  // Reverse adjacency list
+        int[] indegree = new int[V];  // Indegree array to track nodes with no outgoing edges
+
+        // Initialize reverse adjacency list
+        for (int i = 0; i < V; i++) {
+            adjRev[i] = new ArrayList<>();
+        }
+
+        // Build the reverse graph and calculate indegrees
+        for (int i = 0; i < V; i++) {
+            for (int neighbor : graph[i]) {
+                adjRev[neighbor].add(i);  // Reverse the direction of edges
+                indegree[i]++;  // Increment indegree for the current node
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();  // Queue to store nodes with no outgoing edges
+        List<Integer> safeNodes = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+
+        // Process the queue to find all safe nodes
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            safeNodes.add(node);  // This node is safe
+            for (int parent : adjRev[node]) {
+                indegree[parent]--;  // Decrease indegree of the parent nodes
+                if (indegree[parent] == 0) {
+                    q.offer(parent);  // If indegree becomes 0, it is a safe node
+                }
+            }
+        }
+
+        Collections.sort(safeNodes);  // Sort the safe nodes
+        return safeNodes;
+    }
+
 }
