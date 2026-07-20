@@ -725,55 +725,6 @@ The point to remember is, while we enter we mark both the pathVis and vis as tru
         return false;
     }
 
-    // lc 207
-
-    /*
-    Intuition : Kahns Algo BFS Topological sorting 
-
-Imagine every course is locked.
-Whenever all its prerequisites disappear,
-it becomes unlocked.
-If some courses remain locked forever,
-they are part of a cycle.
-indegree: simply the number of incoming edges
-indegree here means the prerequisite count of coursese to be completed befroe taking a particular course
-ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2 
-    */
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<List<Integer>> graph = new ArrayList<>();
-        for(int i=0;i<numCourses;i++)
-            graph.add(new ArrayList<>());
-
-        int[] indegree = new int[numCourses];
-        for(int[] edge : prerequisites)
-        {
-            int course = edge[0];
-            int prereq = edge[1];
-
-            graph.get(prereq).add(course);
-            indegree[course]++;
-        }
-        Queue<Integer> q = new LinkedList<>();
-        for(int i=0;i<numCourses;i++)
-        {
-            if(indegree[i]==0)
-                q.offer(i);
-        }
-        int count=0;
-        while(!q.isEmpty())
-        {
-            int node=q.poll();
-            count++;
-            for(int nbr:graph.get(node))
-            {
-                indegree[nbr]--;
-                if(indegree[nbr]==0)
-                    q.offer(nbr);
-            }
-        }
-        return count==numCourses;
-    }
-
     // leetcode 542 01 Matrix 
     // Similar to rotten oranges 
     public int[][] updateMatrix(int[][] mat) {
@@ -1091,7 +1042,12 @@ Count these enclaves and return the result.
     At the end, reversing this finishing order yields a valid topological sorting.
     */
 
-    void dfs(int node, ArrayList<ArrayList<Integer>> adj, int[] vis, Stack<Integer> st) {
+    // Tpopological sort can only be done on directed acyclic graph or DAG
+    // 1. Directed as if it is undirected 1->2 and 2->1 in the ordering this comes up again 
+    // 2. Acylic as if it is cyclic 1->2 and 2->3 and 3->1 in the ordering this comes up again as 1,2,3,1 which is not possible
+    // The main aim is to get a valid topological ordering
+
+    void dfsTopo(int node, ArrayList<ArrayList<Integer>> adj, int[] vis, Stack<Integer> st) {
         // Mark the current node as visited
         vis[node] = 1;
 
@@ -1099,7 +1055,7 @@ Count these enclaves and return the result.
         for (int it : adj.get(node)) {
             // If the neighbor is not visited, recursively perform DFS
             if (vis[it] == 0) {
-                dfs(it, adj, vis, st);
+                dfsTopo(it, adj, vis, st);
             }
         }
         // After visiting all neighbors, push this node into the stack
@@ -1116,7 +1072,7 @@ Count these enclaves and return the result.
         // Perform DFS from each unvisited vertex
         for (int i = 0; i < V; i++) {
             if (vis[i] == 0) {
-                dfs(i, adj, vis, st);
+                dfsTopo(i, adj, vis, st);
             }
         }
         // Prepare the result array
@@ -1127,4 +1083,145 @@ Count these enclaves and return the result.
         // Return the topological ordering
         return ans;
     }
+    // Function to perform BFS-based topological sort, this code is similar to lc 207 course scheduler
+    // This is standard topo sort using BFS indegree method is fgor bfs only 
+    public int[] topologicalSort(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Create an array to store the in-degree of each vertex
+        int[] indegree = new int[V];
+
+        // Loop over all vertices to calculate in-degree
+        for (int i = 0; i < V; i++) {
+            // Loop over all adjacent vertices of current vertex
+            for (int it : adj.get(i)) {
+                // Increase in-degree of connected vertex
+                indegree[it]++;
+            }
+        }
+
+        // Create a queue to store vertices with in-degree zero
+        Queue<Integer> q = new LinkedList<>();
+
+        // Loop through all vertices
+        for (int i = 0; i < V; i++) {
+            // If in-degree is zero, add it to queue
+            if (indegree[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        // Array to store the topological order
+        int[] topo = new int[V];
+        // Index to track position in topo array
+        int idx = 0;
+
+        // Process vertices in queue
+        while (!q.isEmpty()) {
+            // Remove vertex from queue
+            int node = q.poll();
+
+            // Add it to the topological order
+            topo[idx++] = node;
+
+            // Loop through adjacent vertices of the current node
+            for (int it : adj.get(node)) {
+                // Reduce in-degree of connected vertex
+                indegree[it]--;
+                // If in-degree becomes zero, push it to queue
+                if (indegree[it] == 0) {
+                    q.add(it);
+                }
+            }
+        }
+
+        // Return the topological ordering
+        return topo;
+    }
+    // lc 207
+
+    /*
+    Intuition : Kahns Algo BFS Topological sorting 
+
+Imagine every course is locked.
+Whenever all its prerequisites disappear,
+it becomes unlocked.
+If some courses remain locked forever,
+they are part of a cycle.
+indegree: simply the number of incoming edges
+indegree here means the prerequisite count of coursese to be completed befroe taking a particular course
+ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2 
+    */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for(int i=0;i<numCourses;i++)
+            graph.add(new ArrayList<>());
+
+        int[] indegree = new int[numCourses];
+        for(int[] edge : prerequisites) // prerequisites is adj matrix and not list hence this is needed
+        { // only for this question
+            int course = edge[0];
+            int prereq = edge[1];
+
+            graph.get(prereq).add(course);
+            indegree[course]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for(int i=0;i<numCourses;i++)
+        {
+            if(indegree[i]==0)
+                q.offer(i);
+        }
+        int count=0;
+        while(!q.isEmpty())
+        {
+            int node=q.poll();
+            count++;
+            for(int nbr:graph.get(node))
+            {
+                indegree[nbr]--;
+                if(indegree[nbr]==0)
+                    q.offer(nbr);
+            }
+        }
+        return count==numCourses;
+    }
+    // lc 210 almost the same as the one above
+    // diff between both is lc 210 asks you to return the topological sort ordering if possible
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for(int i=0;i<numCourses;i++)
+            graph.add(new ArrayList<>());
+        int indegree[]=new int[numCourses];
+        for(int i[]:prerequisites)
+        {
+            int course=i[0];
+            int pre=i[1];
+            graph.get(pre).add(course);
+            indegree[course]++;
+        }
+        int[] topo = new int[numCourses];
+        Queue<Integer> q=new LinkedList<>();
+        for(int i=0;i<numCourses;i++)
+        {
+            if(indegree[i]==0) q.add(i);
+        }
+        int idx=0;
+        while(!q.isEmpty())
+        {
+            int course=q.poll();
+            topo[idx++]=course;
+            for(int nbr:graph.get(course))
+            {
+                indegree[nbr]--;
+                if(indegree[nbr]==0)
+                {
+                    q.add(nbr);
+                }
+            }
+        }
+        if (idx == numCourses) {
+            return topo;
+        }
+        return new int[0];
+    }
+
 }
