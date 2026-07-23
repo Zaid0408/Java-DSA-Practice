@@ -1281,4 +1281,173 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
         return safeNodes;
     }
 
+    // Alien Dictionary https://takeuforward.org/data-structure/alien-dictionary-topological-sort-g-26
+
+    public String findOrder(String [] dict, int N, int K) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < K; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for(int i=0;i<N-1;i++)
+        {
+            String dic1=dict[i];
+            String dic2=dict[i+1];
+            int len = Math.min(dic1.length(), dic2.length());
+            for(int j=0;j<len;j++)
+            {
+                if(dic1.charAt(j) !=dic2.charAt(j) )
+                {
+                    // Add edge s1[ptr] -> s2[ptr]
+                    adj.get(dic1.charAt(j) - 'a').add(dic2.charAt(j) - 'a');
+                    break;
+                }
+            }
+        }
+        List<Integer> topo = topoSort(K, adj); // normal topo sort
+        // Convert numeric representation back to characters
+        StringBuilder ans = new StringBuilder();
+        for (int node : topo) {
+            ans.append((char)(node + 'a'));
+        }
+        return ans.toString();
+    }
+
+
+    // new Pattern shortest path from src to dest using BFS/DFS
+    // the below is Shortest Path in Undirected Graph with unit distance 
+    // This is the exact same bfs but instead of having a visisted we have a distance array to keep track of the shortest path from src to that particukar node
+    // If node is not reachable form source then the dist[node] will be infinity
+    public int[] shortestPath(int[][] edges, int N, int M, int src) {
+
+        // Create adjacency list for undirected graph
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        // Fill adjacency list from edge list
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+
+        // Initialize distance array with large value (infinity)
+        int[] dist = new int[N];
+        Arrays.fill(dist, (int) 1e9); // or -1 or Integer.MAX_VALUE
+
+        // Set source distance to 0
+        dist[src] = 0;
+
+        // Initialize queue for BFS
+        Queue<Integer> q = new LinkedList<>();
+        q.add(src);
+
+        // BFS traversal
+        while (!q.isEmpty()) {
+            int node = q.poll();
+
+            // Traverse neighbors
+            for (int neighbor : adj.get(node)) {
+                if (dist[node] + 1 < dist[neighbor]) {
+                    dist[neighbor] = dist[node] + 1;// updating the distance based on the shorter value 
+                    q.add(neighbor);
+                }
+            }
+        }
+
+        // Prepare result, replacing infinity with -1
+        for (int i = 0; i < N; i++) {
+            if (dist[i] == (int) 1e9) {
+                dist[i] = -1;
+            }
+        }
+
+        return dist;
+    }
+
+    // Topological sorting in a DAG directed acyclic graph only is used to find the shortest path to a dist
+    // uses dfs hence stack is used
+    private void topoSort(int node, List<List<int[]>> adj, boolean[] visited, Stack<Integer> stack) {
+        
+        // Mark the current node as visited
+        visited[node] = true;
+        
+        // Traverse all adjacent nodes
+        for (int[] neighbor : adj.get(node)) {
+            
+            // If the neighbor hasn't been visited, recurse
+            if (!visited[neighbor[0]]) {
+                topoSort(neighbor[0], adj, visited, stack);
+            }
+        }
+        
+        // After visiting all neighbors, push this node into the stack
+        stack.push(node);
+    }
+
+    // Function to compute shortest path from source node (0) in a DAG
+    public int[] shortestPath(int N, int M, int[][] edges) { // almost same as the shortest path in undirected graph in bfs implementation above 
+        // diff is that edges have weights also 
+        
+        // Create adjacency list for graph with weights
+        List<List<int[]>> adj = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            adj.add(new ArrayList<>());
+        }
+        
+        // Fill the adjacency list from edge list
+        for (int i = 0; i < M; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int wt = edges[i][2];
+            adj.get(u).add(new int[]{v, wt});
+        }
+
+        // Initialize visited array for topo sort
+        boolean[] visited = new boolean[N];
+        // Stack to hold topological order
+        Stack<Integer> stack = new Stack<>();
+        
+        // Perform topo sort from unvisited nodes
+        for (int i = 0; i < N; i++) {
+            if (!visited[i]) {
+                topoSort(i, adj, visited, stack);
+            }
+        }
+
+        // Initialize distance array with infinity (represented by large value)
+        int[] dist = new int[N];
+        Arrays.fill(dist, (int)1e9);
+
+        // Distance to source (0) is 0
+        dist[0] = 0;
+
+        // Process nodes in topological order
+        while (!stack.isEmpty()) {
+            int node = stack.pop();
+            
+            // If the node is reachable
+            if (dist[node] != (int)1e9) {
+                
+                // Traverse all neighbors and update their distances
+                for (int[] neighbor : adj.get(node)) {
+                    int v = neighbor[0];
+                    int wt = neighbor[1];
+                    
+                    // Relax the edge
+                    if (dist[node] + wt < dist[v]) {
+                        dist[v] = dist[node] + wt;
+                    }
+                }
+            }
+        }
+        // Replace all unreachable nodes with -1
+        for (int i = 0; i < N; i++) {
+            if (dist[i] == (int)1e9) {
+                dist[i] = -1;
+            }
+        }
+        // Return the final distance array
+        return dist;
+    }
 }
