@@ -1303,12 +1303,12 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
                 }
             }
         }
-        List<Integer> topo = topoSort(K, adj); // normal topo sort
+        // List<Integer> topo = topoSort(K, adj); // normal topo sort
         // Convert numeric representation back to characters
         StringBuilder ans = new StringBuilder();
-        for (int node : topo) {
-            ans.append((char)(node + 'a'));
-        }
+        // for (int node : topo) {
+        //     ans.append((char)(node + 'a'));
+        // }
         return ans.toString();
     }
 
@@ -1448,6 +1448,101 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
             }
         }
         // Return the final distance array
+        return dist;
+    }
+
+
+    // Djikstra Algorithm 
+    // use it when undirected and weighted graph
+    /*
+    Why not DFS?
+
+DFS simply explores one path completely. It never guarantees the shortest path.
+
+Why not Topological Sort?
+
+Topological Sort is only for DAGs (Directed Acyclic Graphs). Dijkstra works on graphs with cycles (as long as there are no negative weights).
+
+Why Priority Queue?
+Normal BFS queue works as
+First In
+First Out
+
+Dijkstra needs
+
+Smallest Distance First
+Example
+
+Queue contains
+
+Node 3 Distance 15
+
+Node 2 Distance 4
+
+Node 7 Distance 9
+
+Priority Queue automatically pops
+
+Node 2 Distance 4
+
+first.
+
+That is exactly why Dijkstra is greedy.
+
+It always processes the currently closest node.
+     */
+    class Pair3 {
+        int node;
+        int dist;
+    
+        Pair3(int node, int dist) {
+            this.node = node;
+            this.dist = dist;
+        }
+    }
+    /*
+    Remember: 
+
+    In a weighted graph, the goal of Dijkstra’s algorithm is to find the shortest path from a source node to all other nodes. 
+    The idea is to always expand the closest node not yet processed. 
+    Using a priority queue (min-heap) ensures that we can efficiently pick the node with the smallest current distance, instead of scanning all nodes each time.
+    The algorithm starts with the source node at distance 0. At each step, the priority queue pops the node with the smallest distance. 
+    For every neighbor of that node, if the new distance through this node is shorter than the current stored distance, we update it and push the neighbor into the priority queue. 
+    This process continues until all nodes are processed.
+    */
+    
+    public int[] dijkstra(int V, ArrayList<ArrayList<Pair3>> graph, int src) { // given adj list
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+    
+        PriorityQueue<Pair3> pq = new PriorityQueue<>((a, b) -> a.dist - b.dist);
+        // A sorting rule. It subtracts the distance of path b from path a. If the result is negative, it means a is smaller (closer) and moves to the front of the line.
+        dist[src] = 0;
+        pq.offer(new Pair3(src, 0));
+    
+        while (!pq.isEmpty()) {
+    
+            Pair3 curr = pq.poll();
+            int node = curr.node;
+            int currDist = curr.dist;
+            // Ignore outdated entries
+            if (currDist > dist[node])
+                continue;
+    
+            for (Pair3 nbr : graph.get(node)) {
+    
+                int nextNode = nbr.node;
+                int weight = nbr.dist;
+    
+                if (currDist + weight < dist[nextNode]) {
+    
+                    dist[nextNode] = currDist + weight;
+    
+                    pq.offer(new Pair3(nextNode, dist[nextNode]));
+                }
+            }
+        }
+    
         return dist;
     }
 }
