@@ -1545,4 +1545,99 @@ It always processes the currently closest node.
     
         return dist;
     }
+
+    // lc 1091
+
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int V=grid.length;
+        int m=grid[0].length;
+        if(grid[0][0] == 1 || grid[V-1][m-1] == 1)
+            return -1;
+        if(V == 1 && m == 1)
+            return 1;
+        int[][] dist = new int[V][m];
+        for (int i=0;i<V;i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+
+        Queue<Pair4> q=new LinkedList<>();
+        dist[0][0]=1;
+        q.offer(new Pair4(0,0,1));
+        int[] row = {-1,-1,-1,0,0,1,1,1};
+        int[] col = {-1,0,1,-1,1,-1,0,1};
+        while(!q.isEmpty())
+        {
+            Pair4 p=q.poll();
+            int nr=p.i;int nc=p.j;
+            int dis=p.dist;
+            for(int d=0;d<8;d++)
+            {
+                int r=nr+row[d];
+                int c=nc+col[d];
+                if(r>=0 && r<V && c>=0 && c<m && grid[r][c]==0 && dist[r][c] > dis+1)
+                {
+                    dist[r][c]=dis+1;
+                    if(r==V-1 && c==m-1)
+                    {
+                        return dis+1;
+                    }
+                    q.offer(new Pair4(r,c,dis+1));
+                }
+            }
+        }
+        return -1;
+
+    }
+    class Pair4 {
+        int i;int j;
+        int dist;
+    
+        Pair4(int i,int j,int dist) {
+            this.i=i;
+            this.j=j;
+            this.dist = dist;
+        }
+    }
+
+    // lc 1631
+
+    public int minimumEffortPath(int[][] heights) {
+        int n=heights.length;
+        int m=heights[0].length;
+        int[][] dist = new int[n][m];
+        for(int i=0;i<n;i++)
+        {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        PriorityQueue<Pair4> pq = new PriorityQueue<>((a, b) -> a.dist - b.dist);
+        dist[0][0]=0;
+        pq.offer(new Pair4(0,0,0));
+        int[] dRow = {-1, 1, 0, 0}; // helping in direction traversal 
+        int[] dCol = {0, 0, -1, 1};
+        while(!pq.isEmpty())
+        {
+            Pair4 p=pq.poll();
+            int nr=p.i;int nc=p.j;
+            int dis=p.dist;
+            if(dis>dist[nr][nc]){
+                continue;
+            }
+            for(int d=0;d<4;d++)
+            {
+                int r=nr+dRow[d];
+                int c=nc+dCol[d];
+                
+                if(r<n && r>=0 && c<m && c>=0)
+                {
+                    int die = Math.max(dis, Math.abs(heights[r][c] - heights[nr][nc]));
+                    if(die< dist[r][c]){
+                        dist[r][c]=die;
+                        pq.offer(new Pair4(r,c,die));
+                    }
+                }
+            }
+        }
+
+        return dist[n-1][m-1];
+    }
 }
