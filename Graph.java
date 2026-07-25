@@ -1546,7 +1546,7 @@ It always processes the currently closest node.
         return dist;
     }
 
-    // lc 1091
+    // lc 1091 Shortest path in a Binary matrix
 
     public int shortestPathBinaryMatrix(int[][] grid) {
         int V=grid.length;
@@ -1561,7 +1561,7 @@ It always processes the currently closest node.
         }
 
         Queue<Pair4> q=new LinkedList<>();
-        dist[0][0]=1;
+        dist[0][0]=1; // depends on the question
         q.offer(new Pair4(0,0,1));
         int[] row = {-1,-1,-1,0,0,1,1,1};
         int[] col = {-1,0,1,-1,1,-1,0,1};
@@ -1577,7 +1577,7 @@ It always processes the currently closest node.
                 if(r>=0 && r<V && c>=0 && c<m && grid[r][c]==0 && dist[r][c] > dis+1)
                 {
                     dist[r][c]=dis+1;
-                    if(r==V-1 && c==m-1)
+                    if(r==V-1 && c==m-1) // path is reachable to the end 
                     {
                         return dis+1;
                     }
@@ -1599,7 +1599,7 @@ It always processes the currently closest node.
         }
     }
 
-    // lc 1631
+    // lc 1631 Path With Minimum Effort
 
     public int minimumEffortPath(int[][] heights) {
         int n=heights.length;
@@ -1629,7 +1629,7 @@ It always processes the currently closest node.
                 
                 if(r<n && r>=0 && c<m && c>=0)
                 {
-                    int die = Math.max(dis, Math.abs(heights[r][c] - heights[nr][nc]));
+                    int die = Math.max(dis, Math.abs(heights[r][c] - heights[nr][nc])); // core logic of the problem
                     if(die< dist[r][c]){
                         dist[r][c]=die;
                         pq.offer(new Pair4(r,c,die));
@@ -1639,5 +1639,46 @@ It always processes the currently closest node.
         }
 
         return dist[n-1][m-1];
+    }
+
+    // lc 787 Cheapest Flights Within K Stops
+    // here even if implementation may look like djikstra but Priority Queue is NOT TO BE used
+    // Simple Queue is suffiecient as we are not calculating based on minimum number of trips but minimum number of stops(k)
+    // We cans till use a Priority Queue based on increasing value of stops(k) but since it will keep of increasing post every node traversal anyways so easier to have a queue instead
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        // make graph from directed weighted graph with edges
+        List<List<Pair>> graph=new ArrayList<>();
+         // Here def of Pair class is {neighbour,dist}
+        for(int i=0;i<n;i++) graph.add(new ArrayList<>());
+        for(int i=0;i<flights.length;i++)
+        {
+            graph.get(flights[i][0]).add(new Pair(flights[i][1],flights[i][2]));
+        }
+
+        int dist[]=new int[n];
+        Arrays.fill(dist,Integer.MAX_VALUE);
+        dist[src]=0;
+        Queue<Pair4> q=new LinkedList<>();
+        // Here def of Pair 4 class is {stops,{node,dist}}
+        q.offer(new Pair4(0,src,0));
+        while(!q.isEmpty())
+        {
+            Pair4 p=q.poll();
+            int stops=p.i;int node=p.j;
+            int di=p.dist;
+            if(stops>k) continue;
+
+            for(Pair nbr:graph.get(node))
+            {
+                int nb=nbr.a; int d=nbr.b;
+                if(stops<=k && di+d<dist[nb]){
+                    dist[nb]= di+d;
+                    q.offer(new Pair4(stops+1,nb,di+d));
+                }
+            }
+        }
+        if(dist[dst]==Integer.MAX_VALUE)
+            return -1;
+        return dist[dst];
     }
 }
