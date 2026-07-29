@@ -1744,43 +1744,95 @@ It always processes the currently closest node.
 //    If equal shortest path:
 //      ways[v] = (ways[v] + ways[u]) % MOD
 // 5. Return ways[dst]
-int MOD = 1_000_000_007;
-public int countPaths(int n, int[][] roads) {
-    List<List<Pair>> graph=new ArrayList<>();
-    for(int i=0;i<n;i++) graph.add(new ArrayList<>());
-    for(int i=0;i<roads.length;i++)
-    {
-        graph.get(roads[i][0]).add(new Pair(roads[i][1],roads[i][2]));
-        graph.get(roads[i][1]).add(new Pair(roads[i][0], roads[i][2]));// because graph is undirected
-    }
-    long ways[]=new long[n];
-    long dist[]=new long[n];
-    Arrays.fill(dist, Long.MAX_VALUE);
-    PriorityQueue<Pair> q = new PriorityQueue<>((a, b)->Long.compare(a.b, b.b));
-    dist[0]=0;ways[0]=1;
-    q.offer(new Pair(0,0));
-    while(!q.isEmpty())
-    {
-        Pair p=q.poll(); 
-        int node=p.a;
-        long dis=p.b;
-        if(dis > dist[node])
-            continue;
-        for(Pair nbr:graph.get(node))
+    int MOD = 1_000_000_007;
+    public int countPaths(int n, int[][] roads) {
+        List<List<Pair>> graph=new ArrayList<>();
+        for(int i=0;i<n;i++) graph.add(new ArrayList<>());
+        for(int i=0;i<roads.length;i++)
         {
-            int nb=nbr.a;long d=nbr.b;
-            if(dis+d<dist[nb])
+            graph.get(roads[i][0]).add(new Pair(roads[i][1],roads[i][2]));
+            graph.get(roads[i][1]).add(new Pair(roads[i][0], roads[i][2]));// because graph is undirected
+        }
+        long ways[]=new long[n];
+        long dist[]=new long[n];
+        Arrays.fill(dist, Long.MAX_VALUE);
+        PriorityQueue<Pair> q = new PriorityQueue<>((a, b)->Long.compare(a.b, b.b));
+        dist[0]=0;ways[0]=1;
+        q.offer(new Pair(0,0));
+        while(!q.isEmpty())
+        {
+            Pair p=q.poll(); 
+            int node=p.a;
+            long dis=p.b;
+            if(dis > dist[node])
+                continue;
+            for(Pair nbr:graph.get(node))
             {
-                dist[nb]=dis+d;
-                ways[nb]=ways[node];
-                q.offer(new Pair(nb,(int)(dis+d))); // in the question use long only not int as ways[node] can exceed to a high value
-            }
-            else if(dis+d==dist[nb])
-            {
-                ways[nb] =(ways[nb]+ ways[node] )% MOD;
+                int nb=nbr.a;long d=nbr.b;
+                if(dis+d<dist[nb])
+                {
+                    dist[nb]=dis+d;
+                    ways[nb]=ways[node];
+                    q.offer(new Pair(nb,(int)(dis+d))); // in the question use long only not int as ways[node] can exceed to a high value
+                }
+                else if(dis+d==dist[nb])
+                {
+                    ways[nb] =(ways[nb]+ ways[node] )% MOD;
+                }
             }
         }
+        return (int)ways[n-1];
     }
-    return (int)ways[n-1];
-}
+    // Floyd-Warshall computes shortest distances between every pair of cities.
+    // Try every city as an intermediate (via) node.
+    // Update: dist[i][j] = min(dist[i][j], dist[i][via] + dist[via][j]).
+    // After computing all-pairs shortest paths, count how many cities are
+    // reachable within the threshold and return the city with the smallest count.
+    // If counts are equal, return the city with the larger index.
+
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        int INF = (int)1e9;
+        int[][] dist = new int[n][n];
+        // Initialize
+        for(int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], INF);
+            dist[i][i] = 0;
+        }
+        // Undirected graph
+        for(int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int wt = edge[2];
+
+            dist[u][v] = wt;
+            dist[v][u] = wt;
+        }
+
+        // Floyd-Warshall
+        for(int via = 0; via < n; via++) {
+            for(int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++) {
+
+                    if(dist[i][via] == INF || dist[via][j] == INF)
+                        continue;
+                    dist[i][j] = Math.min(dist[i][j],dist[i][via] + dist[via][j]);
+                }
+            }
+        }
+        int city = -1;
+        int minCount = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++) {
+            int count = 0;
+            for(int j = 0; j < n; j++) {
+                if(i != j && dist[i][j] <= distanceThreshold)
+                    count++;
+            }
+            // Tie -> larger index
+            if(count <= minCount) {
+                minCount = count;
+                city = i;
+            }
+        }
+        return city;
+    }
 }
