@@ -1649,6 +1649,8 @@ It always processes the currently closest node.
         // make graph from directed weighted graph with edges
         List<List<Pair>> graph=new ArrayList<>();
          // Here def of Pair class is {neighbour,dist}
+        // impo distinction n is number of nodes and flights.length is number of edges
+         
         for(int i=0;i<n;i++) graph.add(new ArrayList<>());
         for(int i=0;i<flights.length;i++)
         {
@@ -1681,4 +1683,104 @@ It always processes the currently closest node.
             return -1;
         return dist[dst];
     }
+
+    // lc 743 Network delay time Pure Dijstra algo 
+    
+    public int networkDelayTime(int[][] times, int n, int k) {
+        List<List<Pair>> graph=new ArrayList<>();
+         // Here def of Pair class is {neighbour,dist}
+         /*
+         * 2-> {1,1};{3,1}
+           3-> {4,1}
+          */
+        for(int i=0;i<=n;i++) graph.add(new ArrayList<>());
+        for(int i=0;i<times.length;i++)
+        {
+            graph.get(times[i][0]).add(new Pair(times[i][1],times[i][2]));
+        }
+        int dist[]=new int[n];
+        Arrays.fill(dist,Integer.MAX_VALUE);
+        dist[k-1]=0;
+        PriorityQueue<Pair4> q = new PriorityQueue<>((a, b) -> a.dist - b.dist);
+        // Here Pair4 class is not needed we can actually use Pair class
+        // Where definition of Pair class is {node,dist} same as the one we used for storing in graph
+        q.offer(new Pair4(0,k,0));
+        while(!q.isEmpty())
+        {
+            Pair4 p=q.poll(); // no dependecy on p.i as it is always 0 that is why we can use PAir class here 
+            int node=p.j;
+            int dis=p.dist;
+            if(dis > dist[node-1])
+                continue;
+            for(Pair nbr:graph.get(node))
+            {
+                int nb=nbr.a;int d=nbr.b;
+                if(dis+d<dist[nb-1])
+                {
+                    dist[nb-1]=dis+d;
+                    q.offer(new Pair4(0,nb,dis+d));
+                }
+            }
+        }
+        int time= Integer.MIN_VALUE;
+        for(int i=0;i<dist.length;i++){
+            if(dist[i]==Integer.MAX_VALUE)
+                return -1;
+            time=Math.max(time,dist[i]);
+        }
+        return time;
+    }
+
+    // lc 1976
+
+    // 1. Build an UNDIRECTED weighted graph.
+// 2. Use Dijkstra (PriorityQueue).
+// 3. Maintain:
+//      dist[] = shortest distance
+//      ways[] = number of shortest paths
+// 4. If shorter path found:
+//      dist[v] = newDist
+//      ways[v] = ways[u]
+//    If equal shortest path:
+//      ways[v] = (ways[v] + ways[u]) % MOD
+// 5. Return ways[dst]
+int MOD = 1_000_000_007;
+public int countPaths(int n, int[][] roads) {
+    List<List<Pair>> graph=new ArrayList<>();
+    for(int i=0;i<n;i++) graph.add(new ArrayList<>());
+    for(int i=0;i<roads.length;i++)
+    {
+        graph.get(roads[i][0]).add(new Pair(roads[i][1],roads[i][2]));
+        graph.get(roads[i][1]).add(new Pair(roads[i][0], roads[i][2]));// because graph is undirected
+    }
+    long ways[]=new long[n];
+    long dist[]=new long[n];
+    Arrays.fill(dist, Long.MAX_VALUE);
+    PriorityQueue<Pair> q = new PriorityQueue<>((a, b)->Long.compare(a.b, b.b));
+    dist[0]=0;ways[0]=1;
+    q.offer(new Pair(0,0));
+    while(!q.isEmpty())
+    {
+        Pair p=q.poll(); 
+        int node=p.a;
+        long dis=p.b;
+        if(dis > dist[node])
+            continue;
+        for(Pair nbr:graph.get(node))
+        {
+            int nb=nbr.a;long d=nbr.b;
+            if(dis+d<dist[nb])
+            {
+                dist[nb]=dis+d;
+                ways[nb]=ways[node];
+                q.offer(new Pair(nb,(int)(dis+d))); // in the question use long only not int as ways[node] can exceed to a high value
+            }
+            else if(dis+d==dist[nb])
+            {
+                ways[nb] =(ways[nb]+ ways[node] )% MOD;
+            }
+        }
+    }
+    return (int)ways[n-1];
+}
 }
