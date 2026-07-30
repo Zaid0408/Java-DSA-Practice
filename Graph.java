@@ -403,6 +403,50 @@ Therefore, the graph has 3 connected components: {0, 1, 2, 3}, {4, 5}, and the i
         // Return the total number of connected components
         return components;
     }
+
+    // lc 1319 Number of Operations to Make Network Connected
+    // Similar to connected components
+    public int makeConnected(int n, int[][] connections) {
+        if(n-1>connections.length)
+            return -1;
+
+        List<List<Integer>> graph=new ArrayList<>();
+        for(int i=0;i<n;i++) graph.add(new ArrayList<>());
+
+        for(int i=0;i<connections.length;i++)
+        {
+            int u=connections[i][0];
+            int v=connections[i][1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        boolean vis[]=new boolean[n];
+        int connected=0;
+        for(int i=0;i<n;i++)
+        {
+            if(!vis[i])
+            {
+                connected++;
+                vis[i]=true;
+                Queue<Integer> q=new LinkedList<>();
+                q.offer(i);
+                while(!q.isEmpty())
+                {
+                    int node=q.poll();
+                    for(int nbr:graph.get(node))
+                    {
+                        if(!vis[nbr])
+                        {
+                            vis[nbr] = true;
+                            q.offer(nbr);
+                        }
+                    }
+                }
+                
+            }
+        }
+        return connected-1;
+    }
     // BFS on Graph (Adjacency List), bfs means immidiate neighbours and not different levels 
     // visited array to keep track of the visited nodes, starting node always placed first then traversal starts and make visited[node]=true
     // use queue, same traversal as tree
@@ -1825,6 +1869,7 @@ It always processes the currently closest node.
     // better for dense graphs
     // Time Complexity: O(V^3) where V is the number of vertices, meaning it performs three nested loops.
     // Space Complexity: O(V^2) to store the 2D distance matrix.
+    // https://www.geeksforgeeks.org/dsa/floyd-warshall-algorithm-dp-16/
 
     public int findTheCity(int n, int[][] edges, int distanceThreshold) {
         int INF = (int)1e9;
@@ -1870,5 +1915,41 @@ It always processes the currently closest node.
             }
         }
         return city;
+    }
+
+    // Spanning Tree 
+    // A tree with N nodes and exactly N-1 edges and all N nodes are reachable from each other.
+    // Minimum Spanning Tree:
+    // Among all possible spanning trees of a graph, the minimum spanning tree is the one for which the sum of all the edge weights is the minimum.
+    // Prims Algorithm : Problem Statement: Given a weighted, undirected, and connected graph of V vertices and E edges. The task is to find the sum of weights of the edges of the Minimum Spanning Tree.
+    // Time Complexity: O(V^2) Space Complexity: O(V)
+
+    public int spanningTree(int V,ArrayList<ArrayList<ArrayList<Integer>>> adj) {
+        PriorityQueue<Pair> pq =
+        new PriorityQueue<Pair>((a, b) -> a.b - b.b);
+
+        int[] vis = new int[V];
+        // {wt, node}
+        pq.add(new Pair(0, 0));
+        int sum = 0;
+        while (pq.size() > 0) {
+            int wt = pq.peek().b;
+            int node = pq.peek().a;
+            pq.remove();
+
+            if (vis[node] == 1) continue;
+            // add it to the mst
+            vis[node] = 1;
+            sum += wt;
+
+            for (int i = 0; i < adj.get(node).size(); i++) {
+                int edW = adj.get(node).get(i).get(1);
+                int adjNode = adj.get(node).get(i).get(0);
+                if (vis[adjNode] == 0) {
+                    pq.add(new Pair(edW, adjNode));
+                }
+            }
+        }
+        return sum;
     }
 }
