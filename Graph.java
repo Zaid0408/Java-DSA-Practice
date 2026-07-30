@@ -1952,4 +1952,80 @@ It always processes the currently closest node.
         }
         return sum;
     }
+
+    // union find
+
+    // LC 947 (Most Stones Removed with Same Row or Column)
+    // Two stones are connected if they share a row or a column.
+    // All connected stones form one connected component.
+    // In each component of size k, we can remove k-1 stones,
+    // leaving exactly one stone behind.
+    // Therefore:
+    // answer = total stones - number of connected components.
+    // Solve by Union-Find (or DFS/BFS by finding connected components).
+    /*
+    Same intuition as LC 1319
+LC 1319
+Need  components - 1 cables
+LC 947 Remove
+stones - components
+
+find(x) → "Who is the leader (root) of x's connected component?"
+union(x, y) → "If x and y are in different components, merge those two components into one."
+    */
+
+int[] parent;
+int[] size;
+public int removeStones(int[][] stones) {
+    int n = stones.length;
+    parent = new int[n];
+    size = new int[n];
+    for(int i = 0; i < n; i++)
+    {
+        parent[i] = i;
+        size[i] = 1;
+    }
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = i + 1; j < n; j++)
+        {
+            if(stones[i][0] == stones[j][0] ||stones[i][1] == stones[j][1])
+            {
+                union(i, j);
+            } // matching if they are of same row or same column
+        }
+    }
+    int components = 0;
+    for(int i = 0; i < n; i++)
+    {
+        if(find(i) == i)
+            components++;
+    }
+    return n - components;
+}
+
+private int find(int node)
+{
+    if(parent[node] == node)
+        return node;
+    return parent[node] = find(parent[node]);
+}
+
+private void union(int u, int v)
+{
+    int pu = find(u);
+    int pv = find(v);
+    if(pu == pv)
+        return;
+    if(size[pu] < size[pv])
+    {
+        parent[pu] = pv;
+        size[pv] += size[pu];
+    }
+    else
+    {
+        parent[pv] = pu;
+        size[pu] += size[pv];
+    }
+}
 }
