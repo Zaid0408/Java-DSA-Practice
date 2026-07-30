@@ -1783,12 +1783,48 @@ It always processes the currently closest node.
         }
         return (int)ways[n-1];
     }
+    // basic idea of floyd marshall
+    public void shortest_distance(int[][] matrix) {
+        
+        // Getting the number of nodes
+        int n = matrix.length;
+        
+        // For each intermediate node k
+        for (int k = 0; k < n; k++) {
+            
+            // Check for every (i, j) pair of nodes
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    
+                    /* If k is not an intermediate 
+                       node, skip the iteration */
+                    if (matrix[i][k] == -1 || matrix[k][j] == -1)
+                        continue;
+                    
+                    /* If no direct edge from 
+                       i to j is present */
+                    if (matrix[i][j] == -1) {
+                        // Update the distance
+                        matrix[i][j] = matrix[i][k] + matrix[k][j];
+                    }
+                    /* Else update the distance to 
+                       minimum of both paths */
+                    else {
+                        matrix[i][j] = Math.min(matrix[i][j], matrix[i][k] + matrix[k][j]);
+                    }
+                }
+            }
+        }
+    }
     // Floyd-Warshall computes shortest distances between every pair of cities.
     // Try every city as an intermediate (via) node.
     // Update: dist[i][j] = min(dist[i][j], dist[i][via] + dist[via][j]).
     // After computing all-pairs shortest paths, count how many cities are
     // reachable within the threshold and return the city with the smallest count.
     // If counts are equal, return the city with the larger index.
+    // better for dense graphs
+    // Time Complexity: O(V^3) where V is the number of vertices, meaning it performs three nested loops.
+    // Space Complexity: O(V^2) to store the 2D distance matrix.
 
     public int findTheCity(int n, int[][] edges, int distanceThreshold) {
         int INF = (int)1e9;
