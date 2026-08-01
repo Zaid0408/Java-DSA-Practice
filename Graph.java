@@ -645,7 +645,6 @@ R R R
         q.offer(new Pair(sr,sc));
         while(!q.isEmpty())
         {
-            int size=q.size();
             Pair p=q.poll();
             int r=p.a;int c=p.b;
             for(int d=0;d<4;d++)
@@ -694,7 +693,6 @@ R R R
             Pair p=q.poll();
             int i=p.a;int j=p.b;
             // here p.a means source/node currently and p.b means the parent of the current node. 
-            // parent node is needed because if parent is already visited we can mark it as cyclic
 
             for(int nbr:adj[i])
             {
@@ -705,6 +703,10 @@ R R R
                 }
                 else if( j!=nbr)
                     return true;
+                // meaning of the else statement
+                // if nbr was laready visisted but this nbr is NOT ther parent of i (current node)
+                // This means that there was already a path that has traveresed this nbr 
+                // hence we come across a already visited node and hence it is a cycle
             }
         }
 
@@ -1974,58 +1976,138 @@ find(x) → "Who is the leader (root) of x's connected component?"
 union(x, y) → "If x and y are in different components, merge those two components into one."
     */
 
-int[] parent;
-int[] size;
-public int removeStones(int[][] stones) {
-    int n = stones.length;
-    parent = new int[n];
-    size = new int[n];
-    for(int i = 0; i < n; i++)
-    {
-        parent[i] = i;
-        size[i] = 1;
-    }
-    for(int i = 0; i < n; i++)
-    {
-        for(int j = i + 1; j < n; j++)
+    int[] parent;
+    int[] size;
+    public int removeStones(int[][] stones) {
+        int n = stones.length;
+        parent = new int[n];
+        size = new int[n];
+        for(int i = 0; i < n; i++)
         {
-            if(stones[i][0] == stones[j][0] ||stones[i][1] == stones[j][1])
+            parent[i] = i;
+            size[i] = 1;
+        }
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = i + 1; j < n; j++)
             {
-                union(i, j);
-            } // matching if they are of same row or same column
+                if(stones[i][0] == stones[j][0] ||stones[i][1] == stones[j][1])
+                {
+                    union(i, j);
+                } // matching if they are of same row or same column
+            }
+        }
+        int components = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(find(i) == i)
+                components++;
+        }
+        return n - components;
+    }
+
+    private int find(int node)
+    {
+        if(parent[node] == node)
+            return node;
+        return parent[node] = find(parent[node]);
+    }
+
+    private void union(int u, int v)
+    {
+        int pu = find(u);
+        int pv = find(v);
+        if(pu == pv)
+            return;
+        if(size[pu] < size[pv])
+        {
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        }
+        else
+        {
+            parent[pv] = pu;
+            size[pu] += size[pv];
         }
     }
-    int components = 0;
-    for(int i = 0; i < n; i++)
-    {
-        if(find(i) == i)
-            components++;
-    }
-    return n - components;
-}
+    class DisjointSetByRank {
 
-private int find(int node)
-{
-    if(parent[node] == node)
-        return node;
-    return parent[node] = find(parent[node]);
-}
+        int[] parent;
+        int[] rank;
+    
+        public DisjointSetByRank(int n) {
+            parent = new int[n];
+            rank = new int[n];
+    
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                rank[i] = 0;
+            }
+        }
+    
+        public int find(int node) {
+            if (parent[node] == node)
+                return node;
+    
+            return parent[node] = find(parent[node]); // Path Compression
+        }
+    
+        public void union(int u, int v) {
+            int pu = find(u);
+            int pv = find(v);
+    
+            if (pu == pv)
+                return;
+    
+            if (rank[pu] < rank[pv]) {
+                parent[pu] = pv;
+            }
+            else if (rank[pv] < rank[pu]) {
+                parent[pv] = pu;
+            }
+            else {
+                parent[pv] = pu;
+                rank[pu]++;
+            }
+        }
+    }
+    class DisjointSetBySize {
 
-private void union(int u, int v)
-{
-    int pu = find(u);
-    int pv = find(v);
-    if(pu == pv)
-        return;
-    if(size[pu] < size[pv])
-    {
-        parent[pu] = pv;
-        size[pv] += size[pu];
+        int[] parent;
+        int[] size;
+    
+        public DisjointSetBySize(int n) {
+            parent = new int[n];
+            size = new int[n];
+    
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+        }
+    
+        public int find(int node) {
+            if (parent[node] == node)
+                return node;
+    
+            return parent[node] = find(parent[node]); // Path Compression
+        }
+    
+        public void union(int u, int v) {
+            int pu = find(u);
+            int pv = find(v);
+    
+            if (pu == pv)
+                return;
+    
+            if (size[pu] < size[pv]) {
+                parent[pu] = pv;
+                size[pv] += size[pu];
+            }
+            else {
+                parent[pv] = pu;
+                size[pu] += size[pv];
+            }
+        }
     }
-    else
-    {
-        parent[pv] = pu;
-        size[pu] += size[pv];
-    }
-}
 }
