@@ -6,8 +6,9 @@ import java.util.Map;
 
 public class DP {
     // Tabulation or memoization used
-    // tabulation is bottom up approach used in loops mainly.
-    // Memoization is top down approach used in recursion mostly
+    // Tabulation is a ‘bottom-up’ approach where we start from the base case and reach the final answer that we want. Tabulation helps in optimizing the solution by preventing additional stack space used during recursion.
+    // Memoization is Known as the “top-down” dynamic programming, usually the problem is solved in the direction of the main problem to the base cases.
+    // Space Optimization : only in some cases like house robber and climbing stairs where you just need the previous two values and not anything before 
     // remember the approach for the below given seven problems they are needed to solve most dp sums
     public static int fibonacci(int n, int f[])
     {// Memoization
@@ -38,6 +39,59 @@ public class DP {
             ans[i]=ans[i-1]+ans[i-2];
         }
         return ans[n];
+    }
+    // lc 70 Climbing stair using Space optimization
+    public int climbStairs2(int n) {
+        if(n==1 || n==0 || n==2)
+            return n;
+        int prev=2;
+        int prev2=1;
+        int cur=0;
+        for(int i=3;i<=n;i++)
+        {
+            cur= prev2+prev;
+            prev2=prev;
+            prev=cur;
+        }
+        return cur;
+    }
+
+
+    // Frog Jump : Frog can take either one or two jumps but the jump cost is such that if going from idx i to j the cost is abs(height[i]-height[j])
+    // memoization : top down approach , here start from the end 
+    private int solve(int ind, int[] height, int[] dp) {
+        if (ind == 0) return 0;
+
+        // Return memoized result if already computed
+        if (dp[ind] != -1) return dp[ind];
+
+        // Initialize jumpTwo with a large value
+        int jumpTwo = Integer.MAX_VALUE;
+
+        // Compute cost when jumping from previous stone (ind - 1)
+        int jumpOne = solve(ind - 1, height, dp) + Math.abs(height[ind] - height[ind - 1]);
+
+        // Compute cost when jumping from two stones back (ind - 2) if possible
+        if (ind > 1) {
+            jumpTwo = solve(ind - 2, height, dp) + Math.abs(height[ind] - height[ind - 2]);
+        }
+
+        // Memoize and return the minimum of the two choices
+        dp[ind] = Math.min(jumpOne, jumpTwo);
+        return dp[ind];
+    }
+
+    public int frogJump(int[] height) {
+        // Handle empty input
+        if (height == null || height.length == 0) return 0;
+
+        // Prepare dp with -1 indicating uncomputed states
+        int n = height.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+
+        // Start from the last index
+        return solve(n - 1, height, dp);
     }
     /*
      * The knapsack problem is a classic optimization problem where we need to choose a subset of items with weights and values to include in a knapsack with a limited capacity. 

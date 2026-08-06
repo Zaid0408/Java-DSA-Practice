@@ -1224,8 +1224,8 @@ ex : to take course 3 you need to complete course 1 and 2 hence indegree is 2
             for(int nbr:graph.get(node))
             {
                 indegree[nbr]--;
-                if(indegree[nbr]==0)
-                    q.offer(nbr);
+                if(indegree[nbr]==0) // this means that all courses leading to this nbr have been completed
+                    q.offer(nbr); // hence start the bfs from nbr onwards
             }
         }
         return count==numCourses;
