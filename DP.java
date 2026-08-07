@@ -108,6 +108,31 @@ public class DP {
 
         return right==-1?left:Math.min(right,left);
     }
+
+    /*
+    Frog Jump with K steps : Same as above problem but isntead of taking either one or two jumps we can take any number of jumps in range(1,k)
+    */
+    public int frogJump(int[] heights, int k) {
+        int s=heights.length;
+        int dp[]=new int[s];
+        Arrays.fill(dp,-1);
+        return solve(s-1,heights,dp,k);
+    }
+    private int solve(int i, int[] height, int[] dp,int k) {
+        if (i == 0) return 0;
+
+        // Return memoized result if already computed
+        if (dp[i] != -1) return dp[i];
+        int minEnergy = Integer.MAX_VALUE;
+        for(int j=i-1;j>=Math.max(0,i - k);j--) // compute of all jumps from i-1 to i-k
+        {
+            int jump= solve(j,height,dp,k) + Math.abs(height[i]-height[j]);
+            minEnergy= Math.min(minEnergy,jump);
+        }
+        // Memoize and return the minimum of the two choices
+        
+        return dp[i]=minEnergy;
+    }
     /*
      * The knapsack problem is a classic optimization problem where we need to choose a subset of items with weights and values to include in a knapsack with a limited capacity. 
      * The goal is to maximize the total value of the items while keeping the total weight within the capacity limit.
