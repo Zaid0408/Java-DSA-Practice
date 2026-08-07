@@ -59,6 +59,7 @@ public class DP {
 
     // Frog Jump : Frog can take either one or two jumps but the jump cost is such that if going from idx i to j the cost is abs(height[i]-height[j])
     // memoization : top down approach , here start from the end 
+    // understand the recursive soln below and then this becomes easy 
     private int solve(int ind, int[] height, int[] dp) {
         if (ind == 0) return 0;
 
@@ -81,6 +82,7 @@ public class DP {
         return dp[ind];
     }
 
+
     public int frogJump(int[] height) {
         // Handle empty input
         if (height == null || height.length == 0) return 0;
@@ -92,6 +94,19 @@ public class DP {
 
         // Start from the last index
         return solve(n - 1, height, dp);
+    }
+    // recursive soln for frog jump:
+    public int recur(int i, int[] heights)
+    {
+        if(i==0)
+            return 0;
+        
+        int left=recur(i-1,heights) + Math.abs(heights[i]-heights[i-1]);
+        int right=-1;
+        if(i>1)
+            right=recur(i-2,heights) + Math.abs(heights[i]-heights[i-2]);
+
+        return right==-1?left:Math.min(right,left);
     }
     /*
      * The knapsack problem is a classic optimization problem where we need to choose a subset of items with weights and values to include in a knapsack with a limited capacity. 
