@@ -323,7 +323,7 @@ public class DP {
         return dp[n][rodLength];
     }
     /* 
-     * Coin Change
+     * Coin Change lc 322 
      * You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
      * Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
      * Input: coins = [1,2,5], amount = 11 Output: 3  Explanation: 11 = 5 + 5 + 1
@@ -714,6 +714,29 @@ public class DP {
             }
         } 
         return dp[m-1][n-1];  
+    }
+    // leetcode 64 Minimum path sum
+    // same apprach as unique path 1 
+    // tabulation
+    public int minPathSum(int[][] grid) {
+        int n=grid.length;
+        int m=grid[0].length;
+        int dp[][]=new int[n][m];
+        dp[0][0]=grid[0][0];
+        for(int i=1;i<n;i++)
+            dp[i][0]=dp[i-1][0]+grid[i][0];
+        for(int i=1;i<m;i++)
+            dp[0][i]=dp[0][i-1]+grid[0][i];
+        
+        for(int i=1;i<n;i++)
+        {
+            for(int j=1;j<m;j++)
+            {
+                int min = Math.min(dp[i-1][j], dp[i][j-1]);
+                dp[i][j]= grid[i][j]+min;
+            }
+        }
+        return dp[n-1][m-1];
     }
 
     //leetcode 139 word break
