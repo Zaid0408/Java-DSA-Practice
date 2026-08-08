@@ -603,6 +603,27 @@ public class DP {
         return Math.abs(sum1-sum2);
     }
     // House Robber Problem Leetcode 198
+
+    // lc 198 House Robber
+    // memoization approach
+    public int robMemo(int[] nums) {
+        int n=nums.length;
+        int dp[]=new int[n];
+        dp[0]=nums[0];
+        if (n == 1) {
+            return dp[0];
+        }
+        dp[1] = Math.max(nums[0], nums[1]);
+
+        for(int i=2;i<n;i++)
+        {
+            dp[i]= Math.max(dp[i-1],(dp[i-2]+nums[i]));
+        }
+
+        return dp[n-1];
+    }
+
+    // Space Optimization 
     public static int rob(int[] nums) {
         int rob1=0,rob2=0;
         // Adding and changing values of rob1 and rob2
@@ -645,6 +666,54 @@ public class DP {
             rob2=temp;
         }
         return rob2;
+    }
+
+    // leetcode 62 Unique paths
+    // Bottom up tabulation approach
+    public int uniquePaths(int m, int n) {
+        int dp[][]=new int[m][n];
+        for(int i=0;i<m;i++)
+            dp[i][0]=1;
+        
+        for(int i=0;i<n;i++)
+            dp[0][i]=1;
+
+        for(int i=1;i<m;i++)
+        {
+            for(int j=1;j<n;j++)
+            {
+                dp[i][j]=dp[i-1][j]+ dp[i][j-1];
+            }
+        } 
+        return dp[m-1][n-1];  
+    }
+
+    // leectdoe 63 Unique paths 2
+    // same approach as above ut here an obstacle is present , skip obstacles and compute the unique path
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m=obstacleGrid.length;
+        int n=obstacleGrid[0].length;
+        int dp[][]=new int[m][n];
+        if(obstacleGrid[m-1][n-1]==1 || obstacleGrid[0][0]==1)
+            return 0;
+
+        dp[0][0]=1;
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(obstacleGrid[i][j]==1)
+                {
+                    dp[i][j] =0;
+                    continue;
+                }
+                if(i==0 &&  j==0) continue;
+                int x=(i>0)?dp[i-1][j]:0; 
+                int y=(j>0)?dp[i][j-1]:0; 
+                dp[i][j]=x+y;
+            }
+        } 
+        return dp[m-1][n-1];  
     }
 
     //leetcode 139 word break
