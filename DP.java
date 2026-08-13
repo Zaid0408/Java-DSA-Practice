@@ -849,4 +849,67 @@ Output: false
 
         
     }
+
+    // DP on subsequences
+    // Check if any subset of an array sums up to a given target    
+    public boolean isSubsetSum(int[] arr, int target) {
+        // return rec(arr,target,arr.length-1); 
+
+        int dp[][]=new int[arr.length][target+1];
+        for (int[] row : dp) {
+            java.util.Arrays.fill(row, -1);
+        }
+        return subsetSumDp(arr.length - 1, target, arr, dp);
+    }
+    public boolean rec(int[] arr, int target, int ind) // recusion approach
+    {        
+        if(target==0)
+            return true;
+        if(ind==0)
+            return arr[0]==target;
+
+        boolean take=false;
+        boolean no=rec(arr,target,ind-1);; // dont consider it 
+
+        if(target>=arr[ind])
+            take=rec(arr,target-arr[ind],ind-1); // consider the element as part of the subset
+        
+        return take || no; // OR because we have to know if subset we consider sums upt to target or not
+    }
+    public boolean subsetSumDp(int ind, int target, int[] arr, int[][] dp) { // Memoization
+        if (target == 0) return true;
+        if (ind == 0) return arr[0] == target;
+
+        if(dp[ind][target]!=-1)
+            return dp[ind][target]==1;
+
+        boolean notTake = subsetSumDp(ind - 1, target, arr, dp);
+        boolean take = false;
+        if (target >= arr[ind])
+            take = subsetSumDp(ind - 1, target-arr[ind], arr, dp);
+        dp[ind][target] = take ? 1 : 0;
+        return take || notTake;
+    }
+    public boolean subsetSumTabulation(int ind, int target, int[] arr, boolean[][] dp)
+    {
+        for(int i=0;i<=ind;i++)
+        {
+            dp[i][0]=true;
+        }
+        if (arr[0]<=target) {
+            dp[0][arr[0]] = true;
+        }
+        for(int i=0;i<=ind;i++)
+        {
+            for(int j=0;j<=target;j++)
+            {
+                boolean take=false;
+                boolean notTake=dp[i-1][j];
+                if(j>=arr[i])
+                    take=dp[i-1][j-arr[i]];
+                dp[i][j]=take || notTake;
+            }
+        }
+        return dp[ind][target];
+    }
 }
