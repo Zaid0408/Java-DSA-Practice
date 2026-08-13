@@ -891,7 +891,7 @@ Output: false
         return take || notTake;
     }
     public boolean subsetSumTabulation(int ind, int target, int[] arr, boolean[][] dp)
-    {
+    { // THIS IS SIMILAR TO KNAPSACK PROBLEM
         for(int i=0;i<=ind;i++)
         {
             dp[i][0]=true;
@@ -899,9 +899,9 @@ Output: false
         if (arr[0]<=target) {
             dp[0][arr[0]] = true;
         }
-        for(int i=0;i<=ind;i++)
+        for(int i=1;i<=ind;i++)
         {
-            for(int j=0;j<=target;j++)
+            for(int j=1;j<=target;j++)
             {
                 boolean take=false;
                 boolean notTake=dp[i-1][j];
@@ -911,5 +911,55 @@ Output: false
             }
         }
         return dp[ind][target];
+    }
+    // lc 416 Patition equal subset sum // knapsack logic 
+    public boolean canPartition(int[] nums) {
+        int xuc=0;
+        for(int num: nums)
+            xuc+=num;
+        if(xuc%2==1)
+            return false;
+
+        xuc=xuc/2;
+        boolean dp[][]= new boolean[nums.length+1][xuc+1];
+        for(int i=0;i<=nums.length;i++) 
+            dp[i][0]=true;
+        for(int i=1;i<=nums.length;i++)
+        {
+            for(int j=1;j<=xuc;j++)
+            {
+                boolean take=false;
+                boolean no=dp[i-1][j];
+
+                if(j>=nums[i-1])
+                    take=dp[i-1][j-nums[i-1]];
+                dp[i][j]=take || no;
+            }
+        }
+
+        return dp[nums.length][xuc];
+
+    }
+
+    // Count subsets with sum k
+    public int perfectSum(int[] arr, int K) {
+        int n=arr.length;
+        int dp[][]=new int[n+1][K+1];
+        dp[0][0]=1;
+
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<=K;j++)
+            {
+                int take=0;
+                if(j>=arr[i-1])
+                {
+                    take =dp[i-1][j-arr[i-1]];
+                }
+                dp[i][j]=take+dp[i-1][j];
+            }
+        }
+        return dp[n][K];
+
     }
 }
