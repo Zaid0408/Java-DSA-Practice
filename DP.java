@@ -739,6 +739,34 @@ public class DP {
         return dp[n-1][m-1];
     }
 
+    // lc 120 Triangle
+
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        int[][] dp = new int[n][n];
+        boolean[][] visited = new boolean[n][n];
+        return Triangle(0, 0, triangle, dp,visited);
+    }
+    private int Triangle(int row,int col, List<List<Integer>> triangle, int[][] dp,boolean[][] visited)
+    {
+        if(row==triangle.size()-1)
+        {
+            return triangle.get(row).get(col);
+        }
+        if(visited[row][col])
+        {
+            return dp[row][col];
+        }
+
+        int down= triangle.get(row).get(col) + Triangle(row+1,col,triangle,dp, visited);
+        int diagnol= triangle.get(row).get(col) + Triangle(row+1,col+1,triangle,dp, visited);
+
+        dp[row][col]= Math.min(down,diagnol);
+        visited[row][col] = true;
+
+        return dp[row][col];
+    }
+
     //leetcode 139 word break
     /*
     Is there a combination of words in wordDict that can be used to recreate the original string s.
