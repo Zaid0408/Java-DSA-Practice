@@ -323,14 +323,11 @@ public class DP {
         return dp[n][rodLength];
     }
     /* 
-     * Coin Change lc 322 
-     * You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
-     * Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
-     * Input: coins = [1,2,5], amount = 11 Output: 3  Explanation: 11 = 5 + 5 + 1
-     * Input: coins = [2], amount = 3 Output: -1
+     * Coin Change 2 lc 518
+
      *
     */
-    public int coinChange(int[] coins, int amount) {
+    public int coinChange2(int[] coins, int amount) {
         // dp[i][j] stores the no of ways in which i coins can make the sum j
         int dp[][]=new int[coins.length+1][amount+1];
         for(int i=0;i<=coins.length;i++)
@@ -349,7 +346,7 @@ public class DP {
             {
                 if(coins[i-1]<=j)
                 {
-                    dp[i][j]= dp[i-1][j] + dp[i][j-coins[i-1]];
+                    dp[i][j]= dp[i-1][j]+ dp[i][j-coins[i-1]];
                     // adding both cuz we need number of ways so it means we can include the current coin and make sum and exclude coin and make the sum
                     // dp[i][j-coins[i-1]] include the current coin to make the sum j
                     // dp[i-1][j] exclude the current coin to make the sum j
@@ -363,7 +360,9 @@ public class DP {
         
         return dp[coins.length][amount];
     }
-    public int coinChange2(int[] coins, int amount) {
+    // Easier knowing soln below this is a bit advanced: space optimization soln 
+    // lc 322 Coin change 1
+    public int coinChange1(int[] coins, int amount) {
         int dp[]=new int[amount+1];
         Arrays.fill(dp,amount+1);
         dp[0]=0;
@@ -946,7 +945,7 @@ Output: false
         int n=arr.length;
         int dp[][]=new int[n+1][K+1];
         dp[0][0]=1;
-
+        // dp[i][j] = number of subsets using the first i elements whose sum is exactly j
         for(int i=1;i<=n;i++)
         {
             for(int j=0;j<=K;j++)
@@ -955,11 +954,33 @@ Output: false
                 if(j>=arr[i-1])
                 {
                     take =dp[i-1][j-arr[i-1]];
+                    // "If I take the current number, how many ways were there to make the remaining sum using the elements before it?"
                 }
                 dp[i][j]=take+dp[i-1][j];
             }
         }
         return dp[n][K];
 
+    }
+    // lc 322 Coin change 1 
+    public int coinChange(int[] coins, int amount) {
+        int n=coins.length;
+        int dp[][]=new int[n+1][amount+1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], amount + 1);
+        }
+        for(int i=0;i<=n;i++) dp[i][0]=0; 
+        
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j<=amount;j++)
+            {
+                int take =amount+1;
+                if(j>=coins[i-1])
+                    take=1+dp[i][j-coins[i-1]] ;// If i take the current coin then add onw to  how many ways were there to make the remaining sum using the coins before it
+                dp[i][j]=Math.min(take,dp[i-1][j]);
+            }
+        }
+        return dp[n][amount]>amount? -1:dp[n][amount];
     }
 }
