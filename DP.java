@@ -288,10 +288,11 @@ public class DP {
          */
     }
     /*
-     * Given a rod of n inches and an array of prices of all pieces of size smaller than n. 
+     * Given a rod of n inches and an array of prices of all pieces. 
      * Determine the maximum value obtainable by cutting the rod up and selling the pieces.
-     * length=[1,2,3,4,5,6,7,8]
+     * length=[1,2,3,4,5,6,7,8] - this may or may not be gven so consider i as length of rod i
      * price=[1,5,8,9,10,17,17,20]
+     * n is just length of prices array
      * rod length=8 ans=22
      */
     public static int RodCutting(int[] prices, int[] len, int rodLength, int n){ // same to same as unbounded knapsack
@@ -850,6 +851,9 @@ Output: false
     }
 
     // DP on subsequences
+    // This is similar to knapscak problem of weights and 0-1 knapsack
+    // addition of values mean knapsack with weight
+    // choosing any one is 0-1 knapsack
     // Check if any subset of an array sums up to a given target    
     public boolean isSubsetSum(int[] arr, int target) {
         // return rec(arr,target,arr.length-1); 
@@ -961,6 +965,49 @@ Output: false
         }
         return dp[n][K];
 
+    }
+    // Count partitions with given difference
+    // Same as the above problem with logic change
+    // Given an array arr of n integers and an integer diff, count the number of ways to partition the array into two subsets S1 and S2 such that:
+
+    // ∣S1−S2∣ = diff and S1 ≥ S2
+    // Where |S1| and |S2| are sum of Subsets S1 and S2 respectively.
+
+    /*
+    Instead of checking of difference use the following intuition below 
+        set |S1|+ set |S2|= total sum of all elements in arr
+        set |S1|- set |S2|= diff (which we need to find)
+
+        Substitute S1 with total - S2 
+        total - S2 - S2 = diff
+        total-diff= 2*s2
+        S2 = (total-diff)/2 ie Summation of all elements in set S2= (total-diff)/2
+        (total-diff)/2 use this as new target and problem is now similar to Count Subsets with sum k
+    */
+    // This is exactly the same as LC 494 Target Sum no code changes
+    public int countPartitions(int n, int diff, int[] arr) {
+        int tot=0;
+        for(int a:arr)
+            tot=tot+a;
+        // return 0 if tot-diff  <0 or (tot-diff)%2==1 
+        if(tot-diff<0 || (tot-diff)%2==1) return 0;
+        int target=(tot-diff)/2;
+        
+        int dp[][]=new int[n+1][target+1];
+        dp[0][0]=1;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<=target;j++)
+            {
+                int take=0;
+                if(j>=arr[i-1])
+                {
+                    take =dp[i-1][j-arr[i-1]];
+                }
+                dp[i][j]=take+dp[i-1][j];
+            }
+        }
+        return dp[n][target];
     }
     // lc 322 Coin change 1 
     public int coinChange(int[] coins, int amount) {
