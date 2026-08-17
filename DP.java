@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -5,6 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 public class DP {
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode() {}
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+           this.left = left;
+            this.right = right;
+       }
+   }
     // Tabulation or memoization used
     // Tabulation is a ‘bottom-up’ approach where we start from the base case and reach the final answer that we want. Tabulation helps in optimizing the solution by preventing additional stack space used during recursion.
     // Memoization is Known as the “top-down” dynamic programming, usually the problem is solved in the direction of the main problem to the base cases.
@@ -309,7 +322,7 @@ public class DP {
         for(int i=1;i<=n;i++){ // i is the number of the items for which we can find max profit for
             for(int j=1;j<=rodLength;j++) // j means the actual length of the rod from 1 to max rod length 
             { // trying to find max profit at a particular length j with i items and storing the profit of the same at dp[i][j]
-                if(len[i-1]<=j){ // valid condition
+                if(len[i-1]<=j){ // valid condition 
                     // include the rod length into the knapsack
                     int ans1=prices[i-1]+ dp[i][j-len[i-1]];
                     // exclude the rod length into the knapsack
@@ -322,6 +335,29 @@ public class DP {
             }
         }
         return dp[n][rodLength];
+    }
+    // same rod cutting in striver 
+    // this below is the correct code from striver
+    /*
+    Rows (i) represent the length of the piece you are allowed to cut (from 1 up to n inches).
+    Columns (j) represent the total remaining length of the rod you are trying to cut down.
+    price[i-1] gets the value of the current piece because arrays start at index 0 while our loop starts at 1.
+    if (j >= i) checks if the current piece length i actually fits inside the remaining rod length j.
+    dp[i][j-i] means you take the piece, earn its price, and stay on row i to allow reusing the same piece length.
+    dp[i-1][j] is the backup choice where you completely skip the current piece size and copy the best value from the row above.
+    */
+    public int RodCutting(int price[], int n) {
+        int dp[][]=new int[n+1][n+1];
+        for(int i=1;i<=n;i++){ 
+            for(int j=1;j<=n;j++){
+                int ans=0;
+                // if statement means Check if the rod capacity 'j' can accommodate piece length 'i'
+                if(j>=i) // question mentions 1 based indexing hence we can take i 
+                    ans=price[i-1] + dp[i][j-i];
+                dp[i][j]=Math.max(dp[i-1][j],ans);
+            }
+        }
+        return dp[n][n];
     }
     /* 
      * Coin Change 2 lc 518
@@ -378,6 +414,7 @@ public class DP {
         return dp[amount]!=amount+1 ? dp[amount]: -1 ;
     }
 
+    // DP on trings Pattern.
     /*
      * Longest Common Subsequence
      * Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
@@ -569,6 +606,7 @@ public class DP {
         }
         return dp[n];
     }
+    // leetcode 96 Unique Binary Search Trees
     public static int CountingTrees(int n){
         // given a number find the total number of bst's possible
         // exactly same to same logic as catalan number
@@ -581,6 +619,40 @@ public class DP {
             }
         }
         return dp[n];
+    }
+    // lc 95 Unique Binary Search Trees II
+    public List<TreeNode> generateTrees(int n) {
+        if (n == 0) {
+            return new ArrayList<>();
+        }
+        Map<String, List<TreeNode>> memo = new HashMap<>();
+        return generateTreesHelper(1, n, memo);        
+    }
+
+    private List<TreeNode> generateTreesHelper(int start, int end, Map<String, List<TreeNode>> memo) {
+        String key = start + "-" + end;
+        if (memo.containsKey(key)) {
+            return memo.get(key);
+        }
+        List<TreeNode> trees = new ArrayList<>();
+        if (start > end) {
+            trees.add(null);
+            return trees;
+        }
+        for (int rootVal = start; rootVal <= end; rootVal++) {
+            List<TreeNode> leftTrees = generateTreesHelper(start, rootVal - 1, memo);
+            List<TreeNode> rightTrees = generateTreesHelper(rootVal + 1, end, memo);
+            for (TreeNode leftTree : leftTrees) {
+                for (TreeNode rightTree : rightTrees) {
+                    TreeNode root = new TreeNode(rootVal);
+                    root.left = leftTree;
+                    root.right = rightTree;
+                    trees.add(root);
+                }
+            }
+        }
+        memo.put(key, trees);
+        return trees;
     }
 
     public static int minPartition(int arr[]){
