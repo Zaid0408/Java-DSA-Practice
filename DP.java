@@ -473,6 +473,26 @@ public class DP {
         return dp[text1.length()][text2.length()];
         
     }
+    // lc 583. Delete Operation for Two Strings
+    // Given two strings word1 and word2, return the minimum number of steps required to make word1 and word2 the same.
+    // Find the LCS of the words and then return the length of the word1 - LCS + length of word2 - LCS
+    // length of the word1 - LCS : number of ops required to remove characters from word1
+    // length of the word2 - LCS : number of ops required to remove characters from word2
+    // Hence summation of both is the answer 
+    public int minDistance(String word1, String word2) {
+        int dp[][]=new int[word1.length()+1][word2.length()+1];
+        for(int i=1;i<dp.length;i++){
+            for(int j=1;j<dp[0].length;j++){
+                if(word1.charAt(i-1)==word2.charAt(j-1)){
+                    dp[i][j]=dp[i-1][j-1]+1;    // if both the last characters of word1 and word2 are same 
+                }
+                else{
+                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return word1.length()- dp[word1.length()][word2.length()] + word2.length()- dp[word1.length()][word2.length()];
+    }
     public static int longestCommonSubstring(String text1, String text2)
     {
         // similar logic as longest common subsequence 
