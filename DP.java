@@ -542,6 +542,32 @@ public class DP {
         }
         return dp[s.length()][rev.length()];
     }
+    // lc 1312. Minimum Insertion Steps to Make a String Palindrome
+    // exactly same as above but we need to return the no of operations to make the string palindrome
+    // Minimum Insertion Steps to Make a String Palindrome is basically length of the string - longest pallindromic subsequence of the string
+    // Intuition is to find the longest pallindromic subsequence , keep it handy
+    // for the remaining characters which are not pallindrome then add the remaining characters to make the string pallindrome ex:
+    // given string : abcaa , let us consider lps is aaa remaing chars are b,c 
+    // a b c a      a : to make this a pallindrome we shiould add c,b after the second a to make it a pallindrome to make it a b c a c b a
+    // let us consider lps is aca remaing chars are b,a 
+    // a b   c    a a : to make this a pallindrome we shiould add a between b and c and b between c and a to make it a pallindrome to make it a b a c a  b a
+    // hence formula is easier to understand
+    public int minInsertions(String s) {
+        StringBuilder ss=new StringBuilder(s);
+        String rev=ss.reverse().toString();
+        int dp[][]=new int[s.length()+1][rev.length()+1];
+        for(int i=1;i<dp.length;i++){
+            for(int j=1;j<dp[0].length;j++){
+                if(s.charAt(i-1)==rev.charAt(j-1)){
+                    dp[i][j]=dp[i-1][j-1]+1;    // if both the last characters of s and rev are same 
+                }
+                else{
+                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return s.length()-dp[s.length()][rev.length()];
+    }
     public static int EditDistance(String s1, String s2){
         int dp[][]=new int[s1.length()+1][s2.length()+1];
         // initialization step
@@ -1096,7 +1122,7 @@ Output: false
             {
                 int take =amount+1;
                 if(j>=coins[i-1])
-                    take=1+dp[i][j-coins[i-1]] ;// If i take the current coin then add onw to  how many ways were there to make the remaining sum using the coins before it
+                    take=1+dp[i][j-coins[i-1]] ;// If i take the current coin then add one to :  how many ways were there to make the remaining sum using the coins before it
                 dp[i][j]=Math.min(take,dp[i-1][j]);
             }
         }
