@@ -546,6 +546,67 @@ public class DP {
 
         return ans.reverse().toString();
     }
+    // lc 115. Distinct Subsequences Recursive soln : will exceed time limit
+    // find the number of distinct subsequences of t in s 
+    // ex: Input: s = "babgbag", t = "bag"
+        // Output: 5
+        // Explanation:
+        // As shown below, there are 5 ways you can generate "bag" from s.
+        // ba g
+        // ba    g
+        //     bag
+        //   b  ag
+        // b    ag
+    // f(i-1,j-1,s,t)+ f(i-1,j,s,t); represents the number of ways to generate t[0..j-1] from s[0..i-1] including the char at s[i]
+    // it also means that suppose s[i]==t[j]== 'g' this means taking this current g into consideration for the subsequence and then continuing on to find b and a
+    // but if we dont consider this subsequence and want to find anothe g we use f(i-1,j,s,t) 
+    public int numDistinct(String s, String t) {
+        int n=s.length(),m=t.length();
+        return f(n-1,m-1,s,t);
+    }
+    private int f(int i, int j,String s, String t)
+    {
+        if(j<0)
+            return 1; // means one subseqence possible
+        if(i<0)
+            return 0; // no more traversal possible
+        if(s.charAt(i)==t.charAt(j))
+            return f(i-1,j-1,s,t)+ f(i-1,j,s,t);
+
+        return f(i-1,j,s,t); // characters did not match go to the next index in S string while keeping the T string intact
+    }
+    // Memoization this also gives TLE use Tabulation instead , this is because of recursion and is here for learning purpose
+    private int f(int i, int j,String s, String t, int dp[][])
+    {
+        if(j<0)
+            return 1; // means one subseqence possible
+        if(i<0)
+            return 0; // no more traversal possible
+        if(dp[i][j]!=0)
+            return dp[i][j];
+        if(s.charAt(i)==t.charAt(j))
+            return dp[i][j]= f(i-1,j-1,s,t,dp)+ f(i-1,j,s,t,dp);
+
+        return dp[i][j]= f(i-1,j,s,t,dp); // characters did not match go to the next index in S string while keeping the T string intact
+    }
+    // Tabulation : Similar to LCS
+    public int numDistinct2(String s, String t) {
+        int n=s.length(),m=t.length();
+        int dp[][]=new int[n+1][m+1];
+        for(int i=0;i<=n;i++)
+            dp[i][0]=1; // for String t if length is 0 that neans there is atleast one subsequence found (check recusrion logic )
+        for(int i=1;i<=n;i++)
+            {
+                for(int j=1;j<=m;j++)
+                {
+                    if(s.charAt(i-1)==t.charAt(j-1))
+                        dp[i][j]=dp[i-1][j-1]+ dp[i-1][j];
+                    else
+                        dp[i][j]=dp[i-1][j];
+                }
+            }
+        return dp[n][m];
+    }
     public static int longestCommonSubstring(String text1, String text2)
     {
         // similar logic as longest common subsequence 
