@@ -1416,4 +1416,54 @@ Output: false
     
         return notBuy;
     }
+
+    // LC 123 Best time to buy and sell stock 3
+    // diff between this and LC 122 is that here we have a limt on the transactions we can make 
+    // in the previous problem we can make any number of transactions (A transaction is nothing but buying and selling that stock) 
+    // In this we can only do upto 2 transactions
+    // reccusrive soln
+    // SC : O(N) and TC : O(2^N) Gives TLE
+    public int profit(int i, int buy,int prices[],int cap)
+    {
+        if(cap==0)
+            return 0;
+        if(i==prices.length)
+            return 0;
+        int profit=0;
+
+        if(buy==1){ // 1 here means you are allowed to buy today
+            int buyIt=profit(i+1,0,prices,cap)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices,cap); // i dont want to buy on this day
+            profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
+        }
+        else{ // 0 means you cannot buy
+            int sellIt=profit(i+1,1,prices,cap-1)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            int notSellIt=profit(i+1,0,prices,cap); // I dont want to sell on this day
+            profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
+        }
+        return profit;
+    }
+    // Acceptable soln
+    public int profit(int i, int buy,int prices[],int cap, int dp[][][])
+    {
+        if(cap==0)
+            return 0;
+        if(i==prices.length)
+            return 0;
+        if(dp[i][buy][cap]!=-1)
+            return dp[i][buy][cap];
+        int profit=0;
+
+        if(buy==1){ // 1 here means you are allowed to buy today
+            int buyIt=profit(i+1,0,prices,cap)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices,cap); // i dont want to buy on this day
+            profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
+        }
+        else{ // 0 means you cannot buy
+            int sellIt=profit(i+1,1,prices,cap-1)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            int notSellIt=profit(i+1,0,prices,cap); // I dont want to sell on this day
+            profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
+        }
+        return dp[i][buy][cap]=profit;
+    }
 }
