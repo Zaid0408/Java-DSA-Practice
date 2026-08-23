@@ -705,13 +705,11 @@ public class DP {
     public static int EditDistance(String s1, String s2){
         int dp[][]=new int[s1.length()+1][s2.length()+1];
         // initialization step
-        for(int i=0;i<dp.length;i++){
-            for(int j=0;j<dp[0].length;j++){
-                if(i==0)
-                    dp[i][j]=j; // if string 1 is empty then all the characters of string 2 to be inserted
-                else if(j==0)
-                    dp[i][j]=i; // if string 2 is empty then all the characters of string 1 to be deleted
-            }
+        for (int i = 0; i <= dp.length; i++) {
+            dp[i][0] = i;// if string 2 is empty then all the characters of string 1 to be deleted
+        }
+        for (int j = 0; j <= dp[0].length; j++) {
+            dp[0][j] = j; // if string 1 is empty then all the characters of string 2 to be inserted
         }
         
         for(int i=1;i<dp.length;i++){
@@ -1261,5 +1259,74 @@ Output: false
             }
         }
         return dp[n][amount]>amount? -1:dp[n][amount];
+    }
+
+    // DP on stocks 
+    // Remeber that sopace optimization is important 
+
+
+    // lc 121 best time to buy and sell stock
+    // Space optimization
+
+    public int maxProfit(int[] prices) {
+        int minimum=prices[0];
+        int cost=0,profit=0;
+
+        for(int i=1;i<prices.length;i++)
+        {
+            cost=prices[i]-minimum; // cost of seeling a particular stock on the ith day
+            profit=(Math.max(profit,cost)); // saving max profit
+            minimum=Math.min(minimum,prices[i]); // saving minimum price of the stocke so that we can have max profit
+        }
+        return profit;
+    }
+
+    // lc 122 Best time to buy and sell stock 2
+    // difference between 121 and 122 is that here we can buy and sell multiple times
+    // But we can only hold one stock at a time 
+    // We cannot buy other stocks unless we esell them 
+
+    // recursion time complexity O(2^n) space complexity O(n)
+    // This will have overallaping sub problems and hence time complexity will be exponential
+    
+    public int profit(int i, int buy,int prices[])
+    {
+        if(i==prices.length)
+            return 0;
+        int profit=0;
+
+        if(buy==1){ // 1 here means you are allowed to buy today
+            int buyIt=profit(i+1,0,prices)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices); // i dont want to buy on this day
+            profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
+        }
+        else{ // 0 means you cannot buy
+            int sellIt=profit(i+1,1,prices)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            int notSellIt=profit(i+1,0,prices); // I dont want to sell on this day
+            profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
+        }
+        return profit;
+    }
+    // Memoization Approach
+    public int profit(int i, int buy,int prices[], int dp[][])
+    {
+        if(i==prices.length)
+            return 0;
+        int profit=0;
+        if(dp[i][buy]!=-1)
+            return dp[i][buy];
+        if(buy==1){ // 1 here means you are allowed to buy today
+            int buyIt=profit(i+1,0,prices,dp)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices,dp); // i dont want to buy on this day
+            profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
+            dp[i][buy]=profit;
+        }
+        else{ // 0 means you cannot buy
+            int sellIt=profit(i+1,1,prices,dp)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            int notSellIt=profit(i+1,0,prices,dp); // I dont want to sell on this day
+            profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
+            dp[i][buy]=profit;
+        }
+        return dp[i][buy]=profit;
     }
 }
