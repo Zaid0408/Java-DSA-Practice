@@ -1368,7 +1368,19 @@ Output: false
         return dp[i][buy]=profit;
     }
     // Tabulation Approach 
+    // Remeber tabulation is used to remove auxillary stack space occupied by memoization
 
+    /*
+            HOLDING                 NOT HOLDING
+                |                         |
+            dp[i][0]                    dp[i][1]
+                |                         |
+       ┌────────┴───────┐       ┌─────────┴─────────┐
+       ↓                ↓       ↓                   ↓
+  keep holding      buy today  stay out         sell today
+       ↓                ↓       ↓                   ↓
+ dp[i-1][0]    dp[i-1][1]-price  dp[i-1][1]  dp[i-1][0]+price
+    */
     public int profit(int prices[])
     {
         int dp[][]=new int[prices.length][2];
@@ -1376,15 +1388,17 @@ Output: false
         {
             if(i==0)
             {
-                dp[0][0]=-prices[0];
-                dp[0][1]=0;
+                dp[0][0]=-prices[0];  // -proces[i] because i currently HAVE THAT STOCK AND NOT ALLOWED TO BUY
+                dp[0][1]=0; // dont have anything i have bought
             }
             else
             {
-                dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]-prices[i]);
-                dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]);
+                dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]-prices[i]); // dp[i][0] means max profit from day i if we have held the stock  
+                // dp[i-1][0] You already had a stock and don't sell today. dp[i-1][1]-prices[i]  You were not holding a stock yesterday and buy today.
+                dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]); // dp[i][1] means max profit from day i When i am allowed to buy
+                // dp[i-1][1] Dont sell today. dp[i-1][0]+prices[i] Sell today
             }
         }
-        return dp[prices.length-1][1];
+        return dp[prices.length-1][1]; // returning dp[prices.length-1][1] as 1 means there is nothing to buy no  and i have no stock with me on the last day
     }
 }
