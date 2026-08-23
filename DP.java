@@ -1401,4 +1401,19 @@ Output: false
         }
         return dp[prices.length-1][1]; // returning dp[prices.length-1][1] as 1 means there is nothing to buy no  and i have no stock with me on the last day
     }
+    // Space optimization
+    public int profitSpaceOptimized(int[] prices) {
+        int buy = -prices[0];
+        int notBuy = 0;
+    
+        for (int i = 1; i < prices.length; i++) {
+            int newBuy = Math.max(buy, notBuy - prices[i]);
+            int newNotBuy = Math.max(notBuy, buy + prices[i]);
+    
+            buy = newBuy;
+            notBuy = newNotBuy;
+        }
+    
+        return notBuy;
+    }
 }
