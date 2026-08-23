@@ -702,6 +702,43 @@ public class DP {
         }
         return s.length()-dp[s.length()][rev.length()];
     }
+    /*
+    dp[i][j-1] = ADD / INSERT
+
+Suppose we're at:
+
+word1 = "ab"
+word2 = "abc"
+
+We're trying to convert:
+
+"ab" → "abc"
+
+The last character c needs to be inserted.
+
+Before inserting c, we had:
+
+"ab" → "ab"
+
+dp[i-1][j] = REMOVE
+
+Suppose:
+
+word1 = "abc"
+word2 = "ac"
+
+We want:
+
+"abc" → "ac"
+
+We can remove b.
+
+Before removing b, we solve:
+
+"ab" → "ac"
+
+
+    */
     public static int EditDistance(String s1, String s2){
         int dp[][]=new int[s1.length()+1][s2.length()+1];
         // initialization step
@@ -721,6 +758,7 @@ public class DP {
                     int rem=dp[i-1][j] + 1; // no of operations to remove the remaining characters
                     int replace=dp[i-1][j-1] + 1; // no of operations to replace the remaining characters
                     dp[i][j]=Math.min(add,Math.min(rem,replace));
+                    // dp[i][j] = minimum operations required to convert first i characters of word1 into first j characters of word2
                 }
             }
         }
@@ -1328,5 +1366,25 @@ Output: false
             dp[i][buy]=profit;
         }
         return dp[i][buy]=profit;
+    }
+    // Tabulation Approach 
+
+    public int profit(int prices[])
+    {
+        int dp[][]=new int[prices.length][2];
+        for(int i=0;i<prices.length;i++)
+        {
+            if(i==0)
+            {
+                dp[0][0]=-prices[0];
+                dp[0][1]=0;
+            }
+            else
+            {
+                dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]-prices[i]);
+                dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]);
+            }
+        }
+        return dp[prices.length-1][1];
     }
 }
