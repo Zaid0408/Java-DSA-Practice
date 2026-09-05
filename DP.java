@@ -873,7 +873,7 @@ Before removing b, we solve:
     // House Robber Problem Leetcode 198
 
     // lc 198 House Robber
-    // memoization approach
+    // tabulation approach
     public int robMemo(int[] nums) {
         int n=nums.length;
         int dp[]=new int[n];
@@ -1465,5 +1465,80 @@ Output: false
             profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
         }
         return dp[i][buy][cap]=profit;
+    }
+    // Space optimization
+    public int maxProfitSpaceOptimized(int prices[])
+    {
+        int n = prices.length;
+        int dp[][][] = new int[n + 1][2][3];
+        for (int i = n - 1; i >= 0; i--) {
+            for (int buy = 0; buy < 2; buy++) {
+                for (int cap = 1; cap < 3; cap++) {
+                    if (buy == 1) {
+                        // Buy OR skip
+                        dp[i][buy][cap] = Math.max(dp[i + 1][0][cap] - prices[i],dp[i + 1][1][cap] );
+
+                    } else {
+                        // Sell OR skip
+                        dp[i][buy][cap] = Math.max(dp[i + 1][1][cap - 1] + prices[i],dp[i + 1][0][cap]);
+                    }
+                }
+            }
+        }
+        return dp[0][1][2];
+    }
+    // lc 188 Best time to buy and sell stock 4
+    // diff between this and above problem is instead of having 2 transactions at a time we can have atmost k transactions 
+    // code is exact same as the above but now it is just adding a k to the dp array
+    public int maxProfit(int k, int[] prices) {
+        int n = prices.length;
+       // dp[i][buy][cap]
+       // i   = current day
+       // buy = 1 -> can buy, 0 -> can sell
+       // cap = number of transactions remaining
+       int dp[][][] = new int[n + 1][2][k+1];
+       for (int i = n - 1; i >= 0; i--) {
+           for (int buy = 0; buy < 2; buy++) {
+               for (int cap = 1; cap <=k; cap++) {
+                   if (buy == 1) {
+                       // Buy OR skip
+                       dp[i][buy][cap] = Math.max(dp[i + 1][0][cap] - prices[i],dp[i + 1][1][cap] );
+
+                   } else {
+                       // Sell OR skip
+                       dp[i][buy][cap] = Math.max(dp[i + 1][1][cap - 1] + prices[i],dp[i + 1][0][cap]);
+                   }
+               }
+           }
+       }
+       return dp[0][1][k];
+   }
+
+   // lc 309 Best time to buy and sell with cooldown
+   // here cooldown means you cannot buy on the next day after selling
+   // Buy,..Sell,cooldown day(cannot buy immidiately after selling), buy.. etc
+   // same as best time to buyb and sell 2 as this problem has unlimiited tracsactions
+
+   public int profitWithCooldown(int i, int buy,int prices[], int dp[][])
+    {
+        if(i>=prices.length)
+            return 0;
+        int profit=0;
+        if(dp[i][buy]!=-1 && i<prices.length-1)
+            return dp[i][buy];
+        if(buy==1){ // 1 here means you are allowed to buy today
+            int buyIt=profit(i+1,0,prices,dp)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices,dp); // i dont want to buy on this day
+            profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
+            dp[i][buy]=profit;
+        }
+        else{ // 0 means you cannot buy
+            int sellIt=profit(i+2,1,prices,dp)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            // i+2 because i cannot buy on the next day, this is the cooldown part when we sell we cannot buy the next day
+            int notSellIt=profit(i+1,0,prices,dp); // I dont want to sell on this day
+            profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
+            dp[i][buy]=profit;
+        }
+        return dp[i][buy]=profit;
     }
 }
