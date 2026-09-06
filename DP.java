@@ -623,33 +623,6 @@ public class DP {
         }
         return dp[text1.length()][text2.length()];
     }
-    public static int longestIncreasingSubsequence(int[] arr)
-    {   // same to same as longest common subsequence logic 
-        HashSet<Integer> hs= new HashSet<>();
-        for(int i=0;i<arr.length;i++){
-            hs.add(arr[i]);
-        }
-        int arr2[]=new int[hs.size()];
-        int k=0;
-        for(int x:hs){
-            arr2[k++]=x;
-        }
-        Arrays.sort(arr2);
-        int dp[][]=new int[arr2.length+1][arr.length+1];
-        for(int i=1;i<dp.length;i++){
-            for(int j=1;j<dp[0].length;j++){
-                if(arr[j-1]==arr2[i-1])
-                {
-                    dp[i][j]=1+dp[i-1][j-1];
-                }
-                else
-                {
-                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
-                }
-            }
-        }
-        return dp[hs.size()][arr.length];
-    }
     public static int longestPalindromicSubsequence(String s) {
     // DP Approach
     // 1)Reverse The string;
@@ -1540,5 +1513,140 @@ Output: false
             dp[i][buy]=profit;
         }
         return dp[i][buy]=profit;
+    }
+    // tabluation
+    /*
+    Your state is:
+
+dp[i][buy]
+
+buy = 1 → we are allowed to buy
+buy = 0 → we are holding stock, so we can sell
+
+When buy == 1:
+
+Buy → dp[i+1][0] - prices[i]
+Skip → dp[i+1][1]
+
+When buy == 0:
+
+Sell → dp[i+2][1] + prices[i] ← cooldown!
+Skip → dp[i+1][0]
+    
+    */
+    public int maxProfitWithCooldown(int[] prices) {
+        int dp[][]=new int[prices.length+2][2];
+        for(int i=prices.length-1;i>=0;i--)
+        {
+            for(int buy=0;buy<=1;buy++)
+            {
+                if(buy==1)
+                {
+                    dp[i][buy]=Math.max(dp[i+1][1],dp[i+1][0]-prices[i]);
+                }
+                else
+                {
+                    dp[i][buy]=Math.max(dp[i+1][0],dp[i+2][1]+prices[i]); 
+                }
+            }
+        }
+        return dp[0][1];
+    }
+    
+    // Logest Increasing Subsequence pattern
+    // Subsequence where all the elements follow the sequence in the origanl arrasy but are in increasing order
+    // EX: [1,3,2,4,5] has a LIS as 1,3,4,5 or 1,2,4,5 are in increasing order and ans is 4.
+
+    // recusrive Tc O(2^n) because we are doing take or not take hence 2^n and SC O(n)
+    public int LIS(int[] arr, int i, int prev) {
+        if(i==arr.length)
+            return 0;
+
+        int len1=0,len2=0;
+        if(prev==-1 || arr[i]>arr[prev]) // prev==-1 means first element so take the first elemen , arr[i]>arr[prev] means if the current element is greater than the previous element take it to make the LIS
+        {
+            len1=1+LIS(arr,i+1,i); // take condition , since we consider arr[i] we have to pass i as the prev ind and increment i to be passed as the new index 
+        }
+        len2=LIS(arr,i+1,prev);// not take condition 
+        return Math.max(len1,len2);
+    }
+    public int LIS(int[] arr) {
+        int dp[][]=new int[arr.length][arr.length+1];
+        for(int i=0;i<arr.length;i++)
+        {
+            Arrays.fill(dp[i],-1);
+        }
+
+        return LISM(arr,0,-1,dp);
+    }
+    // memoization
+    // Tc O(n*n) and SC O(n*n)
+    // Overlapping Sub problems hence we need to convert into memoization
+    // here we need to take care of cordinate shift , this basically means we store the data ofr dp[i][prev]at dp[i][prev+1] this is done to include prev=-1 case as well
+
+    // This is impo for this LIS problem as we need to take care of prev=-1 case
+    // hence answer is always at dp[i][prev+1] and not dp[i][prev]
+    public int LISM(int[] arr, int i, int prev, int dp[][]) {
+        if(i==arr.length)
+            return 0;
+
+        if(dp[i][prev+1]!=-1)
+            return dp[i][prev+1];
+
+        int len1=0,len2=0;
+        if(prev==-1 || arr[i]>arr[prev]) // prev==-1 means first element so take the first elemen , arr[i]>arr[prev] means if the current element is greater than the previous element take it to make the LIS
+        {
+            len1=1+LISM(arr,i+1,i,dp); // take condition , since we consider arr[i] we have to pass i as the prev ind and increment i to be passed as the new index 
+        }
+        len2=LISM(arr,i+1,prev,dp);// not take condition 
+        return dp[i][prev+1]=Math.max(len1,len2);
+    }
+
+    public int LIST(int arr[])
+    {
+        int dp[][]=new int[arr.length][arr.length+1];
+        for(int ind=arr.length-1;ind>=0;ind--)
+        {
+            for(int prev=ind-1;prev>=-1;prev--)
+            {
+                int len1=0,len2=0;
+                if(prev==-1 || arr[ind]>arr[prev])
+                {
+                    len1=1+dp[ind+1][ind];
+                }
+                len2=dp[ind+1][prev];
+                dp[ind][prev]=Math.max(len1,len2);
+            }
+        }
+        return dp[0][-1+1]; // dp[0][-1] is the LIS
+    }
+    
+// Longest Increasing Subsequence Tabulation
+    public static int longestIncreasingSubsequence(int[] arr)
+    {   // same to same as longest common subsequence logic 
+        HashSet<Integer> hs= new HashSet<>();
+        for(int i=0;i<arr.length;i++){
+            hs.add(arr[i]);
+        }
+        int arr2[]=new int[hs.size()];
+        int k=0;
+        for(int x:hs){
+            arr2[k++]=x;
+        }
+        Arrays.sort(arr2);
+        int dp[][]=new int[arr2.length+1][arr.length+1];
+        for(int i=1;i<dp.length;i++){
+            for(int j=1;j<dp[0].length;j++){
+                if(arr[j-1]==arr2[i-1])
+                {
+                    dp[i][j]=1+dp[i-1][j-1];
+                }
+                else
+                {
+                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return dp[hs.size()][arr.length];
     }
 }
