@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1601,7 +1603,7 @@ Skip → dp[i+1][0]
         len2=LISM(arr,i+1,prev,dp);// not take condition 
         return dp[i][prev+1]=Math.max(len1,len2);
     }
-
+    // Tabulation Tc O(n*n) and SC O(n*n)
     public int LIST(int arr[])
     {
         int dp[][]=new int[arr.length][arr.length+1];
@@ -1648,5 +1650,164 @@ Skip → dp[i+1][0]
             }
         }
         return dp[hs.size()][arr.length];
+    }
+    // space optimization
+    public int LIS(int arr[],int n)
+    {
+        int dp[]=new int[n];
+        int maxi=-1;
+        Arrays.fill(dp,1);
+        for(int ind=0;ind<n;ind++)
+        {
+            for(int prev=0;prev<ind;prev++)
+            {
+                if(arr[ind]>arr[prev] && 1+dp[prev]>dp[ind])
+                {
+                    dp[ind]=1+dp[prev];
+                }
+            }
+            maxi=Math.max(maxi,dp[ind]);
+        }
+
+        return maxi;
+    }
+
+    public List<Integer> printLIS(int[] nums) {
+        int n=nums.length;
+        int dp[]=new int[n];
+        int hash[]=new int[n];
+        Arrays.sort(nums);
+        Arrays.fill(dp,1);
+        int maxi=1-1;
+        int lastIndex=0;
+        for (int i = 0; i < n; i++) {
+            hash[i]=i;
+        }
+
+        for(int i=0;i<n;i++)
+        {
+            for(int prev=0;prev<i;prev++)
+            {
+                if(nums[i]>nums[prev] && dp[i]<1+dp[prev])
+                {
+                    dp[i]=dp[prev]+1;
+                    hash[i]=prev;
+                }
+            }
+            if(dp[i]>maxi)
+            {
+                maxi=dp[i];
+                lastIndex=i;
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        while (hash[lastIndex] != lastIndex) {
+            ans.add(nums[lastIndex]);
+            lastIndex = hash[lastIndex];
+        }
+        ans.add(nums[lastIndex]);
+        Collections.reverse(ans);
+
+        return ans;
+
+    }
+
+    // lc 368 Largest Divisible Subset
+
+    // Same logic as printing the LIS 
+
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        int n=nums.length;
+        int dp[]=new int[n];
+        int hash[]=new int[n];
+        Arrays.sort(nums);
+        Arrays.fill(dp,1);
+        int maxi=1-1;
+        int lastIndex=0;
+        for (int i = 0; i < n; i++) {
+            hash[i]=i;
+        }
+
+        for(int i=0;i<n;i++)
+        {
+            for(int prev=0;prev<i;prev++)
+            {
+                if(nums[i]%nums[prev]==0 && dp[i]<1+dp[prev])
+                {
+                    dp[i]=dp[prev]+1;
+                    hash[i]=prev;
+                }
+            }
+            if(dp[i]>maxi)
+            {
+                maxi=dp[i];
+                lastIndex=i;
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        while (hash[lastIndex] != lastIndex) {
+            ans.add(nums[lastIndex]);
+            lastIndex = hash[lastIndex];
+        }
+        ans.add(nums[lastIndex]);
+        Collections.reverse(ans);
+
+        return ans;
+
+    }
+
+    // lc 1048 Longest String Chain
+
+    // Longest string chain is a chain of string predecessors
+    // ex ab is the predesessor of abc and abc is the predecessor of abcd, the difference is justv an addition of a extra char
+    // find the longest string chain of such predecessors
+    // Input: words = ["a","b","ba","bca","bda","bdca"]
+    // Output: 4
+    // Explanation: One of the longest word chains is ["a","ba","bda","bdca"].
+
+    public int longestStrChain(String[] words) {
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+        int n=words.length;
+        int dp[]=new int[n];
+        Arrays.fill(dp,1);
+        int maxi=1;
+        for(int i=1;i<n;i++)
+        {
+            for(int prev=0;prev<i;prev++)
+            {
+                if(compareStrings(words[i],words[prev]) && dp[i]<1+dp[prev])
+                {
+                    dp[i]=dp[prev]+1;
+                }
+            }
+            if(dp[i]>maxi)
+            {
+                maxi=dp[i];
+            }
+        }
+        
+        return maxi;
+
+    }
+    public boolean compareStrings(String s1,String s2)
+    {
+        if(s1.length()!=s2.length()+1)
+            return false;
+
+        int p1=0,p2=0;
+        while(p1<s1.length())
+        {
+            if(p2<s2.length() && s1.charAt(p1)==s2.charAt(p2))
+            {
+                p1++;p2++;
+            }
+            else{
+                p1++;
+            }
+        }
+        if(p1==s1.length() && p2==s2.length())
+            return true;
+        
+        return false;
     }
 }
