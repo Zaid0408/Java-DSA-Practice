@@ -1846,4 +1846,144 @@ Skip → dp[i+1][0]
         
         return ans;
     }
+
+    // Patition DP
+
+    // Whenevr there is more than one way to solve a question use partition dp
+    // ex in matrix chain multiplication we can use partition dp to find the best way to multiply the matrices
+    // given matrices A,B,C we have a few ways to multiply them ie (AB)C, A(BC), AC(B) etc, and we have to find the best way to multiply them
+    // in such scenarios use partition dp
+
+    // Rules for poartition DP
+
+    // 1. Start witjh the entire block / array
+    // 2. try all partitions -> run a loop to try all partitions 
+    // 3. return the best possible partition 
+
+    // f(i,j) -> means the best possible way to multiply the matrices from i to j
+    // f(i,j-1) = min{f(i,k)+f(k+1,j)} for all k such that i<k<j : this is trying all possible partitions
+
+    /*
+        f(i,j){
+            if(i==j) return 0;
+
+            for(int k=i;k<=j-1;k++)
+                {
+                    steps=+ a[i-1]*a[k]*a[j] + f(i,k) + f(k+1,j) ; // this step can change depending on the problem
+                    if(steps<minSteps)
+                        minSteps=steps;
+                }
+            return minSteps;
+        }
+    */
+    // exponential time complexity in recusion
+    public int matrixMultiplication(int[] nums) {
+        int dp[][]=new int[nums.length][nums.length];
+        for(int i=0;i<nums.length;i++)
+        {
+            for(int j=0;j<nums.length;j++)
+            {
+                dp[i][j]=-1;
+            }
+        }
+        return func(nums,1,nums.length-1,dp);
+    }
+    public int func(int nums[],int i,int j)
+    {
+        if(i==j) return 0;
+        int mini=Integer.MAX_VALUE;
+        for(int k=i;k<j;k++)
+        {
+            int steps=nums[i-1]*nums[k]*nums[j] + func(nums,i,k) + func(nums,k+1,j);
+            mini=Math.min(mini,steps);
+        }
+        return mini;
+    }
+    // memoization 
+    // check changing variables 
+    public int func(int nums[],int i,int j,int dp[][])
+    {
+
+        if(i==j) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int mini=Integer.MAX_VALUE;
+        for(int k=i;k<j;k++)
+        {
+            int steps=nums[i-1]*nums[k]*nums[j] + func(nums,i,k,dp) + func(nums,k+1,j,dp);
+            mini=Math.min(mini,steps);
+        }
+        return dp[i][j]=mini;
+    }
+
+    // tabulation
+    public int matrixMultiplicationTabulation(int[] nums) {
+        int n=nums.length;
+        int dp[][]=new int[n][n];
+        for(int i=n-1;i>=0;i--)
+        {
+            for(int j=i+1;j<n;j++)
+            {
+                if(i==j) dp[i][j]=0; // base case same as recusrion
+                else
+                {
+                    int mini=Integer.MAX_VALUE;
+                    for(int k=i;k<j;k++) // recurrence
+                    {
+                        int steps=nums[i-1]*nums[k]*nums[j] + dp[i][k] + dp[k+1][j];
+                        mini=Math.min(mini,steps);
+                    }
+                    dp[i][j]=mini;
+                }
+            }
+        }
+        return dp[1][n-1]; // final answer stored here as i goes from n-1 to 1
+    }
+
+    // lc 1547 Minimum cost to cut the stick
+    // recursion
+
+    public int minCost(int n, int[] cuts) {
+        int dp[][]=new int[cuts.length+1][cuts.length+1];
+        for(int i=0;i<=cuts.length;i++)
+        {
+            for(int j=0;j<=cuts.length;j++)
+            {
+                dp[i][j]=-1;
+            }
+        }
+        Arrays.sort(cuts);
+        List<Integer> l=new ArrayList<>();
+        l.add(0);
+        for(int cut:cuts)
+            l.add(cut);
+
+        l.add(n);
+
+        return help(1,cuts.length,l,dp);
+    }
+    public int help(int i,int j,List<Integer> l)
+    {
+        if(i>j) return 0;
+        int mini=Integer.MAX_VALUE;
+        for(int k=i;k<=j;k++)
+        {
+            int cut=l.get(j+1) -l.get(i-1) + help(i,k-1,l) + help(k+1,j,l);
+            mini=Math.min(mini,cut);
+        }
+
+        return mini;
+    }
+    public int help(int i,int j,List<Integer> l,int dp[][])
+    {
+        if(i>j) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int mini=Integer.MAX_VALUE;
+        for(int k=i;k<=j;k++)
+        {
+            int cut=l.get(j+1) -l.get(i-1) + help(i,k-1,l) + help(k+1,j,l);
+            mini=Math.min(mini,cut);
+        }
+
+        return dp[i][j]=mini;
+    }
 }
