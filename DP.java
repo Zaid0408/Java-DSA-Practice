@@ -1442,6 +1442,13 @@ Output: false
         return dp[i][buy][cap]=profit;
     }
     // Space optimization
+    // For tabulation problems here onwards it is important to remember one thing 
+    // in the given example below i goes from n-1 to 0 whereas in memoization it goes from 0 to n-1
+    // to figure this out check the memoization code and get the changing variables 
+    // if the changing variables go from i=0 to n-1 so in tabulation it will be the other way around remember this point
+    // i is the only variable changing in memoization hence taking the opposite way
+    // This is seen in LIS and best time to buy sell stock problems 
+
     public int maxProfitSpaceOptimized(int prices[])
     {
         int n = prices.length;
@@ -1985,5 +1992,97 @@ Skip → dp[i+1][0]
         }
 
         return dp[i][j]=mini;
+    }
+
+    // Tabulation
+
+    public int minCostTabulation(int n, int[] cuts) {
+        Arrays.sort(cuts);
+        List<Integer> l=new ArrayList<>();
+        l.add(0);
+        for(int cut:cuts)
+            l.add(cut);
+
+        l.add(n);
+        int dp[][]=new int[cuts.length+2][cuts.length+2];
+        for(int i=cuts.length;i>=1;i--)
+        {
+            for(int j=1;j<=cuts.length;j++)
+            {
+                if(i>j) continue;
+                else{
+                    int mini=Integer.MAX_VALUE;
+                    for(int k=i;k<=j;k++)
+                    {
+                        int cut=l.get(j+1) -l.get(i-1) + dp[i][k-1] + dp[k+1][j];
+                        mini=Math.min(mini,cut);
+                    }
+                    dp[i][j]=mini;
+                }
+            }
+        }
+        return dp[1][cuts.length];
+    }
+
+    // lc 312 Burst Ballons : Same pattern as above 
+    public int maxCoins(int[] nums) {
+
+        int n = nums.length;
+    
+        int arr[] = new int[n + 2];
+    
+        arr[0] = 1;
+        arr[n + 1] = 1;
+    
+        for (int i = 0; i < n; i++) {
+            arr[i + 1] = nums[i];
+        }
+        int dp[][] = new int[n + 2][n + 2];
+
+        for (int i = 0; i < n + 2; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return help(1, n, arr);
+    }
+    
+    public int help(int i, int j, int arr[]) {
+    
+        if (i > j)
+            return 0;
+    
+        int maxi = 0;
+    
+        for (int k = i; k <= j; k++) {
+    
+            int coins = arr[i - 1] * arr[k] * arr[j + 1]
+                      + help(i, k - 1, arr)
+                      + help(k + 1, j, arr);
+    
+            maxi = Math.max(maxi, coins);
+        }
+    
+        return maxi;
+    }
+    // memoization 
+    public int help(int i, int j, int arr[], int dp[][]) {
+
+        if (i > j)
+            return 0;
+    
+        if (dp[i][j] != -1)
+            return dp[i][j];
+    
+        int maxi = 0;
+    
+        for (int k = i; k <= j; k++) {
+    
+            int coins = arr[i - 1] * arr[k] * arr[j + 1]
+                      + help(i, k - 1, arr, dp)
+                      + help(k + 1, j, arr, dp);
+    
+            maxi = Math.max(maxi, coins);
+        }
+    
+        return dp[i][j] = maxi;
     }
 }
