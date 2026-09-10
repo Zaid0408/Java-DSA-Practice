@@ -1481,4 +1481,39 @@ PGE + NGE  -> maximum contribution
         int waterHeight[]={0,1,0,2,1,0,1,3,2,1,2,1};
         System.out.println(trap(waterHeight));
     }
+
+    // lc 1106 Parsing a boolean expression
+
+    public boolean parseBoolExpr(String expression) {
+        Stack<Character> st = new Stack<>();
+        for(char ch:expression.toCharArray())
+        {
+            if(ch=='(' || ch==',')
+                continue;
+            else if(ch == 't' ||ch == 'f' || ch == '!' || ch == '&' || ch == '|')
+                st.push(ch);
+            else if(ch ==')')
+            {
+                boolean hasTrue=false,hasFalse=false;
+                while(st.peek()!='!' && st.peek()!='&' && st.peek()!='|')
+                {
+                    char top=st.pop();
+                    if(top=='t') hasTrue=true;
+                    else if(top=='f') hasFalse=true;
+                
+                }
+
+                char k=st.pop();
+                if (k == '!') {
+                    st.push(hasTrue ? 'f' : 't');
+                } else if (k == '&') {
+                    st.push(hasFalse ? 'f' : 't');
+                } else {
+                    st.push(hasTrue ? 't' : 'f');
+                }
+            }
+            
+        }
+        return st.peek()=='t';
+    }
 }

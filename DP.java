@@ -6,7 +6,103 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+/*
+Absolutely. The **jist** is:
 
+there is a trick, and once you understand it, tabulation becomes much less about memorizing loop directions.
+
+The key idea is:
+
+You don't decide the tabulation loops first. 
+You start from the memoization state definition and ask: "What states does this state depend on?" 
+Then you fill the DP table in an order that guarantees those states are already computed.
+
+### When converting Memoization → Tabulation
+
+**1. Look at what your recursive function depends on.**
+
+If:
+
+```java
+dp[i] depends on dp[i-1]
+```
+
+→ loop `i` **forward**.
+
+If:
+
+```java
+dp[i] depends on dp[i+1]
+```
+
+→ loop `i` **backward**.
+
+For 2D, apply the same logic to `j`.
+
+---
+
+**2. The final answer comes directly from your original recursive call.**
+
+If:
+
+```java
+return help(1, n);
+```
+
+then:
+
+```java
+return dp[1][n];
+```
+
+If:
+
+```java
+return help(0, n-1);
+```
+
+then:
+
+```java
+return dp[0][n-1];
+```
+
+**Don't guess the answer cell — copy the starting state of the recursion.**
+
+---
+
+**3. DP size depends on the indices you access.**
+
+If you access up to index `n`:
+
+```java
+new int[n + 1]
+```
+
+If you access `n + 1`:
+
+```java
+new int[n + 2]
+```
+
+For example, if you have:
+
+```java
+dp[k + 1][j]
+```
+
+and `k` can become `n`, you need `n + 2` space.
+
+---
+
+### The one-line mental rule
+
+> **Memoization tells you the states; the dependencies tell you the loop direction; the initial recursive call tells you the answer cell; the largest index tells you the DP size.**
+
+That's basically all you need to remember.
+
+
+*/
 public class DP {
     public class TreeNode {
         int val;
@@ -1868,7 +1964,7 @@ Skip → dp[i+1][0]
     // 3. return the best possible partition 
 
     // f(i,j) -> means the best possible way to multiply the matrices from i to j
-    // f(i,j-1) = min{f(i,k)+f(k+1,j)} for all k such that i<k<j : this is trying all possible partitions
+    // f(i,j) = min{f(i,k)+f(k+1,j)} for all k such that i<k<=j-1 : this is trying all possible partitions
 
     /*
         f(i,j){
@@ -1884,6 +1980,8 @@ Skip → dp[i+1][0]
         }
     */
     // exponential time complexity in recusion
+    // the input is given as nums=[10,20,10,40] which means 3 matrices
+    // Matrix A is of 10x20 , Matrix B is of 20x10 and Matrix c is of 10x40
     public int matrixMultiplication(int[] nums) {
         int dp[][]=new int[nums.length][nums.length];
         for(int i=0;i<nums.length;i++)
@@ -1975,6 +2073,7 @@ Skip → dp[i+1][0]
         for(int k=i;k<=j;k++)
         {
             int cut=l.get(j+1) -l.get(i-1) + help(i,k-1,l) + help(k+1,j,l);
+            // l.get(j+1) -l.get(i-1) is the length of the cut we are making
             mini=Math.min(mini,cut);
         }
 
@@ -2121,5 +2220,64 @@ Skip → dp[i+1][0]
         }
     
         return dp[1][n];
+    }
+
+    // Pallindrome partioning : Same pattern as above
+    // recursion
+    public int minCut(String s) {
+        int dp[]=new int[s.length()];
+        Arrays.fill(dp,-1);
+
+        return cutMemoization(s,0,dp);
+    }
+    // recursion has overlapping sub problems 
+    public int cutRecursion(String s,int i) {
+        if(i==s.length())
+            return 0;
+
+        int mini=Integer.MAX_VALUE;
+        // String we consider will always be from i to j
+        for(int j=i;j<s.length();j++)
+        {
+            if(isPalindrome(s,i,j))
+            {
+                int cut=1+cutRecursion(s,j+1);
+                mini=Math.min(mini,cut);
+            }
+        }
+        return mini;
+
+    }
+    public int cutMemoization(String s,int i,int dp[]) {
+        if(i==s.length())
+            return 0;
+        if(dp[i]!=-1) return dp[i];
+        int mini=Integer.MAX_VALUE;
+        for(int j=i;j<s.length();j++)
+        {
+            if(isPalindrome(s,i,j))
+            {
+                if (j == s.length() - 1){
+                    mini = Math.min(mini, 0);
+                }
+                else{
+                    int cut=1+cutMemoization(s,j+1,dp);
+                    mini=Math.min(mini,cut);
+                }
+            }
+        }
+        return dp[i]=mini;
+    }
+
+    public boolean isPalindrome(String s,int i,int j)
+    {
+        while(i<j)
+        {
+            if(s.charAt(i)!=s.charAt(j))
+                return false;
+            i++;
+            j--;
+        }
+        return true;
     }
 }
