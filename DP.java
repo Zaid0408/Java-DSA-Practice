@@ -2280,4 +2280,54 @@ Skip → dp[i+1][0]
         }
         return true;
     }
+
+    // lc 1043. Partition Array for Maximum Sum
+
+    // recursion 
+
+    public int maxSumAfterPartitioning(int[] arr, int k) {
+        int n=arr.length;
+        int dp[]=new int[n+1];
+        Arrays.fill(dp,-1);
+        return hell(arr,0,k,dp);
+    }
+    // recursion with exponenetial time complexity
+    public int hell(int arr[],int i,int k)
+    {
+        if(i==arr.length)
+            return 0;
+        if(i+k>arr.length)
+            return 0;
+        int maxi=0;
+        int sum=0;
+        int len=0;
+        int mani=Integer.MIN_VALUE;
+        for(int j=i;j<Math.min(arr.length,(i+k));j++)
+        {
+            len++;
+            mani=Math.max(mani,arr[j]);
+            sum+=len*mani + hell(arr,j+1,k);
+            maxi=Math.max(maxi,sum);
+        }
+        return maxi;
+    }
+    // memoization TC : O(N)* O(k)
+    // SC : O(N) (dp array) * O(N) -> Auxillary stack space
+    public int hell(int arr[],int i,int k, int dp[])
+    {
+        if(i==arr.length)
+            return 0;
+        if(dp[i]!=-1)
+            return dp[i];
+        int maxi=0;
+        int mani=Integer.MIN_VALUE;
+        for(int j=i;j<Math.min(arr.length,(i+k));j++)
+        {
+            int len=j-i+1;
+            mani=Math.max(mani,arr[j]);
+            int sum =len*mani + hell(arr,j+1,k,dp);
+            maxi=Math.max(maxi,sum);
+        }
+        return dp[i]=maxi;
+    }
 }
