@@ -1156,7 +1156,11 @@ Before removing b, we solve:
     public int minimumTotal(List<List<Integer>> triangle) {
         int n = triangle.size();
         int[][] dp = new int[n][n];
-        boolean[][] visited = new boolean[n][n];
+        boolean[][] visited = new boolean[n][n]; // this is not needed
+        for(int i=0;i<n;i++)
+            {
+                Arrays.fill(dp[i],Integer.MAX_VALUE);// // max value is initialized and not -1 as the traingle can contain negative values 
+            }
         return Triangle(0, 0, triangle, dp,visited);
     }
     private int Triangle(int row,int col, List<List<Integer>> triangle, int[][] dp,boolean[][] visited)
@@ -1165,10 +1169,14 @@ Before removing b, we solve:
         {
             return triangle.get(row).get(col);
         }
-        if(visited[row][col])
+        if(visited[row][col]) // not needed instead you can use the second if below
         {
             return dp[row][col];
         }
+        if(dp[row][col]!=Integer.MAX_VALUE) 
+            {
+                return dp[row][col];
+            }
 
         int down= triangle.get(row).get(col) + Triangle(row+1,col,triangle,dp, visited);
         int diagnol= triangle.get(row).get(col) + Triangle(row+1,col+1,triangle,dp, visited);
@@ -1422,14 +1430,61 @@ Output: false
         return dp[n][target];
     }
     // lc 322 Coin change 1 
+    private int helper(int[] coins, int i, int amount, int[][] dp) {
+        if (amount == 0) {
+            return 0;
+        }
+        // dp[i][amount] = minimum coins needed to make `amount` using the first `i` coin types
+        if (i == 0) {
+            return amount + 1;
+        }
+        if (dp[i][amount] != -1) {
+            return dp[i][amount];
+        }
+        int take = amount + 1;
+        if (amount >= coins[i - 1]) {
+            take = 1 + helper(
+                coins,
+                i,
+                amount - coins[i - 1],
+                dp
+            );
+        }
+
+        int notTake = helper(
+            coins,
+            i - 1,
+            amount,
+            dp
+        );
+
+        return dp[i][amount] = Math.min(take, notTake);
+    }
+    // impo disticnton here 
+    // we do not change the value of i in recursion / tabulation because  We have: coins = [1, 2, 5]
+    // Suppose we take 5. We now have:
+    // 11
+    // ↓ take 5
+    // 6
+    // Can we take another 5? Yes! So when we solve the remaining 6, we must still have access to the 5. Therefore: helper(i, j - coins[i - 1])
+    /*
+                    dp[i][j]
+                       |
+              ┌────────┴────────┐
+            TAKE              NOT TAKE
+             |                    |
+          use coin             don't use coin
+             |                    |
+     1 + dp[i][j-coin]       dp[i-1][j]
+    */
     public int coinChange(int[] coins, int amount) {
         int n=coins.length;
         int dp[][]=new int[n+1][amount+1];
+        // dp[i][j] = minimum number of coins required to make amount j using the first i coins
         for (int i = 0; i <= n; i++) {
             Arrays.fill(dp[i], amount + 1);
         }
         for(int i=0;i<=n;i++) dp[i][0]=0; 
-        
         for(int i=1;i<=n;i++)
         {
             for(int j=1;j<=amount;j++)
