@@ -512,7 +512,7 @@ public class DP {
         return dp[amount]!=amount+1 ? dp[amount]: -1 ;
     }
 
-    // DP on trings Pattern.
+    // DP on Strings Pattern.
     /*
      * Longest Common Subsequence
      * Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
@@ -1484,6 +1484,7 @@ Output: false
         for (int i = 0; i <= n; i++) {
             Arrays.fill(dp[i], amount + 1);
         }
+        // We're using amount + 1 as a fake infinity. As if ex is 11 and amount is 10, we can't make 11 using 10 coins.
         for(int i=0;i<=n;i++) dp[i][0]=0; 
         for(int i=1;i<=n;i++)
         {
