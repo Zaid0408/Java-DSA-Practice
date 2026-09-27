@@ -1502,6 +1502,29 @@ Output: false
     // DP on stocks 
     // Remeber that sopace optimization is important 
 
+    /*
+    LC 121
+One transaction
+→ Track minimum buying price
+        ↓
+LC 122
+Unlimited transactions
+→ State = (day, buy)
+        ↓
+LC 123
+At most 2 transactions
+→ State = (day, buy, cap)
+        ↓
+LC 188
+At most K transactions
+→ Same state, cap = K
+        ↓
+LC 309
+Unlimited transactions + cooldown
+→ Same (day, buy) state
+→ Selling jumps to i + 2
+    */
+
 
     // lc 121 best time to buy and sell stock
     // Space optimization
@@ -1536,7 +1559,7 @@ Output: false
 
     // lc 122 Best time to buy and sell stock 2
     // difference between 121 and 122 is that here we can buy and sell multiple times
-    // But we can only hold one stock at a time but we have unlimited transactions 
+    // But we can only hold one stock at a time but we have unlimited transactions A transaction means: Buy + Sell
     // We cannot buy other stocks unless we esell them 
 
     // recursion time complexity O(2^n) space complexity O(n)
@@ -1671,9 +1694,34 @@ So you're asking:"Is it better to sell today or keep holding?" That's the entire
     // LC 123 Best time to buy and sell stock 3
     // diff between this and LC 122 is that here we have a limt on the transactions we can make 
     // in the previous problem we can make any number of transactions (A transaction is nothing but buying and selling that stock) 
-    // In this we can only do upto 2 transactions
+    // In this we can only do upto 2 transactions where cap represents the number of transactions remaining. So max value of cap is 2 atmost
     // reccusrive soln
     // SC : O(N) and TC : O(2^N) Gives TLE
+
+    /*
+    The only new thing is what happens to cap. You only decrease cap when you sell.Why? Because:
+
+Buy alone isn't a completed transaction.
+Buy + Sell = one completed transaction.
+
+Therefore:
+
+SELL → cap - 1
+
+Your recursion stops when:
+cap == 0
+because no more transactions are available.
+    */
+
+/*
+1. Same stock DP as LC 122, but now there is a transaction limit.
+2. State = day + buy/sell state + transactions remaining.
+3. buy = 1 means I can buy; buy = 0 means I am holding and can sell.
+4. A transaction is completed only when I SELL, so cap decreases on selling.
+5. Buying does not decrease cap because the transaction is not completed yet.
+6. For every state, choose between taking the action or skipping the day.
+7. For tabulation, process day from n-1 toward 0 because states depend on future days.
+*/
     public int profit(int i, int buy,int prices[],int cap)
     {
         if(cap==0)
@@ -1748,6 +1796,16 @@ So you're asking:"Is it better to sell today or keep holding?" That's the entire
     // lc 188 Best time to buy and sell stock 4
     // diff between this and above problem is instead of having 2 transactions at a time we can have atmost k transactions 
     // code is exact same as the above but now it is just adding a k to the dp array
+
+/*
+1. LC 188 is the generalized version of LC 123.
+2. Instead of at most 2 transactions, we can make at most K transactions.
+3. State = day + buy state + transactions remaining.
+4. buy = 1 means I can buy; buy = 0 means I currently hold a stock.
+5. Decrease cap only when selling because Buy + Sell completes one transaction.
+6. The transitions are exactly the same as LC 123.
+7. Only the transaction dimension changes from 2 to K.
+*/
     public int maxProfit(int k, int[] prices) {
         int n = prices.length;
        // dp[i][buy][cap]
@@ -1776,6 +1834,16 @@ So you're asking:"Is it better to sell today or keep holding?" That's the entire
    // here cooldown means you cannot buy on the next day after selling
    // Buy,..Sell,cooldown day(cannot buy immidiately after selling), buy.. etc
    // same as best time to buyb and sell 2 as this problem has unlimiited tracsactions
+
+/*
+1. This is the unlimited-transactions stock DP with one extra cooldown rule.
+2. State = day + whether I am allowed to buy.
+3. If I can buy: either buy today or skip today.
+4. If I hold a stock: either sell today or keep holding.
+5. After selling today, tomorrow is forced to be a cooldown day.
+6. Therefore selling moves from i to i+2 instead of i+1.
+7. Tabulation must be built from right to left because states depend on future days.
+*/
 
    public int profitWithCooldown(int i, int buy,int prices[], int dp[][])
     {
