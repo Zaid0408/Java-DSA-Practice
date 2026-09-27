@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import javax.lang.model.util.Elements;
 /*
 Absolutely. The **jist** is:
 
@@ -1232,42 +1234,6 @@ Output: false
         return arr[s.length()]; 
     }
     public static void main(String[] args) {
-        int W=7;
-        int val[]={15,14,10,45,30};
-        int weight[]={2,5,1,3, 4};
-        int dp[][]=new int[val.length+1][W+1];
-        for(int i=0;i<dp.length;i++){
-            for(int j=0;j<dp[0].length;j++){
-                dp[i][j]=-1;
-            }
-        }
-        //System.out.println(knapsack(val, weight, W, val.length, dp));
-        //System.out.println(knapsack(val, weight, W, val.length));
-        // for(int i=0;i<dp.length;i++){
-        //     for(int j=0;j<dp[0].length;j++){
-        //         System.out.print(dp[i][j]+" ");
-        //     }
-        //     System.out.println();
-        // }
-
-        int[] length={1,2,3,4,5,6,7,8};
-        int[] price={1,5,8,9,10,17,17,20};
-        //System.out.println(RodCutting(price, length, 8, length.length));
-
-        String str1="abcde",str2="ace";
-        int dp1[][]=new int[str1.length()+1][str2.length()+1];
-        for(int i=0;i<dp1.length;i++){
-            for(int j=0;j<dp1[0].length;j++){
-                dp1[i][j]=-1; // initialize all the array with -1 if we get length of lcs replace the -1 with that value
-            }
-        }
-        //System.out.println(longestCommonSubsequence(str1, str2, dp1,str1.length(), str2.length()));
-        //System.out.println(longestCommonSubsequence2(str1, str2));
-        //System.out.println(longestCommonSubstring("abce", str2));
-        int array[]={50,3,10,7,40,80};
-        System.out.println(longestIncreasingSubsequence(array));
-
-        
     }
 
     // DP on subsequences
@@ -1909,16 +1875,30 @@ Skip → dp[i+1][0]
     // Longest Increasing Subsequence pattern
     // Subsequence where all the elements follow the sequence in the origanl arrasy but are in increasing order
     // EX: [1,3,2,4,5] has a LIS as 1,3,4,5 or 1,2,4,5 are in increasing order and ans is 4.
+    // Given an array, find the length of the longest subsequence where:
+    // Elements must remain in their original order.
+    // Every next element must be strictly greater than the previous selected element
 
     // recusrive Tc O(2^n) because we are doing take or not take hence 2^n and SC O(n)
+
+    /*
+1. At every index, decide whether to TAKE or SKIP the current element.
+2. State = current index i + index of previously selected element prev.
+3. TAKE is possible if there is no previous element or arr[i] > arr[prev].
+4. If I TAKE arr[i], it becomes the new prev for the next state.
+5. If I SKIP arr[i], prev remains unchanged.
+6. Return the maximum length between TAKE and SKIP.
+7. Recursion explores all subsequences, giving O(2^n) time.
+*/
     public int LIS(int[] arr, int i, int prev) {
         if(i==arr.length)
             return 0;
 
         int len1=0,len2=0;
-        if(prev==-1 || arr[i]>arr[prev]) // prev==-1 means first element so take the first elemen , arr[i]>arr[prev] means if the current element is greater than the previous element take it to make the LIS
+        if(prev==-1 || arr[i]>arr[prev]) // prev==-1 means first element so take the first element , arr[i]>arr[prev] means if the current element is greater than the previous element take it to make the LIS
         {
             len1=1+LIS(arr,i+1,i); // take condition , since we consider arr[i] we have to pass i as the prev ind and increment i to be passed as the new index 
+            // Why does prev become i? Because the element I just selected becomes my new previous element.
         }
         len2=LIS(arr,i+1,prev);// not take condition 
         return Math.max(len1,len2);
@@ -1934,11 +1914,42 @@ Skip → dp[i+1][0]
     }
     // memoization
     // Tc O(n*n) and SC O(n*n)
-    // Overlapping Sub problems hence we need to convert into memoization
+    // Overlapping Sub problems hence we need to convert into memoization, The problem with recursion is that you repeatedly reach the same (i, prev) state.
     // here we need to take care of cordinate shift , this basically means we store the data ofr dp[i][prev]at dp[i][prev+1] this is done to include prev=-1 case as well
 
     // This is impo for this LIS problem as we need to take care of prev=-1 case
     // hence answer is always at dp[i][prev+1] and not dp[i][prev]
+
+    /*
+        The important prev = -1 problem ,Your prev can be:
+-1, 0, 1, 2, ...
+But arrays cannot use index -1.So you perform a coordinate shift:
+
+actual prev     stored index
+
+-1              0
+ 0              1
+ 1              2
+ 2              3
+...
+
+Hence: dp[i][prev + 1]. This is an extremely important LIS detail. The answer starts at:
+i = 0
+prev = -1
+so:
+dp[0][-1 + 1]
+=
+dp[0][0]
+    */
+
+/*
+1. Same TAKE/SKIP intuition as recursion, but cache repeated states.
+2. State = (i, prev), representing the best LIS from i with previous index prev.
+3. TAKE if prev == -1 or arr[i] > arr[prev].
+4. TAKE makes i the new prev; SKIP keeps prev unchanged.
+5. prev can be -1, so use coordinate shifting: store it at prev + 1.
+6. Therefore dp[i][prev + 1] represents the actual state (i, prev).
+*/
     public int LISM(int[] arr, int i, int prev, int dp[][]) {
         if(i==arr.length)
             return 0;
@@ -1955,6 +1966,15 @@ Skip → dp[i+1][0]
         return dp[i][prev+1]=Math.max(len1,len2);
     }
     // Tabulation Tc O(n*n) and SC O(n*n)
+    /*
+1. Tabulation uses the exact same TAKE/SKIP state as memoization.
+2. State = (ind, prev), and the answer depends on ind + 1.
+3. Since future index states are required, build ind from n-1 down to 0.
+4. TAKE gives 1 + answer after selecting arr[ind].
+5. SKIP keeps prev unchanged and moves to the next index.
+6. Coordinate shifting is still needed because prev can be -1.
+7. Time is O(n²) because we evaluate every (ind, prev) state.
+*/
     public int LIST(int arr[])
     {
         int dp[][]=new int[arr.length][arr.length+1];
@@ -1974,34 +1994,6 @@ Skip → dp[i+1][0]
         return dp[0][-1+1]; // dp[0][-1] is the LIS
     }
     
-// Longest Increasing Subsequence Tabulation
-    public static int longestIncreasingSubsequence(int[] arr)
-    {   // same to same as longest common subsequence logic 
-        HashSet<Integer> hs= new HashSet<>();
-        for(int i=0;i<arr.length;i++){
-            hs.add(arr[i]);
-        }
-        int arr2[]=new int[hs.size()];
-        int k=0;
-        for(int x:hs){
-            arr2[k++]=x;
-        }
-        Arrays.sort(arr2);
-        int dp[][]=new int[arr2.length+1][arr.length+1];
-        for(int i=1;i<dp.length;i++){
-            for(int j=1;j<dp[0].length;j++){
-                if(arr[j-1]==arr2[i-1])
-                {
-                    dp[i][j]=1+dp[i-1][j-1];
-                }
-                else
-                {
-                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
-                }
-            }
-        }
-        return dp[hs.size()][arr.length];
-    }
     // space optimization
     // lc 300 Length of LIS
     public int LIS(int arr[],int n)
