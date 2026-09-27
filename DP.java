@@ -1879,7 +1879,24 @@ Skip → dp[i+1][0]
     // Elements must remain in their original order.
     // Every next element must be strictly greater than the previous selected element
 
-    // recusrive Tc O(2^n) because we are doing take or not take hence 2^n and SC O(n)
+    /*
+    There are two ways you've represented the LIS state:
+Recursive / Memoization / 2D Tabulation Think:
+
+"I'm at index i. What did I select previously?"
+state = (i, prev)
+
+You are making a future decision:
+TAKE / SKIP
+
+
+1D DP Think:
+"What is the longest increasing subsequence that ENDS at i?"
+state = i
+
+You are looking backward:
+Can I attach arr[i] to a previous increasing subsequence?
+    */
 
     /*
 1. At every index, decide whether to TAKE or SKIP the current element.
@@ -1890,6 +1907,8 @@ Skip → dp[i+1][0]
 6. Return the maximum length between TAKE and SKIP.
 7. Recursion explores all subsequences, giving O(2^n) time.
 */
+
+    // recusrive Tc O(2^n) because we are doing take or not take hence 2^n and SC O(n)  
     public int LIS(int[] arr, int i, int prev) {
         if(i==arr.length)
             return 0;
@@ -1996,6 +2015,40 @@ dp[0][0]
     
     // space optimization
     // lc 300 Length of LIS
+
+    /*
+    Instead of asking: "What is the LIS from index i given some previous index?"
+    your 1D solution asks: "What is the longest increasing subsequence that ENDS at index i?"
+
+    dp[i] means Length of the longest increasing subsequence whose last element is arr[i].
+    Initially: Arrays.fill(dp, 1) Why is every value at least 1?
+    Because every individual element can form a subsequence of length 1.
+
+    Now consider: arr[i]
+    Look at every previous element:
+    arr[0] ... arr[i-1]
+
+    If: arr[prev] < arr[i] then arr[i] can be attached to the increasing subsequence ending at prev. That gives:
+        1 + dp[prev] : The 1 represents the current element arr[i].
+
+So you're essentially asking:
+"Among all increasing subsequences that I can extend with arr[i], which one is the longest?" Hence:
+dp[i] = max(dp[i], 1 + dp[prev])
+
+Finally, why don't you return simply dp[n-1]? Because the LIS doesn't necessarily end at the last element. ex:
+For: [10, 9, 2, 5, 3, 7, 101, 18] the LIS could end at 101, or 18, etc.
+Therefore you maintain: maxi - to find the largest dp[i] across all ending positions.
+     */
+
+/*
+1. Define dp[i] as the LIS length ending specifically at arr[i].
+2. Every element can start a subsequence, so initialize every dp[i] to 1.
+3. For every previous index prev < i, check if arr[prev] < arr[i].
+4. If increasing, arr[i] can extend the subsequence ending at prev.
+5. Therefore dp[i] = max(dp[i], 1 + dp[prev]).
+6. The LIS can end anywhere, so take the maximum dp[i] over the entire array.
+7. Time is O(n²) and space is O(n), making this simpler than the 2D DP.
+*/
     public int LIS(int arr[],int n)
     {
         int dp[]=new int[n];
