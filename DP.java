@@ -1506,6 +1506,21 @@ Output: false
     // lc 121 best time to buy and sell stock
     // Space optimization
 
+    /*
+    Simple explanation You can make only one transaction: Buy once → Sell once.
+    You want the maximum profit: selling price - buying price . The important restriction is that you must buy before you sell.
+    solution is based on a very simple observation: For every day, if I want to sell today, I should have bought at the cheapest price seen before today.
+    So you maintain two things:  minimum → cheapest stock price seen so far, profit → maximum profit found so far
+    */
+    /*
+1. Only ONE transaction is allowed: buy once and sell once.
+2. For every day, assume I sell today.
+3. To maximize today's profit, I need the minimum price seen before today.
+4. Keep `minimum` = cheapest price seen so far.
+5. Calculate today's profit = current price - minimum.
+6. Keep the maximum profit found so far.
+7. Since only minimum price and maximum profit matter, space can be optimized to O(1).
+*/
     public int maxProfit(int[] prices) {
         int minimum=prices[0];
         int cost=0,profit=0;
@@ -1521,11 +1536,47 @@ Output: false
 
     // lc 122 Best time to buy and sell stock 2
     // difference between 121 and 122 is that here we can buy and sell multiple times
-    // But we can only hold one stock at a time 
+    // But we can only hold one stock at a time but we have unlimited transactions 
     // We cannot buy other stocks unless we esell them 
 
     // recursion time complexity O(2^n) space complexity O(n)
     // This will have overallaping sub problems and hence time complexity will be exponential
+
+    /*
+    At every day, there are only two situations:
+
+buy == 1 → you are allowed to buy
+buy == 0 → you currently have a stock, so your meaningful choice is to sell
+
+From either state, you have two choices.
+
+When buy == 1
+You can Buy today:You pay the price: -prices[i] and move to the state where you cannot buy.
+
+Or:
+Don't buy today
+Stay in the same state and move to tomorrow. So you're asking: "Is it better to buy today or wait?"
+
+When buy == 0
+
+You can:
+
+Sell today: You receive: +prices[i] and return to the state where you can buy again.
+Or:
+Don't sell todayKeep holding and move to tomorrow.
+
+So you're asking:"Is it better to sell today or keep holding?" That's the entire DP. The state is basically: Which day am I on + am I currently allowed to buy or not?
+    */
+
+    /*
+1. Unlimited transactions are allowed, but only one stock can be held at a time.
+2. State = current day + whether I am allowed to buy.
+3. buy = 1 means I can buy; buy = 0 means I currently hold a stock and can sell.
+4. At every state, I have two choices: take the action or skip the day.
+5. Buying costs prices[i], while selling adds prices[i].
+6. Selling returns me to the buy state, allowing another transaction.
+7. Memoization stores (day, buy); tabulation builds the same states iteratively.
+*/
     
     public int profit(int i, int buy,int prices[])
     {
@@ -1655,13 +1706,13 @@ Output: false
         int profit=0;
 
         if(buy==1){ // 1 here means you are allowed to buy today
-            int buyIt=profit(i+1,0,prices,cap)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
-            int notBuyIt=profit(i+1,1,prices,cap); // i dont want to buy on this day
+            int buyIt=profit(i+1,0,prices,cap,dp)-prices[i]; // i have the choice to buy today at day i hence it is -ve as i am buying
+            int notBuyIt=profit(i+1,1,prices,cap,dp); // i dont want to buy on this day
             profit=Math.max(buyIt,notBuyIt); // to consider max profit if i buy on this day or not 
         }
         else{ // 0 means you cannot buy
-            int sellIt=profit(i+1,1,prices,cap-1)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
-            int notSellIt=profit(i+1,0,prices,cap); // I dont want to sell on this day
+            int sellIt=profit(i+1,1,prices,cap-1,dp)+prices[i]; // I have a choice to sell today so i will sell hence it is +ve as prices[i]  will get aded
+            int notSellIt=profit(i+1,0,prices,cap,dp); // I dont want to sell on this day
             profit=Math.max(sellIt,notSellIt); // to consider max profit if i sell on this day or not
         }
         return dp[i][buy][cap]=profit;
@@ -1787,7 +1838,7 @@ Skip → dp[i+1][0]
         return dp[0][1];
     }
     
-    // Logest Increasing Subsequence pattern
+    // Longest Increasing Subsequence pattern
     // Subsequence where all the elements follow the sequence in the origanl arrasy but are in increasing order
     // EX: [1,3,2,4,5] has a LIS as 1,3,4,5 or 1,2,4,5 are in increasing order and ans is 4.
 
@@ -1884,6 +1935,7 @@ Skip → dp[i+1][0]
         return dp[hs.size()][arr.length];
     }
     // space optimization
+    // lc 300 Length of LIS
     public int LIS(int arr[],int n)
     {
         int dp[]=new int[n];
