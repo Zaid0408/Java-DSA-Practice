@@ -2069,6 +2069,56 @@ Therefore you maintain: maxi - to find the largest dp[i] across all ending posit
         return maxi;
     }
 
+    /*
+    For example: 1 → 3 → 4 → 5 Suppose dp[5] = 4. You need to know: Where did 5 come from?
+That's exactly what your: hash[i] stores.
+
+You initialize: hash[i] = i meaning:
+"Currently, I consider i to be the starting point of its own chain." 
+When you discover that nums[prev] can extend the LIS ending at prev:
+nums[i] > nums[prev]
+
+and it produces a longer sequence:
+dp[i] < 1 + dp[prev]
+
+you do: hash[i] = prev;
+
+Meaning: "The LIS ending at i came from prev."
+
+So imagine: 1 ← 3 ← 4 ← 5 Your hash array stores these links.
+
+Finding where the LIS ends - 
+
+You maintain:
+lastIndex
+
+Whenever you find a larger dp[i], you remember that index. So:
+lastIndex = endpoint of the longest LIS ending at i. Then you walk backward:
+
+lastIndex
+   ↓
+hash[lastIndex]
+   ↓
+hash[previous]
+   ↓
+...
+
+until: hash[lastIndex] == lastIndex
+
+which means you've reached the beginning. But you've reconstructed the sequence backwards, so:
+Collections.reverse(ans); puts it back into the original increasing order.
+    */
+
+/*
+1. First use normal LIS DP: dp[i] = LIS length ending at i.
+2. hash[i] stores the previous index from which the LIS ending at i came.
+3. Whenever prev can extend i and gives a longer LIS, update dp[i] and hash[i].
+4. lastIndex stores the endpoint of the overall longest LIS.
+5. Start from lastIndex and follow hash[] backward to reconstruct the sequence.
+6. hash[i] = i means we reached the starting element of the chain.
+7. Reverse the reconstructed elements because we collected them from end to start.
+*/
+
     public List<Integer> printLIS(int[] nums) {
         int n=nums.length;
         int dp[]=new int[n];
@@ -2112,6 +2162,59 @@ Therefore you maintain: maxi - to find the largest dp[i] across all ending posit
     // lc 368 Largest Divisible Subset
 
     // Same logic as printing the LIS 
+    // Given an array, find the largest subset where: For every pair of elements, one must divide the other. Example: [1, 2, 4, 8] works because:
+    // 2 % 1 = 0
+    // 4 % 2 = 0
+    // 8 % 4 = 0
+
+    // So the answer length is 4.
+
+    /*
+    irst, you sort the numbers.
+
+That is extremely important because after sorting, if:
+prev < i: then:  nums[prev] <= nums[i]
+So you only need to check: nums[i] % nums[prev] == 0. You don't need to separately check the opposite direction.
+
+Now think exactly like LIS , dp[i] means: Largest divisible subset ending at nums[i].
+
+For every previous number: nums[prev] , ask:
+
+"Can I append nums[i] to the divisible subset ending at prev?"
+
+Your condition:
+
+nums[i] % nums[prev] == 0
+
+answers that.
+
+If yes: dp[i] = 1 + dp[prev]
+
+And just like Print LIS, you use: hash[i] = prev; to remember the actual chain.
+
+So conceptually:
+
+LIS:
+Can prev → i be connected?
+        ↓
+arr[i] > arr[prev]
+
+Divisible subset:
+Can prev → i be connected?
+        ↓
+arr[i] % arr[prev] == 0
+Everything else is basically the same.
+    */
+
+    /*
+1. Sort the array so previous elements are <= current elements.
+2. dp[i] = largest divisible subset length ending at nums[i].
+3. For every prev < i, check whether nums[i] is divisible by nums[prev].
+4. If divisible, nums[i] can extend the subset ending at prev.
+5. Update dp[i] and hash[i] when this produces a longer subset.
+6. Track lastIndex of the largest dp value to find the final chain.
+7. Follow hash[] backward and reverse to reconstruct the subset.
+*/
 
     public List<Integer> largestDivisibleSubset(int[] nums) {
         int n=nums.length;
@@ -2162,6 +2265,39 @@ Therefore you maintain: maxi - to find the largest dp[i] across all ending posit
     // Output: 4
     // Explanation: One of the longest word chains is ["a","ba","bda","bdca"].
 
+    /*
+    Instead of asking: "Is arr[prev] < arr[i]?" we ask: "Can words[prev] be the predecessor of words[i]?"
+
+That's what your: compareStrings(words[i], words[prev]) checks.
+
+Why sort by length?Your code starts with:
+Arrays.sort(words, Comparator.comparingInt(String::length)); This ensures shorter words come first.
+
+Why? Because a predecessor must be exactly one character shorter.
+
+Therefore when you're at: words[i], you only need to look backward at possible shorter words.
+This gives you the same directional structure as LIS: prev → i
+
+dp[i] = longest valid string chain ending at words[i].
+
+For every previous word: words[prev] , you ask: "Can this word be the predecessor of words[i]?"
+
+If yes:
+dp[i] = 1 + dp[prev]
+
+So the DP structure hasn't changed at all. Only the definition of "can prev connect to i?" has changed.
+    */
+
+/*
+1. Sort words by length so every possible predecessor appears before its word.
+2. dp[i] = longest valid string chain ending at words[i].
+3. For every prev < i, check if words[prev] is a valid predecessor of words[i].
+4. A predecessor must have exactly one fewer character.
+5. compareStrings() checks whether the shorter word can be obtained by removing one character.
+6. If valid, extend the chain: dp[i] = 1 + dp[prev].
+7. Track the maximum dp[i] because the longest chain can end at any word.
+*/
+
     public int longestStrChain(String[] words) {
         Arrays.sort(words, Comparator.comparingInt(String::length));
         int n=words.length;
@@ -2188,7 +2324,8 @@ Therefore you maintain: maxi - to find the largest dp[i] across all ending posit
     }
     public boolean compareStrings(String s1,String s2)
     {
-        if(s1.length()!=s2.length()+1)
+        // Try to match every character of the shorter word inside the longer word while allowing exactly one extra character in the longer word.
+        if(s1.length()!=s2.length()+1) // because the longer word must contain exactly one additional character.
             return false;
 
         int p1=0,p2=0;
@@ -2208,6 +2345,45 @@ Therefore you maintain: maxi - to find the largest dp[i] across all ending posit
         return false;
     }
     // lc 673 Number of Longest Increasing Subsequences 
+    /*
+    dp[i] means: Length of the longest increasing subsequence ending at i.
+    You also need: cnt[i] which means: Number of longest increasing subsequences of length dp[i] that end at i.
+    Initially:
+dp[i] = 1
+cnt[i] = 1
+Why? Every element by itself is an LIS of length 1.
+
+Case 1 — We found a longer LIS Your code checks:
+
+dp[i] < 1 + dp[prev] That means: "The sequence ending at prev, followed by nums[i], is better than anything I previously had for i."
+
+So: dp[i] = dp[prev] + 1;
+
+cnt[i] = cnt[prev]; Why don't we add?
+Because we've discovered a new best length.
+The old sequences at i are no longer relevant because we're only counting sequences having the new maximum length.
+
+So we replace the count.
+
+Case 2 — We found another way to achieve the same longest length
+
+Your second condition: dp[i] == 1 + dp[prev] That means:
+"I already have an LIS of this length ending at i, but prev gives me another way to create the same length."
+Therefore:
+
+cnt[i] += cnt[prev];
+
+Now we add because we've discovered additional LISs of the same optimal length.
+
+Finally After calculating every dp[i], you know the overall LIS length:
+maxi
+
+But the LIS can end at different positions. So you go through every index:
+if(dp[i] == maxi)
+    ans += cnt[i];
+
+Meaning: "If an LIS ends here and has the global maximum length, add all LISs ending here."
+    */
     public int findNumberOfLIS(int[] nums) {
         int n=nums.length;
         int dp[]=new int[n];
