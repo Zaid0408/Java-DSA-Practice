@@ -794,6 +794,7 @@ Then, once the LCS table exists, walk backward through it to construct the actua
     }
     // lc 115. Distinct Subsequences Recursive soln : will exceed time limit
     // find the number of distinct subsequences of t in s 
+    // Notice that we're not asking whether t exists.We're asking: How many different ways can I form t from s?
     // ex: Input: s = "babgbag", t = "bag"
         // Output: 5
         // Explanation:
@@ -806,18 +807,91 @@ Then, once the LCS table exists, walk backward through it to construct the actua
     // f(i-1,j-1,s,t)+ f(i-1,j,s,t); represents the number of ways to generate t[0..j-1] from s[0..i-1] including the char at s[i]
     // it also means that suppose s[i]==t[j]== 'g' this means taking this current g into consideration for the subsequence and then continuing on to find b and a
     // but if we dont consider this subsequence and want to find anothe g we use f(i-1,j,s,t) 
+
+    
+    /*
+    Why is the LCS-style pattern used here? This problem looks similar to LCS because we're comparing two strings character by character.
+But there is an important difference:
+
+LCS asks: What's the maximum length of a common subsequence?
+
+LC 115 asks: How many different subsequences can form t?So the state structure resembles LCS:
+
+i = position in s
+j = position in t
+
+but the value stored in DP is different.
+
+For LCS: dp[i][j] = maximum length
+For this problem: dp[i][j] = number of ways
+
+That's why you can think of this as an LCS-family/string-DP pattern, but don't blindly use the LCS recurrence.
+    */
+
+    /*
+    When characters match You have:
+if(s.charAt(i)==t.charAt(j))
+    return f(i-1,j-1,s,t)+ f(i-1,j,s,t);
+
+This is the heart of the problem. Suppose:
+
+s[i] == t[j] There are two possibilities.
+
+Possibility 1 — Take s[i] and Use this character to match t[j].Therefore both move:
+i → i-1
+j → j-1
+
+That's:f(i-1,j-1)
+
+Possibility 2 — Don't take s[i]
+Even though the characters match, you don't have to use this particular occurrence.
+Maybe another occurrence of the same character later/earlier can form another valid subsequence.So:
+
+i → i-1
+j stays
+
+That's: f(i-1,j)
+
+Therefore: take + don't take becomes:
+
+f(i-1,j-1) + f(i-1,j)
+
+This is why your comment about the second call is correct:
+We ignore this occurrence of the matching character and continue looking for another possible way to construct t.
+When characters don't match You have:
+
+return f(i-1,j,s,t);
+
+There is no choice. If:
+s[i] != t[j]
+then s[i] cannot help match t[j].
+
+So simply ignore s[i]:
+i → i-1
+j stays
+    */
     public int numDistinct(String s, String t) {
         int n=s.length(),m=t.length();
         return f(n-1,m-1,s,t);
     }
     private int f(int i, int j,String s, String t)
-    {
+    { // f(i,j,s,t) means Number of ways to form t[0...j] using s[0...i].
         if(j<0)
             return 1; // means one subseqence possible
+        /*
+        We have successfully matched the entire target t. There is exactly one successful way from here:
+        Do nothing. So return 1.
+        This 1 is extremely important in counting DP. You're basically saying:
+        "One valid construction has been completed."
+        */
         if(i<0)
             return 0; // no more traversal possible
+        /*
+        We've run out of characters in s. But t still hasn't been completely matched.Therefore:
+        No possible subsequence. Return 0.
+        */
         if(s.charAt(i)==t.charAt(j))
-            return f(i-1,j-1,s,t)+ f(i-1,j,s,t);
+            return f(i-1,j-1,s,t)+ f(i-1,j,s,t); // remember this is number of ways so we use the take + not take formula used in other dp problems 
 
         return f(i-1,j,s,t); // characters did not match go to the next index in S string while keeping the T string intact
     }
@@ -836,6 +910,62 @@ Then, once the LCS table exists, walk backward through it to construct the actua
         return dp[i][j]= f(i-1,j,s,t,dp); // characters did not match go to the next index in S string while keeping the T string intact
     }
     // Tabulation : Similar to LCS
+    /*
+    Your memoization state is:
+f(i,j) where i and j are indices.
+
+But your tabulation uses: dp[i][j] where i and j represent lengths.
+This is the usual +1 shift. Think:
+
+recursive index i
+       ↓
+tabulation length i+1
+
+Your recursive base cases:
+
+j < 0 return 1
+i < 0 return 0
+
+become tabulation initialization:
+
+dp[i][0] = 1
+
+because:no matter how many characters you take from s, an Empty t can be formed from any prefix of s in exactly one way: choose nothing.
+
+Then: dp[0][j] = 0 for all j > 0, because: You cannot form a non-empty target from an empty source.
+
+Your transitions:
+match:
+f(i-1,j-1) + f(i-1,j) become:
+
+dp[i][j] = dp[i-1][j-1] + dp[i-1][j]
+
+And mismatch:
+f(i-1,j) becomes:
+
+dp[i][j] = dp[i-1][j]
+Why fill top → bottom?
+
+Current state only depends on the previous row:
+
+dp[i-1][j-1]
+dp[i-1][j]
+
+So row i-1 must be calculated before row i.
+
+Therefore:
+
+i = 1 → n
+j = 1 → m
+    */
+   /*
+ * LC 115: Count distinct subsequences of s that form t.
+ * dp[i][j] = number of ways to form first j chars of t using first i chars of s.
+ * If chars match, either take s[i-1] or skip it -> dp[i-1][j-1] + dp[i-1][j].
+ * If chars don't match, s[i-1] cannot help -> dp[i][j] = dp[i-1][j].
+ * Empty target has 1 way: choose nothing, so dp[i][0] = 1.
+ * Empty source cannot form non-empty target, so dp[0][j] = 0.
+ */
     public int numDistinct2(String s, String t) {
         int n=s.length(),m=t.length();
         int dp[][]=new int[n+1][m+1];
@@ -853,26 +983,72 @@ Then, once the LCS table exists, walk backward through it to construct the actua
             }
         return dp[n][m];
     }
+    /*
+    Longest Common Substring Characters must be continuous/adjacent.  For example:
+"abcde"
+"abfde"
+Common substrings include:
+"ab"
+"de"
+
+but "ade" is not a substring because the characters aren't continuous.
+
+Why does this use an LCS-like pattern? Because we're still comparing characters at positions i and j.
+
+So we can use the same basic 2D state: dp[i][j]
+
+But the meaning changes: dp[i][j] = length of the common substring that ends exactly at text1[i-1] and text2[j-1].
+That "ends exactly here" is the key.
+    */
+   /*
+ * Longest Common Substring: characters must be contiguous.
+ * dp[i][j] = length of common substring ending exactly at text1[i-1], text2[j-1].
+ * If chars match -> extend diagonal: dp[i-1][j-1] + 1.
+ * If chars differ -> substring breaks, so dp[i][j] = 0.
+ * Unlike LCS, do NOT take max(top, left) because skipping breaks continuity.
+ * The longest substring can end anywhere, so maintain the maximum DP value.
+ */
     public static int longestCommonSubstring(String text1, String text2)
     {
         // similar logic as longest common subsequence 
         int dp[][]=new int[text1.length()+1][text2.length()+1];
+        int maxi=-1;
         for(int i=1;i<dp.length;i++){
             for(int j=1;j<dp[0].length;j++){
                 if(text1.charAt(i-1)==text2.charAt(j-1)){
                     dp[i][j]=dp[i-1][j-1]+1;    // if both the last characters of text1 and text2 are same 
+                    maxi=Math.max(maxi,dp[i][j]);
                 }
                 else{ // if uncommon characters then substring breaks then set it to 0
                     dp[i][j]=0;
-                }
+                } // this is the main diff betwee this and lcs dp[i][j]=0; is done only because we are looking for substring and not subsequence, a substring is continuous and in the same order as the orignal word
             }
         }
-        return dp[text1.length()][text2.length()];
+        return maxi;
+        //return dp[text1.length()][text2.length()]; // answer not necesaarily is stored here , change this to return a variable called maxi which stores the maximum 
     }
+
+    /*
+ * Longest Palindromic Subsequence:
+ * A palindrome reads the same forwards and backwards.
+ * Reverse the string and find LCS(original, reversed).
+ * The common subsequence represents characters that can form a palindrome.
+ * Therefore LPS length = LCS(s, reverse(s)).
+ * Use the standard LCS DP: match -> diagonal + 1, mismatch -> max(top,left).
+ * Final answer = dp[s.length()][reverse.length()].
+ */
+/*
+ * Intuition:
+ * Convert LPS into LCS by comparing the string with its reverse.
+ * dp[i][j] stores the best common subsequence between the two prefixes.
+ * Matching characters can be included -> dp[i-1][j-1] + 1.
+ * Mismatching characters require skipping one side -> max(top,left).
+ * The LCS with the reversed string gives the longest palindromic subsequence.
+ */
     public static int longestPalindromicSubsequence(String s) {
     // DP Approach
     // 1)Reverse The string;
-    // 2)Find the lowest common subsequence of given string and reverse of the string.
+    // 2)Find the longest common subsequence of given string and reverse of the string.
         StringBuilder ss=new StringBuilder(s);
         String rev=ss.reverse().toString();
         int dp[][]=new int[s.length()+1][rev.length()+1];
