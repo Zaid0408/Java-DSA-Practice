@@ -525,6 +525,24 @@ public class DP {
      * Example 3: 
      * Input: text1 = "abc", text2 = "def" Output: 0 Explanation: There is no such common subsequence, so the result is 0.
      */
+    // The important idea is that we compare characters from the end of both strings.
+    /*
+    If text1[n-1] == text2[m-1]
+Both characters can be part of the LCS.
+So take them → 1 + LCS(n-1, m-1).
+If they are different:
+We cannot take both.
+Either ignore the current character of text1, or ignore the current character of text2.
+Take the better of those two possibilities.
+Your n and m represent lengths, not indices. 
+Suppose:
+
+text1 = "abc"
+text2 = "axc"
+
+At this point, both last characters are c. Since they match, there is no reason to throw c away.So:
+LCS("abc", "axc") = 1 + LCS("ab", "ax") That's why: 1 + longestCommonSubsequence(..., n-1, m-1)
+    */
     public static int longestCommonSubsequence(String text1, String text2, int dp1[][],int n, int m) {
         // memoization 
         /* 
@@ -536,13 +554,31 @@ public class DP {
         if(dp1[n][m]!=-1)
             return dp1[n][m];
         if(text1.charAt(n-1)==text2.charAt(m-1))
-            return  dp1[n][m]= 1 + longestCommonSubsequence(text1,text2,dp1,n-1,m-1);
+            return  dp1[n][m]= 1 + longestCommonSubsequence(text1,text2,dp1,n-1,m-1); 
         else{
-            int ans1= longestCommonSubsequence(text1,text2,dp1,n-1,m);
-            int ans2= longestCommonSubsequence(text1,text2,dp1,n,m-1);
+            int ans1= longestCommonSubsequence(text1,text2,dp1,n-1,m); // ignore the current character of text1 and move on
+            int ans2= longestCommonSubsequence(text1,text2,dp1,n,m-1); // ignore the current character of text2 and move on
             return dp1[n][m]= Math.max(ans1,ans2); // valid statement will return dp1[n][m]
         }
+        /*
+        int n=text1.length(),m=text2.length();
+        int dp[][]=new int[n+1][m+1];
+        for(int i=0;i<=n;i++)
+        {
+            Arrays.fill(dp[i],-1);
+        }
+        return helper(text1,text2,n,m,dp);
+        */
     }
+    /*
+ * LCS pattern:
+ * dp[i][j] = LCS length between first i chars of text1 and first j chars of text2.
+ * If last chars match -> take both: 1 + dp[i-1][j-1].
+ * If they don't match -> skip one character and take max(dp[i-1][j], dp[i][j-1]).
+ * Base case: if either string is empty, LCS = 0.
+ * Memoization stores repeated (i,j) states; tabulation fills them bottom-up.
+ * Final answer = dp[text1.length()][text2.length()].
+ */
     public static int longestCommonSubsequence2(String text1, String text2)
     {   // remember LCS pattern for dp
         // tabulation approach
@@ -579,6 +615,11 @@ public class DP {
     // length of the word1 - LCS : number of ops required to remove characters from word1
     // length of the word2 - LCS : number of ops required to remove characters from word2
     // Hence summation of both is the answer 
+    /*
+    Instead of directly thinking: "Which characters should I delete?"
+Think: Which characters should I keep?" If we can find the Longest Common Subsequence, those characters already exist in both strings in the correct order.
+So we can keep the LCS and delete everything else.
+    */
     public int minDistance(String word1, String word2) {
         int dp[][]=new int[word1.length()+1][word2.length()+1];
         for(int i=1;i<dp.length;i++){
@@ -593,6 +634,23 @@ public class DP {
         }
         return word1.length()- dp[word1.length()][word2.length()] + word2.length()- dp[word1.length()][word2.length()];
     }
+    // same logic as above 
+    //Given two strings str1 and str2, find the minimum number of insertions and deletions in string str1 required to transform str1 into str2.
+    // Insertion and deletion of characters can take place at any position in the string.
+    public int minOperations(String str1, String str2) {
+        int dp[][]=new int[str1.length()+1][str2.length()+1];
+        for(int i=1;i<dp.length;i++){
+            for(int j=1;j<dp[0].length;j++){
+                if(str1.charAt(i-1)==str2.charAt(j-1)){
+                    dp[i][j]=dp[i-1][j-1]+1;    // if both the last characters of str1 and str2 are same 
+                }
+                else{
+                    dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return str1.length()- dp[str1.length()][str2.length()] + str2.length()- dp[str1.length()][str2.length()];
+    }
     // lc 1092. Shortest Common Supersequence
     // find the Longest Common Subsequence (LCS), The LCS represents characters that appear in both strings in the same order.
     // Then, I construct the Shortest Common Supersequence by:
@@ -601,10 +659,92 @@ public class DP {
     // If they differ, I include characters from both strings
     // Finally, I add any remaining characters from either string
     // Reverse the constructed string to get the final answer.
+    /*
+    You need to create the shortest string that contains both str1 and str2 as subsequences. For example:
+
+str1 = "abac"
+str2 = "cab"
+
+A valid answer could be: "cabac" because both strings can be obtained from it by deleting some characters.
+    The key is: The characters common to both strings should be written only once. And what represents the characters common to both strings while preserving their order?
+    LCS.
+    Find LCS
+   ↓
+Use LCS to know which characters can be shared
+   ↓
+For matching characters → add once
+For different characters → add the appropriate character from one string
+   ↓
+Add remaining characters
+   ↓
+Reverse
+
+For phase 2 will constructing the shortest supersequence back 
+That is, you're standing at the last characters of both strings. Think of this as walking backward through the two strings.
+
+Characters are the same → add once
+Characters are different → add the appropriate character from one string
+
+If: dp[i-1][j] > dp[i][j-1] then ignoring the current character of str1 gives a better LCS.
+
+So you append the current str1 character and move: ans.append(str1.charAt(i-1)); i--;
+
+Otherwise:
+ans.append(str2.charAt(j-1));
+j--;
+
+The important intuition is: The LCS table tells you which side to move toward while constructing the shortest supersequence.
+Why do you append the character even though you're moving toward an LCS?
+
+This is an important distinction. The LCS table is only helping you decide which character should be handled first.
+
+The final SCS needs:
+
+all LCS characters once
+all non-LCS characters from str1
+all non-LCS characters from str2
+
+So when characters differ, you append the character from the side you're moving from.
+    */
+   /*
+ * LC 1092: Build the shortest string containing both strings as subsequences.
+ * First calculate the LCS table because LCS characters can be shared only once.
+ * Traverse from the end: if characters match, add once and move both pointers.
+ * If they differ, use the LCS table to decide which character to add first.
+ * After one string ends, append all remaining characters from the other string.
+ * Reconstruction is done backwards, so reverse the StringBuilder at the end.
+ */
+
+   /*
+   How to arrive at Tabulation from Memoization
+
+The recursive state would be something like:
+f(i,j)
+
+meaning: What is the required LCS information for the first i characters and first j characters?
+The changing variables are: i and j Therefore:
+
+2 changing variables
+        ↓
+2D DP
+
+The dependencies are:
+
+dp[i-1][j]
+dp[i][j-1]
+dp[i-1][j-1]
+
+Therefore those smaller states must already exist. So fill:
+
+i = 1 → n
+j = 1 → m
+
+Then, once the LCS table exists, walk backward through it to construct the actual SCS. That distinction is important: DP table is filled forward. Answer reconstruction is done backward.
+   */
     public String shortestCommonSupersequence(String str1, String str2) {
         int n=str1.length(),m=str2.length();
         int dp[][]=new int[n+1][m+1];
-
+        // dp[i][j] = LCS length between the first i characters of str1 and first j characters of str2.
         for(int i=1;i<=n;i++)
         {
             for(int j=1;j<=m;j++)
@@ -614,7 +754,7 @@ public class DP {
                 else
                     dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
             }
-        }
+        } // standard lcs till here 
         StringBuilder ans=new StringBuilder();
         int i=n,j=m;
         while(i>0 && j>0)
@@ -645,6 +785,12 @@ public class DP {
         }
 
         return ans.reverse().toString();
+        /*
+        Why reverse? You're constructing the answer from the end toward the beginning. So if the actual answer should be:
+        abcde
+        you've built:
+        edcba hence reverser the answer
+        */
     }
     // lc 115. Distinct Subsequences Recursive soln : will exceed time limit
     // find the number of distinct subsequences of t in s 
