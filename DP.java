@@ -105,6 +105,8 @@ That's basically all you need to remember.
 
 
 */
+
+// https://leetcode.com/discuss/post/1000929/solved-all-dynamic-programming-dp-proble-8m82/ Check more problems here
 public class DP {
     public class TreeNode {
         int val;
@@ -513,6 +515,56 @@ public class DP {
         
         return dp[amount]!=amount+1 ? dp[amount]: -1 ;
     }
+
+    /*
+ * ==================== DP ON STRINGS / LCS ====================
+ *
+ * Recognize this pattern when the problem involves TWO strings/sequences
+ * and asks about their relationship while preserving character order.
+ *
+ * Strong hints:
+ * - Longest Common Subsequence
+ * - Common characters/elements while maintaining order
+ * - Number of ways to form one string from another
+ * - Make two strings equal using deletions/insertions
+ * - Shortest Common Supersequence
+ * - Palindromic subsequence -> compare string with its reverse
+ * - String transformation problems that compare prefixes of two strings
+ *
+ * Main mental question:
+ * "What is the relationship between the first i characters of string 1
+ *  and the first j characters of string 2?"
+ *
+ * Common 2D state:
+ * dp[i][j] = answer for first i characters of string1
+ *            and first j characters of string2.
+ *
+ * Typical LCS transition:
+ * If characters match:
+ *     use both -> 1 + dp[i-1][j-1]
+ *
+ * If characters differ:
+ *     skip one side -> max(dp[i-1][j], dp[i][j-1])
+ *
+ * BUT DO NOT blindly apply the LCS recurrence.
+ * First identify what dp[i][j] is counting:
+ *
+ * LCS              -> maximum common subsequence length
+ * Distinct Subseq. -> number of ways
+ * Common Substring -> contiguous match, mismatch becomes 0
+ * Edit Distance    -> minimum transformation cost
+ * SCS              -> use LCS table to reconstruct shortest supersequence
+ *
+ * Important distinction:
+ * SUBSEQUENCE -> characters can be skipped.
+ * SUBSTRING   -> characters must remain contiguous.
+ *
+ * KEY DIFFERENCE:
+ * When TWO strings are being compared and the problem talks about
+ * commonality, matching, forming, transforming, or preserving order,
+ * consider a 2D string DP / LCS-family pattern.
+ * ================================================================
+ */
 
     // DP on Strings Pattern.
     /*
@@ -1045,6 +1097,14 @@ That "ends exactly here" is the key.
  * Mismatching characters require skipping one side -> max(top,left).
  * The LCS with the reversed string gives the longest palindromic subsequence.
  */
+/*
+ * Memoization -> Tabulation:
+ * Recursive state has two variables: LCS(i,j), so use a 2D dp table.
+ * Base case i=0 or j=0 gives 0 -> initialize first row/column to 0.
+ * Match dependency is (i-1,j-1) -> dp[i-1][j-1] + 1.
+ * Mismatch dependencies are (i-1,j) and (i,j-1) -> max(top,left).
+ * Since current state depends on smaller i/j values, fill top-to-bottom, left-to-right.
+ */
     public static int longestPalindromicSubsequence(String s) {
     // DP Approach
     // 1)Reverse The string;
@@ -1075,12 +1135,37 @@ That "ends exactly here" is the key.
     // exactly same as above but we need to return the no of operations to make the string palindrome
     // Minimum Insertion Steps to Make a String Palindrome is basically length of the string - longest pallindromic subsequence of the string
     // Intuition is to find the longest pallindromic subsequence , keep it handy
-    // for the remaining characters which are not pallindrome then add the remaining characters to make the string pallindrome ex:
+    // for the remaining characters which are not pallindrome/characters not included in the LPS  add the remaining characters to make the string pallindrome ex:
     // given string : abcaa , let us consider lps is aaa remaing chars are b,c 
-    // a b c a      a : to make this a pallindrome we shiould add c,b after the second a to make it a pallindrome to make it a b c a c b a
+    // a b c a      a : to make this a pallindrome we should add c,b after the second a to make it a pallindrome to make it a b c a c b a
     // let us consider lps is aca remaing chars are b,a 
-    // a b   c    a a : to make this a pallindrome we shiould add a between b and c and b between c and a to make it a pallindrome to make it a b a c a  b a
+    // a b   c    a a : to make this a pallindrome we should add a between b and c and b between c and a to make it a pallindrome to make it a b a c a  b a
     // hence formula is easier to understand
+    /*
+ * LC 1312: Minimum insertions to make s a palindrome.
+ * First find the Longest Palindromic Subsequence (LPS).
+ * LPS = LCS(s, reverse(s)) because a palindrome reads the same backwards.
+ * Characters belonging to the LPS are already arranged as a palindrome.
+ * The remaining characters must be matched using insertions.
+ * Therefore minimum insertions = s.length() - LPS.
+ * We only need the LPS length, so there is no need to reconstruct the palindrome.
+ * Why does n - LPS work? Think of the LPS as the part you don't need to fix.
+If the string contains:
+
+LPS = "aba"
+
+those three characters can remain.
+The characters outside that palindromic subsequence need corresponding characters inserted to make the entire string symmetric.
+ */
+/*
+ * Memoization -> Tabulation:
+ * This problem uses the exact LCS state: LCS(i,j) between s and reverse(s).
+ * Two changing variables -> 2D dp table.
+ * Empty string base cases -> first row and column are 0.
+ * Match -> diagonal + 1; mismatch -> max(top,left).
+ * Fill table top-to-bottom and left-to-right because dependencies are smaller states.
+ * After LCS is calculated, return s.length() - dp[n][n].
+ */
     public int minInsertions(String s) {
         StringBuilder ss=new StringBuilder(s);
         String rev=ss.reverse().toString();
@@ -1131,10 +1216,70 @@ We can remove b.
 Before removing b, we solve:
 
 "ab" → "ac"
+    */
+   /*
+ * Edit Distance:
+ * Find minimum insert, delete, and replace operations to convert s1 into s2.
+ * dp[i][j] = minimum operations to convert first i chars of s1 into first j chars of s2.
+ * If current chars match, no operation is needed -> dp[i-1][j-1].
+ * If they differ, choose minimum of insert, delete, and replace.
+ * This resembles LCS because both compare two string prefixes, but the DP meaning is different.
+ * 
+ * Your state is:
+dp[i][j]
+Convert first i characters of s1 into first j characters of s2.
+ */
 
+    /*
+    Case 1 — Characters are equal
+if(s1.charAt(i-1)==s2.charAt(j-1))
+    dp[i][j]=dp[i-1][j-1];
 
+Suppose:
+s1 = "abc"
+s2 = "adc"
+
+At the current position:
+c == c
+
+You don't need an operation for c. So just solve the smaller problem: first i-1 characters → first j-1 characters
+Therefore:dp[i][j] = dp[i-1][j-1]
+
+Case 2 — Characters differ
+Suppose: s1[i-1] != s2[j-1] , You have exactly three choices.
+
+Choice 1 — Insert
+
+You want the current target character s2[j-1]. So imagine inserting it into s1.
+
+After that insertion, the target character has been handled, but the source prefix hasn't been consumed. Therefore:
+
+dp[i][j-1] + 1
+
+That's your:
+int add=dp[i][j-1] + 1;
+
+Choice 2 — Remove
+
+Remove the current character from s1.So: dp[i-1][j] + 1
+Your code: int rem=dp[i-1][j] + 1;
+The source becomes one character shorter.
+
+Choice 3 — Replace. Replace s1[i-1] with s2[j-1].
+Now both current characters have been dealt with. So:
+
+dp[i-1][j-1] + 1
+
+Your code: int replace=dp[i-1][j-1] + 1;
+
+Then:
+
+dp[i][j]=Math.min(add,Math.min(rem,replace));
+
+Because the question asks for the minimum number of operations.
     */
     public static int EditDistance(String s1, String s2){
+        // This may look similar to LCS but it is not it is actually: String transformation DP. LCS maybe a subset of this 
         int dp[][]=new int[s1.length()+1][s2.length()+1];
         // initialization step
         for (int i = 0; i <= dp.length; i++) {
@@ -2193,7 +2338,44 @@ Skip → dp[i+1][0]
         }
         return dp[0][1];
     }
-    
+    /*
+ * ==================== LIS / SUBSEQUENCE DP ====================
+ *
+ * Recognize this pattern when the problem asks for:
+ * - Longest / maximum / minimum subsequence under some condition.
+ * - A sequence must maintain the original order, but elements can be skipped.
+ * - We are selecting elements one-by-one and deciding TAKE vs SKIP.
+ * - A valid next element depends on the previously selected element.
+ * - Common conditions: increasing, decreasing, divisible, compatible,
+ *   valid chain, previous element < current element, etc.
+ *
+ * Main mental question:
+ * "If I choose this element, what previous element/state does it depend on?"
+ *
+ * Common 2D state:
+ * dp(i, prev) = best subsequence starting at i given previous selected index.
+ *
+ * Common optimized 1D state:
+ * dp[i] = best subsequence ending specifically at index i.
+ *
+ * Typical transition:
+ * If current element can follow prev:
+ *     take = 1 + dp[prev]
+ * Otherwise skip / consider another previous element.
+ *
+ * Variations can ask for:
+ * - Length of the subsequence
+ * - Number of LIS
+ * - Print/reconstruct the LIS
+ * - Longest chain based on a custom comparison
+ *
+ * KEY DIFFERENCE:
+ * Subsequence = order matters, but elements between chosen elements
+ * can be skipped.
+ * ================================================================
+ */
+
+
     // Longest Increasing Subsequence pattern
     // Subsequence where all the elements follow the sequence in the origanl arrasy but are in increasing order
     // EX: [1,3,2,4,5] has a LIS as 1,3,4,5 or 1,2,4,5 are in increasing order and ans is 4.
@@ -2742,6 +2924,55 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
         return ans;
     }
 
+    /*
+ * ==================== MCM / PARTITION DP ====================
+ *
+ * Recognize this pattern when the problem asks you to:
+ * - Partition / split an array, string, or range into parts.
+ * - Decide where to place cuts.
+ * - Try every possible partition point k.
+ * - Combine answers from the left and right portions.
+ * - Find minimum/maximum cost after performing a sequence of operations.
+ *
+ * Strong hint:
+ * "Choose a partition point / split point / last operation."
+ *
+ * Main mental question:
+ * "If I solve the range from i to j, where should I make the
+ * final partition?"
+ *
+ * Common state:
+ * dp[i][j] = best answer for the range from i to j.
+ *
+ * Try every possible partition:
+ *
+ * for k = i ... j:
+ *     left  = dp[i][k]
+ *     right = dp[k+1][j]
+ *     current = left + right + cost of combining/performing operation
+ *
+ * Then take:
+ *     minimum OR maximum
+ *
+ * Typical clues:
+ * - Matrix Chain Multiplication
+ * - Burst Balloons
+ * - Boolean Parenthesization
+ * - Palindrome Partitioning
+ * - Minimum cost to cut a stick
+ * - Problems asking for optimal way to split/parenthesize/partition
+ *
+ * KEY IDEA:
+ * Unlike LIS where the decision is usually TAKE/SKIP,
+ * partition DP asks:
+ *
+ * "Where should I split this range?"
+ *
+ * If the answer depends on solving BOTH sides of a chosen split,
+ * strongly consider interval / partition DP.
+ * ================================================================
+ */
+
     // Patition DP
 
     // Whenevr there is more than one way to solve a question use partition dp
@@ -2774,6 +3005,56 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     // exponential time complexity in recusion
     // the input is given as nums=[10,20,10,40] which means 3 matrices
     // Matrix A is of 10x20 , Matrix B is of 20x10 and Matrix c is of 10x40
+
+
+    /*
+ * ==================== MCM / PARTITION DP ====================
+ *
+ * Recognize this pattern when:
+ * - We have a range / interval.
+ * - We need to split or partition that range.
+ * - We can choose different partition points k.
+ * - Choosing k creates a LEFT and RIGHT subproblem.
+ * - We need the minimum / maximum total cost.
+ *
+ * Main question:
+ * "Where should I split this range?"
+ *
+ * General structure:
+ *
+ *          i ----------- j
+ *                |
+ *                k
+ *                |
+ *          --------|--------
+ *          LEFT    RIGHT
+ *
+ * Try every possible k:
+ *
+ * answer(i,j) =
+ *     best over all k {
+ *         answer(left)
+ *         + answer(right)
+ *         + cost of choosing k
+ *     }
+ *
+ * MCM:
+ * - Split a chain of matrices.
+ * - Cost of combining = nums[i-1] * nums[k] * nums[j].
+ *
+ * Minimum Cost to Cut Stick:
+ * - Split a stick by choosing which cut to perform.
+ * - Cost of current cut = current stick length.
+ *
+ * KEY RECOGNITION:
+ * "I have a range, I choose a partition point,
+ *  solve both sides, and combine their answers."
+ *
+ *                ↓
+ *
+ *          MCM / PARTITION DP
+ * =============================================================
+ */
     public int matrixMultiplication(int[] nums) {
         int dp[][]=new int[nums.length][nums.length];
         for(int i=0;i<nums.length;i++)
@@ -2783,11 +3064,11 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
                 dp[i][j]=-1;
             }
         }
-        return func(nums,1,nums.length-1,dp);
+        return func(nums,1,nums.length-1,dp); // Find the minimum cost to multiply all matrices from matrix i through matrix j.
     }
     public int func(int nums[],int i,int j)
     {
-        if(i==j) return 0;
+        if(i==j) return 0; // there is only one matrix. You don't need to multiply anything. hence cost is 0
         int mini=Integer.MAX_VALUE;
         for(int k=i;k<j;k++)
         {
@@ -2801,26 +3082,39 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     public int func(int nums[],int i,int j,int dp[][])
     {
 
-        if(i==j) return 0;
+        if(i==j) return 0; // there is only one matrix. You don't need to multiply anything. hence cost is 0
         if(dp[i][j]!=-1) return dp[i][j];
         int mini=Integer.MAX_VALUE;
         for(int k=i;k<j;k++)
         {
             int steps=nums[i-1]*nums[k]*nums[j] + func(nums,i,k,dp) + func(nums,k+1,j,dp);
+            // func(nums,i,k) Solve the matrices on the left. func(nums,k+1,j) Solve the matrices on the right. nums[i-1] * nums[k] * nums[j] Combine them
             mini=Math.min(mini,steps);
         }
         return dp[i][j]=mini;
     }
 
     // tabulation
+    /*
+ * MCM — MEMOIZATION → TABULATION
+ *
+ * 1. Find changing variables in recursion: i and j.
+ * 2. Therefore create a 2D table: dp[i][j].
+ * 3. Convert base case: i == j returns 0 → dp[i][i] = 0.
+ * 4. Convert recursive calls: func(i,k) → dp[i][k].
+ * 5. Convert recursive calls: func(k+1,j) → dp[k+1][j].
+ * 6. Keep the same partition loop over every possible k.
+ * 7. Check dependencies before deciding the loop direction.
+ * 8. dp[i][j] depends on smaller intervals, so calculate those first.
+ * 9. Finally, the original recursive call func(1,n-1) becomes dp[1][n-1].
+ */
     public int matrixMultiplicationTabulation(int[] nums) {
         int n=nums.length;
         int dp[][]=new int[n][n];
         for(int i=n-1;i>=0;i--)
         {
-            for(int j=i+1;j<n;j++)
+            for(int j=i+1;j<n;j++) // since we need range here i to j hence j starts from i+1 
             {
-                if(i==j) dp[i][j]=0; // base case same as recusrion
                 else
                 {
                     int mini=Integer.MAX_VALUE;
@@ -2837,6 +3131,29 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     }
 
     // lc 1547 Minimum cost to cut the stick
+    /*
+    For example: n = 7, cuts = [1,3,4,5]
+You need to perform all these cuts.
+
+The important part is:
+The cost of making a cut equals the length of the stick that exists at that moment.
+
+So the order of cuts matters. For example, making a cut while the stick is length 7 costs 7.
+After cutting it, you now have smaller sticks.
+
+ * LC 1547 — MINIMUM COST TO CUT A STICK
+ *
+ * We must perform all required cuts on a stick of length n.
+ * The cost of each cut equals the length of the stick being cut.
+ * Therefore, the order in which we perform cuts affects the total cost.
+ * For a range of remaining cuts i...j, choose one cut k to perform first.
+ * That cut divides the current stick into a LEFT and RIGHT part.
+ * Solve the remaining cuts on both sides independently.
+ * Add the current stick length as the cost of performing cut k.
+ * Try every possible k and choose the minimum total cost.
+ * This is Partition DP because we repeatedly choose where to partition.
+ 
+    */
     // recursion
 
     public int minCost(int n, int[] cuts) {
@@ -2854,9 +3171,9 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
         for(int cut:cuts)
             l.add(cut);
 
-        l.add(n);
-
-        return help(1,cuts.length,l,dp);
+        l.add(n); // remember to add boundaries to the list important while solving
+        // you first add: 0 and n to the cuts list. This is important because now every group of cuts has a clear left and right boundary.
+        return help(1,cuts.length,l,dp);// Find the minimum cost to perform all cuts from index i to j.
     }
     public int help(int i,int j,List<Integer> l)
     {
@@ -2864,8 +3181,10 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
         int mini=Integer.MAX_VALUE;
         for(int k=i;k<=j;k++)
         {
-            int cut=l.get(j+1) -l.get(i-1) + help(i,k-1,l) + help(k+1,j,l);
-            // l.get(j+1) -l.get(i-1) is the length of the cut we are making
+            int cut=l.get(j+1) -l.get(i-1) + help(i,k-1,l) + help(k+1,j,l); 
+            // cut divides the remaining work into:  i ... k-1 and: k+1 ... j
+            // l.get(j+1) -l.get(i-1) is the length of the cut we are making. If k is performed first, the current stick has length: l[j+1] - l[i-1]
+            // current cut cost[l.get(j+1) -l.get(i-1)] + best left cost(i ... k-1) + best right cost(k+1 ... j)
             mini=Math.min(mini,cut);
         }
 
@@ -2886,9 +3205,22 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     }
 
     // Tabulation
+    /*
+ * CUT STICK — MEMOIZATION → TABULATION
+ *
+ * 1. Recursive state is help(i,j), so DP needs two dimensions.
+ * 2. Create dp[i][j] to represent the minimum cost for cuts i...j.
+ * 3. Base case i > j returns 0; Java's default zero handles these states.
+ * 4. help(i,k-1) becomes dp[i][k-1].
+ * 5. help(k+1,j) becomes dp[k+1][j].
+ * 6. Keep the same loop over every possible first cut k.
+ * 7. Inspect dependencies to determine table filling order.
+ * 8. Both dependencies are smaller ranges, so calculate them first.
+ * 9. Original help(1,cuts.length) becomes dp[1][cuts.length].
+ */
 
     public int minCostTabulation(int n, int[] cuts) {
-        Arrays.sort(cuts);
+        Arrays.sort(cuts);// sort the cuts
         List<Integer> l=new ArrayList<>();
         l.add(0);
         for(int cut:cuts)
@@ -2916,6 +3248,63 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     }
 
     // lc 312 Burst Ballons : Same pattern as above 
+    /*
+    1. What is the problem and why is Partition DP used? You have balloons with values, and when you burst balloon k, you earn:
+
+left balloon × current balloon × right balloon
+The difficult part is that bursting a balloon changes its neighbors. So thinking:
+
+"Which balloon should I burst first?"
+
+makes the neighboring values difficult to track. The key idea is to reverse the thinking:
+
+Which balloon should I burst LAST in this range? If k is the last balloon burst between i and j, then at that moment:
+arr[i-1]     arr[k]     arr[j+1]
+     ↓          ↓           ↓
+   left       last        right
+
+The balloons between i and j have already disappeared. Therefore the coins gained from the final balloon are simply:
+arr[i-1] * arr[k] * arr[j+1]
+
+And everything else has already been solved independently:
+[i ... k-1]       [k+1 ... j]
+
+That gives the Partition DP structure:
+LEFT + LAST OPERATION + RIGHT
+ *
+ * We need to burst all balloons and maximize the total coins earned.
+ * Bursting a balloon changes its neighbors, making "burst first" difficult.
+ * Instead, think about which balloon is burst LAST in a given range.
+ * If k is last, all balloons between i and j are already removed.
+ * Therefore k's neighbors are simply arr[i-1] and arr[j+1].
+ * Coins earned from the final balloon = arr[i-1] * arr[k] * arr[j+1].
+ * The remaining balloons form two independent subproblems: left and right.
+ * Try every k as the last balloon and take the maximum total coins.
+ * This is Partition DP because choosing k partitions the range into two parts.
+ * 
+              choose k as LAST
+                    ↓
+        ┌───────────┴───────────┐
+        ↓                       ↓
+     LEFT SIDE              RIGHT SIDE
+     i...k-1                 k+1...j
+        ↓                       ↓
+     best coins              best coins
+        └───────────┬───────────┘
+                    ↓
+              final burst
+                    ↓
+        arr[i-1] * arr[k] * arr[j+1]
+
+ * Main trick: choose the LAST balloon to burst, not the first.
+ * Padding the array with 1 at both ends gives fixed boundaries.
+ * dp[i][j] represents the maximum coins from bursting range i...j.
+ * k represents the balloon chosen as the final balloon in this range.
+ * Final burst cost = arr[i-1] * arr[k] * arr[j+1].
+ * Then combine left range i...k-1 and right range k+1...j.
+ * This is a MAX partition DP, so use Math.max over all k.
+ * Be careful that the main method must actually call the memoized helper.
+    */
     public int maxCoins(int[] nums) {
 
         int n = nums.length;
@@ -2955,7 +3344,7 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
         return maxi;
     }
     // memoization 
-    public int help(int i, int j, int arr[], int dp[][]) {
+    public int help(int i, int j, int arr[], int dp[][]) { // What is the maximum number of coins I can collect by bursting all balloons from i to j?
 
         if (i > j)
             return 0;
@@ -2976,6 +3365,19 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
     
         return dp[i][j] = maxi;
     }
+    /*
+ * BURST BALLOONS — MEMOIZATION → TABULATION
+ *
+ * Recursive state help(i,j) has two changing variables, so use dp[i][j].
+ * Base case i > j returns 0, which is already Java's default table value.
+ * Convert help(i,k-1) into dp[i][k-1].
+ * Convert help(k+1,j) into dp[k+1][j].
+ * Keep the same loop over k because every k can be the last balloon.
+ * dp[i][j] depends only on smaller intervals.
+ * Therefore calculate smaller intervals before calculating larger intervals.
+ * Use Math.max because we want the maximum number of coins.
+ * The original answer help(1,n) becomes dp[1][n].
+ */
 
     public int maxCoinsTabulation(int[] nums) {
 
