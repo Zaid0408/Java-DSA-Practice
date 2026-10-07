@@ -1342,55 +1342,7 @@ Because the question asks for the minimum number of operations.
         }
         return dp[n];
     }
-    // leetcode 96 Unique Binary Search Trees
-    public static int CountingTrees(int n){
-        // given a number find the total number of bst's possible
-        // exactly same to same logic as catalan number
-        int dp[]=new int[n+1];
-        dp[0]=1;
-        dp[1]=1;
-        for(int i=2;i<=n;i++){
-            for(int j=0;j<i;j++){
-                dp[i]+=dp[j]*dp[i-j-1];
-            }
-        }
-        return dp[n];
-    }
-    // lc 95 Unique Binary Search Trees II
-    public List<TreeNode> generateTrees(int n) {
-        if (n == 0) {
-            return new ArrayList<>();
-        }
-        Map<String, List<TreeNode>> memo = new HashMap<>();
-        return generateTreesHelper(1, n, memo);        
-    }
-
-    private List<TreeNode> generateTreesHelper(int start, int end, Map<String, List<TreeNode>> memo) {
-        String key = start + "-" + end;
-        if (memo.containsKey(key)) {
-            return memo.get(key);
-        }
-        List<TreeNode> trees = new ArrayList<>();
-        if (start > end) {
-            trees.add(null);
-            return trees;
-        }
-        for (int rootVal = start; rootVal <= end; rootVal++) {
-            List<TreeNode> leftTrees = generateTreesHelper(start, rootVal - 1, memo);
-            List<TreeNode> rightTrees = generateTreesHelper(rootVal + 1, end, memo);
-            for (TreeNode leftTree : leftTrees) {
-                for (TreeNode rightTree : rightTrees) {
-                    TreeNode root = new TreeNode(rootVal);
-                    root.left = leftTree;
-                    root.right = rightTree;
-                    trees.add(root);
-                }
-            }
-        }
-        memo.put(key, trees);
-        return trees;
-    }
-
+    
     public static int minPartition(int arr[]){
         int sum=0;
         for(int a:arr)
@@ -3416,7 +3368,38 @@ LEFT + LAST OPERATION + RIGHT
         return dp[1][n];
     }
 
-    // Pallindrome partioning : Same pattern as above
+    // Pallindrome partioning 2 : Same pattern as above
+    /*
+ * PALINDROME PARTITIONING — PARTITION DP
+ *
+ * you want to partition a string into pieces such that every piece is a palindrome, using the minimum number of cuts.For example:
+"ababbbabbababa"
+
+You want to find the best partition:
+"aba" | "bbb" | "abba" | "baba"
+
+where every piece is a palindrome.The important decision is:
+
+Starting from position i, where should I make my next partition?You try every possible ending position j:
+i -------- j
+If: s[i...j]
+is a palindrome, you can make that partition and solve the remaining suffix:
+
+s[j+1 ... n-1]
+
+So this is partition DP, although unlike MCM it uses a 1D state:
+dp[i]
+
+ * We need to divide a string into palindrome substrings using minimum cuts.
+ * Starting from index i, try every possible ending index j.
+ * If s[i...j] is a palindrome, it can be one valid partition.
+ * After choosing that palindrome, the remaining problem starts at j+1.
+ * Therefore dp[i] can represent the minimum cuts needed from index i onward.
+ * Try every valid palindrome starting at i and choose the minimum result.
+ * Unlike MCM, this uses 1D DP because only the next starting index matters.
+ * The partition decision is the ending point j of the current palindrome.
+ * This is still Partition DP: choose a valid partition, then solve the remainder.
+ */
     // recursion
     public int minCut(String s) {
         int dp[]=new int[s.length()];

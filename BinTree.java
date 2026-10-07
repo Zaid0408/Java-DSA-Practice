@@ -1083,6 +1083,40 @@ Intuition:
             return root;
         }
     }
+
+
+    long MOD = 1000000007L;
+    long totalSum = 0;
+    long maxi = 0;
+
+    // First DFS: calculate total sum of the tree
+    public long dfsTotal(TreeNode root) {
+        if (root == null)
+            return 0;
+        return root.val + dfsTotal(root.left) + dfsTotal(root.right);
+    }
+
+    // Second DFS: calculate every subtree sum
+    public long dfsMaxProduct(TreeNode root) {
+        if (root == null)
+            return 0;
+
+        long leftSum = dfsMaxProduct(root.left);
+        long rightSum = dfsMaxProduct(root.right);
+
+        long subtreeSum = root.val + leftSum + rightSum;
+        long otherSum = totalSum - subtreeSum;
+        long product = subtreeSum * otherSum;
+
+        maxi = Math.max(maxi, product);
+        return subtreeSum;
+    }
+    // leetocode 1339 Maximum Product of Splitted Binary Tree
+    public int maxProduct(TreeNode root) {
+        totalSum = dfsTotal(root);
+        dfsMaxProduct(root);
+        return (int)(maxi % MOD);
+    }
     
     public static void main(String[] args) {
         // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
