@@ -1117,7 +1117,56 @@ Intuition:
         dfsMaxProduct(root);
         return (int)(maxi % MOD);
     }
+
+    // leetcode 1367. Linked List in Binary Tree
+    /*
+    Traverse the tree find the node where root.val==head.val once found traverse the tree to find all the remaining elements of the list
+    NOTE : Important that if head is found at root then all other elements must be found adjacent to root/ must be child then grandchild etc 
+    Otherwise the list is not found even if it is present in the tree
+    ex : tree is 4,null,1,null,null,null,2 and list is 4,2 then list is not found.
+            4
+            \
+             1
+             \
+              2
+    */
+    public boolean isSubPath(ListNode head, TreeNode root) {
+        if(root==null)
+            return false;
+
+        if(matchList(head,root)) // if head is found at root then start the matching 
+            return true;
+        
+        return isSubPath(head,root.left) || isSubPath(head,root.right); // check both left amnd right subtrees
+    }
+    public boolean matchList(ListNode head, TreeNode root)
+    {
+        if(head==null)
+            return true;
+        if(root==null)
+            return false;
+        if(head.val!=root.val)
+            return false; // impo: Only go to the next node if the values are sameand if they are different then list is not found here
+        
+        head=head.next;
+        return matchList(head,root.left) || matchList(head,root.right); 
+    }
+    // leetcode 1372. Longest ZigZag Path in a Binary Tree
+    /*
     
+    */
+    public int longestZigZag(TreeNode root) {
+        return helperZigZag(root,0,0)-1;
+    }
+    public int helperZigZag(TreeNode root, int left, int right)
+    {
+        if(root==null)
+            return Math.max(left,right);
+        int leftLen=helperZigZag(root.left,right+1,0);
+        int rightLen=helperZigZag(root.right,0,left+1);
+
+        return Math.max(leftLen,rightLen);
+    }
     public static void main(String[] args) {
         // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
         BinaryTree tree=new BinaryTree();
