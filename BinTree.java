@@ -1085,6 +1085,16 @@ Intuition:
     }
 
 
+    /* leetocode 1339 Maximum Product of Splitted Binary Tree
+ * Maximum Product of Splitted Binary Tree - Intuition:
+ * Cutting an edge separates the tree into a subtree and the remaining tree.
+ * If a subtree has sum S, the other part has sum (totalSum - S).
+ * Therefore, the product for that cut is S * (totalSum - S).
+ * First find the total sum of the entire tree.
+ * Then calculate every subtree's sum using DFS and evaluate its split product.
+ * The key idea is: every node represents a possible subtree where we can make the cut.
+ */
+
     long MOD = 1000000007L;
     long totalSum = 0;
     long maxi = 0;
@@ -1130,6 +1140,15 @@ Intuition:
              \
               2
     */
+   /*
+ * Linked List in Binary Tree - Intuition:
+ * There are two separate tasks: FIND a starting tree node and MATCH the list from there.
+ * Try every tree node as a possible starting point for the linked list.
+ * Once a match starts, we must move only downward to the left or right child.
+ * We cannot restart the list search somewhere else while matching a path.
+ * If the current values match, move to head.next and one of the two children.
+ * Think: "Find a starting point" first, then "follow one continuous downward path."
+ */
     public boolean isSubPath(ListNode head, TreeNode root) {
         if(root==null)
             return false;
@@ -1153,8 +1172,14 @@ Intuition:
     }
     // leetcode 1372. Longest ZigZag Path in a Binary Tree
     /*
-    
-    */
+ * Longest ZigZag Path - Intuition:
+ * A ZigZag path must alternate between LEFT and RIGHT at every step.
+ * Therefore, we need to remember the direction of the previous move.
+ * If the previous move was LEFT, the next move must be RIGHT, and vice versa.
+ * When we continue in the correct direction, increase the current ZigZag length.
+ * Starting the same direction again breaks the ZigZag, so its length effectively resets.
+ * Key idea: when the next decision depends on the previous direction, include direction in the state.
+ */
     public int longestZigZag(TreeNode root) {
         return helperZigZag(root,0,0)-1;
     }

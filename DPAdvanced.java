@@ -117,6 +117,15 @@ So the tree-DP intuition becomes:
 At every node, make a TAKE/SKIP decision, but the decision changes what you're allowed to do with the children.
 This is very similar to the TAKE/SKIP intuition you've already learned in subsequence DP.
     */
+   /*
+ * House Robber III - Tree DP Intuition:
+ * At every node, decide whether to ROB or NOT ROB the current node.
+ * If we ROB the node, we cannot rob its immediate children.
+ * If we DON'T rob it, each child can independently choose ROB or NOT ROB.
+ * Therefore, each subtree should provide both possibilities to its parent.
+ * Think of the state as: [maximum if ROBBED, maximum if NOT ROBBED].
+ * This is the tree version of TAKE/SKIP DP, where the current choice affects children.
+ */
     public int rob(TreeNode root) {
         if(root==null)
             return 0;
