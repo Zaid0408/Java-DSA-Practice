@@ -1192,6 +1192,78 @@ Intuition:
 
         return Math.max(leftLen,rightLen);
     }
+
+        /**
+     leetcode 968. Binary Tree Cameras
+     Greedy Soln 
+     Make decison for parent based on children
+     1. if either child is not monitored parent needs a camera
+     2. If one or more of the child nodes have camera so parent is monitored
+     3. if both children are monitored then parent needs a camera
+     */
+    private int ans=0;
+    public int minCameraCover(TreeNode root) {
+         return dfsCamera(root)==-1?ans+1:ans;
+    }
+     public int dfsCamera(TreeNode root)
+     {
+         if(root==null)
+             return 0;
+         // -1: NOT MONITORED
+         //  0: MONITORED
+         //  1: HAS CAMERA
+         int left=dfsCamera(root.left);
+         int right=dfsCamera(root.right);
+ 
+         if(left==-1 || right==-1) // if either child is not monitored parent needs a camera
+         {
+             ans++;
+             return 1;
+         }
+         if(left==1 || right==1) // if either child has camera so parent is monitored
+             return 0;
+ 
+         return -1;
+ 
+     }
+    // leetcode 1373 Maximum Sum BST in Binary Tree
+    // Recusrisve soln gives error and TLE due to overlapping subproblems
+    int ans=0;
+    public int maxSumBST(TreeNode root) {
+        ans=0;
+        helper(root);
+        return ans;
+    }
+    public void helper(TreeNode root)
+    {
+        if(root==null)
+            return;
+        if(validBST(root,Integer.MIN_VALUE,Integer.MAX_VALUE))
+        {
+            ans=Math.max(ans,sumBST(root));
+        }
+        helper(root.left);
+        helper(root.right);
+    }
+    public boolean validBST(TreeNode root, int low,int high)
+    {
+        if(root==null)
+            return true;
+        if(root.val<=low || root.val>=high)
+            return false;
+        return validBST(root.left,low,root.val) && validBST(root.right,root.val,high);
+    }
+    public int sumBST(TreeNode root)
+    {
+        if(root==null)
+            return 0;
+        if(root.left == null && root.right== null)
+            return root.val;
+        int left=sumBST(root.left);
+        int right=sumBST(root.right);
+
+        return root.val+left+right;
+    }
     public static void main(String[] args) {
         // int nodes[]= {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
         BinaryTree tree=new BinaryTree();

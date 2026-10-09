@@ -184,4 +184,105 @@ This is very similar to the TAKE/SKIP intuition you've already learned in subseq
         // return Math.max(ans[0], ans[1]);
     }
 
+    /* Leetcode 1373 Maximum Sum BST in Binary Tree, DP on trees
+    Ask yourself: What information does the parent need from its left and right subtrees to determine whether its own subtree is a BST?
+It needs just four things from each child:
+
+Is the child's subtree a BST?
+What is its minimum value?
+What is its maximum value?
+What is its sum?
+
+Instead of making three separate traversals, each recursive call returns all four pieces of information together.The intuition
+
+Consider this tree:
+
+        5
+       / \
+      3   8
+     / \
+    2   4
+
+First, solve the leaf nodes. Each leaf reports that it is a BST, its own value as its minimum and maximum, and its sum.
+
+Then the node 3 receives information from 2 and 4. It checks:
+
+max(left)<3<min(right)
+
+Since 2<3<4, its subtree is a BST. It can return its combined sum, minimum, and maximum to node 5.
+
+Node 5 uses the same logic to determine whether the entire tree is a BST.
+
+At every valid BST subtree, update the global maximum sum.
+    */
+
+/**
+ * PROBLEM: Maximum Sum BST in Binary Tree
+ * 
+ * 1. WHY THE Info CLASS?
+ *    A node cannot decide if it forms a valid BST solely from its children's values.
+ *    It needs 4 pieces of aggregated information bottom-up:
+ *      - isBst:  Are both subtrees valid BSTs?
+ *      - min:    The minimum value anywhere in the current subtree.
+ *      - max:    The maximum value anywhere in the current subtree.
+ *      - sum:    The total sum of node values in the current subtree.
+ *    Post-order traversal (Left, Right, Root) ensures subproblems are fully solved first.
+ * 
+ * 2. WHY THIS BASE CASE? -> return new Info(true, Integer.MAX_VALUE, Integer.MIN_VALUE, 0);
+ *    For a null node (empty subtree), we set min = MAX_VALUE and max = MIN_VALUE.
+ *    - Why swapped? A parent node checks: (root.val > left.max && root.val < right.min).
+ *      * For a leaf node's left child (null), root.val > Integer.MIN_VALUE is ALWAYS TRUE.
+ *      * For a leaf node's right child (null), root.val < Integer.MAX_VALUE is ALWAYS TRUE.
+ *    This inverted initialization acts as a identity element, allowing leaf nodes to effortlessly 
+ *    pass the BST comparison check.
+ * 
+ * 3. WHY BOUND PROPAGATION? -> return new Info(true, Math.min(root.val, left.min), Math.max(root.val, right.max), sum);
+ *    When constructing the Info object for a valid BST rooted at `root`:
+ *    - If `root.left` is null, `left.min` is Integer.MAX_VALUE. Returning `left.min` directly would 
+ *      corrupt the subtree's minimum bound to MAX_VALUE!
+ *    - Math.min(root.val, left.min) correctly bounds the minimum to `root.val` when left is empty.
+ *    - Similarly, Math.max(root.val, right.max) prevents Integer.MIN_VALUE from leaking up when right is empty.
+ *    This correctly propagates the exact [min, max] range of the entire subtree up to higher parents.
+ * 
+ * 4. INVALID SUBTREE FALLBACK:
+ *    If ANY BST condition fails, return new Info(false, 0, 0, 0).
+ *    Setting isBst = false stops invalid BST states from propagating upward to parent nodes.
+ */
+    
+    //  Leetcode 1373
+    int ans=0;
+    class Info{
+        boolean isBst;
+        int min,max,sum;
+
+        public Info(boolean isBst, int min, int max,int sum)
+        {
+            this.isBst=isBst;
+            this.min=min;
+            this.max=max;
+            this.sum=sum;
+        }
+    }
+    public int maxSumBST(TreeNode root) {
+        ans=0;
+        helper(root);
+        return ans;
+    }
+    public Info helper(TreeNode root)
+    {
+        if(root==null)
+            return new Info(true,Integer.MAX_VALUE,Integer.MIN_VALUE,0);
+        Info left=helper(root.left);
+        Info right=helper(root.right);
+
+        if(root.val>left.max && root.val<right.min && (left.isBst && right.isBst))
+        {
+            int sum=root.val+left.sum+right.sum;
+            ans= Math.max(ans,sum);
+            return new Info(true,Math.min(root.val,left.min),Math.max(root.val,right.max),sum);
+        }
+        
+        return new Info(false,0,0,0);
+    }
+
 }
