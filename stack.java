@@ -650,7 +650,7 @@ public class stack {
     Stack has to be in decreasing order so that we can get the next greater element where top is the smallest element and the bottom is the greatest
     By ensuring that stack is in decreasing order of elemnts post index i , the next gretaer of nums2[i] will be the top of the stack
     */
-
+    // nums1 = [4,1,2], nums2 = [1,3,4,2], nge= [3,4,-1,-1], s=[1,3,4]
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
         Stack s=new Stack<>();
         int ans[]=new int[nums1.length];
@@ -718,7 +718,7 @@ public class stack {
         Stack<Integer> s=new Stack<>();
         for(int i=n-1;i>=0;i--)
         {
-            while(!s.isEmpty() && (s.peek()>=arr[i]))
+            while(!s.isEmpty() && (s.peek()>=arr[i])) // only this condition is reveresed compared to next greater
                 s.pop();
             if(s.isEmpty())
                 nse[i]=-1;
@@ -886,28 +886,27 @@ I=3  ans=13+(1*1*4)=17
     // leetcode 735 Asteroid Collison
 
     public int[] asteroidCollision(int[] asteroids) {
-        
-        Stack<Integer> st=new Stack<>();
-        int n=asteroids.length;
-        for(int i=0;i<n;i++)
-        {
-            if(asteroids[i]>0)
-            {
-                st.push(asteroids[i]);
+        Stack<Integer> s = new Stack<>();
+        int n = asteroids.length;
+        for (int i = 0; i < n; i++) {
+            boolean destroy=false;
+            int a=asteroids[i];
+            while(!s.isEmpty() && s.peek()>0 && a<0) // pop from stack only in case of collisions
+            { // s.peek()>0 && a<0 because these are the conditions for collisions to happen , 
+                if(s.peek()<-a) // if an incoming negative value is greater in magnitude then pop the exiting positivve value
+                {
+                    s.pop();
+                }
+                else if(s.peek()==-a) { // if opposite sign and same magintude then both get destroyed
+                    s.pop(); 
+                    destroy=true; break; // mark destroy as true and break the loop
+                }
+                else { destroy = true; break;} // s.peek() is greater in magbitude than the upcoming asteroid , hence destory the upcoming asteroid
             }
-            else
-            {
-                while(!st.isEmpty() && st.peek()>0 && st.peek()<(int)Math.abs(asteroids[i]))
-                    st.pop(); // pse/nse/nge pattern 
-
-                if(!st.isEmpty() && st.peek()==(int)Math.abs(asteroids[i]))
-                    st.pop();
-                else if(st.isEmpty() || st.peek()<0)
-                    st.push(asteroids[i]);
-            }
+            if(!destroy)
+                s.push(a); // push only if there is no collision
         }
-
-        int[] arr = st.stream().mapToInt(Integer::intValue).toArray();
+        int[] arr = s.stream().mapToInt(Integer::intValue).toArray();
         return arr;
     }
 
@@ -946,7 +945,7 @@ I=3  ans=13+(1*1*4)=17
         return ans.isEmpty()?"0":ans.toString();
     }
 
-    // Leetcode 2104 
+    // Leetcode 2104 Sum of Subarray Ranges 
 
     // Please go through the logic again
 
@@ -1114,6 +1113,21 @@ PGE + NGE  -> maximum contribution
 
     // leetcode 901 online stock span
 
+    // Online Stock Span problem:
+// Given a stream of stock prices, calculate the span of each price.
+// The span of a price is the maximum number of consecutive prices that are smaller than or equal to the current price.
+// For example, if the prices are [7, 1, 5, 3, 6, 4], then the spans are [1, 1, 2, 1, 4, 2].
+// If the current price is the maximum so far, the span is 1.
+// If the current price is smaller than the previous prices, the span is the number of previous prices that are greater than or equal to the current price.
+
+// Online Stock Span solution using Stack:
+// We use a stack to keep track of the indices of the prices.
+// We iterate over the prices and for each price, we pop indices from the stack until we find a price that is smaller than or equal to the current price.
+// We calculate the span by subtracting the current index from the index of the popped element.
+// We push the current index onto the stack.
+// We repeat this process for all the prices.
+// The span array is constructed by iterating over the indices and their corresponding spans.
+//
     class StockSpanner {
         List<Integer> prices;
         Stack<Integer> st;
