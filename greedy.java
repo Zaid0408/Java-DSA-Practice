@@ -1,4 +1,4 @@
-
+import java.util.*;;
 
 public class Greedy{
     // leetcode 455 Assign Cookies
@@ -93,7 +93,7 @@ public class Greedy{
 // 6. Continue this greedy expansion step-by-step through the entire array loop.
 // 7. If the loop completes successfully without getting stuck, return true overall.
 
-    public boolean canJump(int[] nums) {
+    public boolean canJumpGreedy(int[] nums) {
         int maxReach=0;
         for(int i=0;i<nums.length;i++)
         {

@@ -721,7 +721,7 @@ public class stack {
             while(!s.isEmpty() && (s.peek()>=arr[i])) // only this condition is reveresed compared to next greater
                 s.pop();
             if(s.isEmpty())
-                nse[i]=-1;
+                nse[i]=n;
             else
                 nse[i]=s.peek();
             s.push(arr[i]);
@@ -736,7 +736,7 @@ public class stack {
         int n=arr.length;
         int pse[]=new int[n];
         Stack<Integer> s=new Stack<>();
-        for(int i=n-1;i>=0;i--)
+        for(int i = 0; i < n; i++)
         {
             while(!s.isEmpty() && (s.peek()>arr[i]))
                 s.pop();
@@ -1207,6 +1207,51 @@ PGE + NGE  -> maximum contribution
         return nse;
     }
 
+    // An alternative approach is :
+
+    /**
+ * Problem Name: 84. Largest Rectangle in Histogram
+ * Difficulty: Hard
+ * 
+ * Description: Given an array of integers heights representing the histogram's bar 
+ * height where the width of each bar is 1, return the area of the largest rectangle 
+ * in the histogram.
+ * 
+ * Example:
+ * Input: heights = [2, 1, 5, 6, 2, 3]
+ * Output: 10
+ * Explanation: The largest rectangle is formed by heights 5 and 6, giving an area of 5 * 2 = 10.
+ */
+
+    /*
+    This Java solution uses a monotonic increasing stack to track the indices of the histogram bars in linear time 
+    Time Complexity: O(n)
+    1. Iterate through heights: It loops from 0 to n (where an extra height of 0 is assumed at index n to flush out and compute areas for any remaining bars in the stack).
+    2. Maintain the Stack: Whenever the current bar is shorter than the bar at the stack's top, it means the taller bar has hit its right boundary (the current index). It pops the stack to get that bar's height.
+    3. Calculate Width and Area: The width of the rectangle is determined by the distance between the current index and the new stack top (or the full index if the stack is empty). It continuously updates maxArea with height * width.
+    */
+
+    public int largestRectangleArea(int[] heights) {
+        Stack<Integer> st = new Stack<>();
+        int maxArea = 0;
+        int n = heights.length;
+        for (int i = 0; i <= n; i++) {
+            int currHeight = (i == n) ? 0 : heights[i];
+            while (!st.isEmpty() && currHeight < heights[st.peek()]) {
+                int height = heights[st.pop()];
+                int width;
+                if (st.isEmpty()) {
+                    width = i;
+                } else {
+                    width = i - st.peek() - 1;
+                }
+                maxArea = Math.max(maxArea, height * width);
+            }
+            st.push(i);
+        }
+        return maxArea;
+    }
+
 
 
     public int largestRectangleAreaOptimized(int[] heights) {
@@ -1232,7 +1277,26 @@ PGE + NGE  -> maximum contribution
         return maxArea;
     }
 
-    // leetcode 85 
+    // leetcode 85 : revise largest area of histogram first before checking this 
+    /**
+ * PROBLEM: 85. Maximal Rectangle (Hard)
+ * Given a rows x cols binary matrix filled with '0's and '1's, find the largest 
+ * rectangle containing only '1's and return its area. It reduces the 2D matrix 
+ * problem into multiple 1D Largest Rectangle in Histogram sub-problems.
+ */
+
+    /**
+ * APPROACH:
+ * 1. Treat each row of the matrix as the base of a histogram.
+ * 2. Maintain a prefix height array where each element stores the count of 
+ *    consecutive '1's up to the current row. If a '0' is encountered, reset to 0.
+ * 3. For every row, calculate the maximum rectangular area using a Monotonic Stack 
+ *    (Previous Smaller Element / Next Smaller Element logic) in O(Cols) time.
+ * 4. The Monotonic Stack works because to maximize a rectangle's area anchored at a 
+ *    bar, we must find the nearest boundaries to the left and right that are shorter 
+ *    than the current bar. The stack keeps track of these boundaries efficiently.
+ * 5. Track the global maximum area across all row iterations and return the result.
+ */
     public int maximalRectangle(char[][] matrix) {
         int rowArea=0; int ans=0;
         int rows=matrix.length;

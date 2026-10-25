@@ -1428,6 +1428,61 @@ Because the question asks for the minimum number of operations.
         return rob2;
     }
 
+    // leetcode 91 Decode ways
+
+    public int numDecodingsMemoization(String s) {
+        int[] memo = new int[s.length()];
+        Arrays.fill(memo, -1); // Initialize memo array with -1 (unvisited)
+        return decode(s, 0, memo);
+    }
+    
+    private int decode(String s, int i, int[] dp) {
+        // Base case: if we reach the end of the string, that's 1 valid decoding way
+        if (i == s.length()) {
+            return 1;
+        }
+        // Base case: if the string starts with '0', it's invalid
+        if (s.charAt(i) == '0') {
+            return 0;
+        }
+        // If we already computed this subproblem, return it
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        
+        // 1. Decode single digit (s[i])
+        int ways = decode(s, i + 1, dp);
+        
+        // 2. Decode two digits (s[i] and s[i+1]) if valid (10 to 26)
+        if (i + 1 < s.length()) {
+            int twoDigit = (s.charAt(i) - '0') * 10 + (s.charAt(i + 1) - '0');
+            if (twoDigit >= 10 && twoDigit <= 26) {
+                ways += decode(s, i + 2, dp);
+            }
+        }
+        
+        // Save and return the result
+        return dp[i] = ways;
+    }
+
+    public int numDecodings(String s) {
+        int n=s.length();
+        int dp[]=new int[n+1];
+        dp[0]=1;
+        dp[1]= s.charAt(0)=='0'?0:1;
+        for(int i=2;i<=n;i++)
+        {
+            int j=s.charAt(i-1)-'0';
+            int k=(s.charAt(i-2) - '0')*10 +(s.charAt(i-1) -'0');
+            System.out.println(k+" "+j);
+            if(j>0)
+                dp[i]+= dp[i-1];
+            if(k>=10 && k<=26)
+                dp[i]+= dp[i-2];
+        }
+        return dp[n];
+    }
+
     // ninja training
 
     public int ninjaTraining(int[][] matrix) {
@@ -3067,7 +3122,6 @@ Meaning: "If an LIS ends here and has the global maximum length, add all LISs en
         {
             for(int j=i+1;j<n;j++) // since we need range here i to j hence j starts from i+1 
             {
-                else
                 {
                     int mini=Integer.MAX_VALUE;
                     for(int k=i;k<j;k++) // recurrence
