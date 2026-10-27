@@ -1430,6 +1430,17 @@ Because the question asks for the minimum number of operations.
 
     // leetcode 91 Decode ways
 
+    // 91. Decode Ways: Given a digit string, find the total number of ways to decode it 
+// into letters (A-Z) using mappings '1'->A to '26'->Z. Strings with invalid 
+// groupings or leading zeros return 0 ways.
+
+// Solution & Intuition: Uses bottom-up Dynamic Programming (like climbing stairs).
+// Let dp[i] be the number of ways to decode a prefix of length i. At each step, 
+// we check two options: decoding the single current digit (1-9) which adds dp[i-1] ways, 
+// and decoding the last two digits as a pair (10-26) which adds dp[i-2] ways. We sum 
+// these valid contributions iteratively, initializing dp[0]=1 as our base case, 
+// yielding an efficient O(n) time and O(n) space solution.
+
     public int numDecodingsMemoization(String s) {
         int[] memo = new int[s.length()];
         Arrays.fill(memo, -1); // Initialize memo array with -1 (unvisited)
@@ -1937,6 +1948,57 @@ Output: false
             }
         }
         return dp[n][amount]>amount? -1:dp[n][amount];
+    }
+
+    // LC 279 Perfect Squares: Given n, find the fewest perfect-square numbers that sum to n.
+    // A square can be used more than once; for example, 12 = 4 + 4 + 4, so the answer is 3.
+    // Memoization: helperNumSquares(n) returns the minimum squares needed to make the remaining value n.
+    // Try every square i*i <= n, then solve the smaller remainder n - i*i.
+    // Since squares can be reused, each recursive call can try all square values again.
+    // Add 1 for the chosen square and keep the minimum across all choices.
+    // Return 0 when n is 0, treat negative remainders as impossible, and cache each result in dp[n].
+
+    int ma=Integer.MAX_VALUE;
+    public int numSquares(int n) {
+        int dp[]=new int[n+1];
+        Arrays.fill(dp,-1);
+        return helperNumSquares(n,dp);
+    }
+    public int helperNumSquares(int n, int dp[])
+    {
+        if(n==0)
+            return 0;
+        if(n<0)
+            return ma;
+        if(dp[n]!=-1)
+            return dp[n];
+        
+        int ans=ma;
+        for(int i=1;i*i<=n;i++)
+        {
+            int s=i*i;
+            int recur=Math.min(ans,helperNumSquares(n-s,dp));
+            if(recur!=ma)
+                ans=Math.min(ans,recur+1);
+        }
+        return dp[n]=ans;
+    }
+
+    // Tabulation
+    public int numSquaresTabulation(int n) {
+        int dp[]=new int[n+1];
+        Arrays.fill(dp,Integer.MAX_VALUE);
+        dp[0]=0;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j*j<=n;j++)
+            {
+                int s=j*j;
+                if(s<=i)
+                    dp[i]=Math.min(dp[i],dp[i-s]+1);
+            }
+        }
+        return dp[n];
     }
 
     // DP on stocks 
