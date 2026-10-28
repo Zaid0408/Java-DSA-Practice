@@ -61,6 +61,22 @@ public class heap {
         }
         return ans;
     }
+    // leetcode 703
+    class KthLargest {
+        public KthLargest(int k, int[] nums) {
+            for(int num:nums)
+                pq.add(num);
+            p=k;
+        }
+        public int add(int val) {
+            pq.add(val);
+            while(pq.size()>p)
+                pq.poll();
+            return pq.peek();
+        }
+        PriorityQueue<Integer> pq=new PriorityQueue<>(); // this is minheap
+        int p=0;
+    }
     public int lastStoneWeight(int[] stones) { // Leetcode 1046
         PriorityQueue<Integer> maxBoi=new PriorityQueue<>(Collections.reverseOrder());
         maxBoi.add(0);
@@ -78,5 +94,56 @@ public class heap {
             }
         }
         return maxBoi.peek();
+    }
+
+    /*
+    Sort a K-Sorted Array
+You are given an integer array arr and an integer k.
+
+The array is k-sorted, meaning every element is at most k positions away from its correct position in the completely sorted array.
+
+Sort the array in non-decreasing order and return the sorted array.
+
+Your solution should take advantage of the k-sorted property rather than simply sorting the entire array.
+
+Example 1:
+Input: arr = [3, 1, 2, 5, 4, 7, 6], k = 2
+
+Output: [1, 2, 3, 4, 5, 6, 7]
+
+Explanation: Every element is at most 2 positions away from its position in the sorted array. After sorting, the array becomes [1, 2, 3, 4, 5, 6, 7].
+
+Example 2:
+Input: arr = [4, 2, 3, 1, 6, 5], k = 3
+
+Output: [1, 2, 3, 4, 5, 6]
+
+Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3, 4, 5, 6].
+    */
+     
+    public int[] sortKSortedArray(int[] arr, int k) {
+        if (arr == null || arr.length == 0) {
+            return arr;
+        }
+        PriorityQueue<Integer> pq=new PriorityQueue<>();
+        int i=0,j=0;
+        int ans[]=new int[arr.length];
+        while(i<=k && i<arr.length){
+            pq.add(arr[i]);
+            i++;
+        }
+
+        while(i<arr.length)
+        {
+            int cur=arr[i];
+            ans[j++]=pq.poll();
+            pq.add(cur);
+            i++;
+        }
+        while(pq.size()!=0){
+            ans[j++]=pq.poll();
+        }
+
+        return ans;
     }
 }
