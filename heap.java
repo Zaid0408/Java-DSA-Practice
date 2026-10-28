@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class heap {
@@ -144,6 +146,34 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
             ans[j++]=pq.poll();
         }
 
+        return ans;
+    }
+
+    // 1331. Rank Transform of an Array
+
+    public int[] arrayRankTransform(int[] arr) {
+        // Min-heap to automatically sort elements in ascending order
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int num : arr) {
+            pq.offer(num);
+        }
+        // Map to store each unique number and its corresponding rank
+        Map<Integer, Integer> rankMap = new HashMap<>();
+        int rank = 1;
+        // Extract elements from the heap in increasing order and assign ranks
+        while (!pq.isEmpty()) {
+            int num = pq.poll();
+            // If the number is not already mapped, assign the current rank
+            if (!rankMap.containsKey(num)) {
+                rankMap.put(num, rank++);
+            }
+        }
+        // Replace each element in the original array with its rank from the map
+        int[] ans = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            ans[i] = rankMap.get(arr[i]);
+        }
+        
         return ans;
     }
 }
