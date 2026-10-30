@@ -219,7 +219,42 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
             temp=temp.next;
         }
         return ans.next;
-        
+    }
 
+    // Leetcode 846. Hand of Straights
+    // Given an array of card numbers and a target group size, this checks 
+    // if all cards can be perfectly partitioned into groups of consecutive integers.
+    // It returns true if a valid arrangement exists, and false otherwise.
+
+    /* 
+         * Priority Queue Greedy Implementation Breakdown:
+         * 1. We dump all cards into a Min-Heap (PriorityQueue) so the smallest card 
+         *    is always readily available at the top.
+         * 2. We pull the smallest card using pq.poll(), treating it as the mandatory 
+         *    starting number for a new group.
+         * 3. We loop through the required subsequent numbers (current + 1, current + 2, etc.)
+         *    and use pq.remove() to pluck them out of the heap one by one.
+         * 4. If any required consecutive card is missing from the heap, pq.remove() 
+         *    returns false, meaning a valid straight cannot be formed.
+         */
+
+    public boolean isNStraightHand(int[] hand, int groupSize) {
+        if(hand.length==0 || hand.length% groupSize!=0)
+            return false;
+        PriorityQueue<Integer> pq=new PriorityQueue<>();
+        for(int hun:hand)
+            pq.add(hun);
+        
+        while(!pq.isEmpty())
+        {
+            int hun=pq.poll();
+            for(int i=1;i<groupSize;i++)
+            {
+                int nextCard=hun+i;
+                if(!pq.remove(nextCard))
+                    return false;
+            }
+        }
+        return true;
     }
 }
