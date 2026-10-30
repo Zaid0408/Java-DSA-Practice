@@ -176,4 +176,50 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
         
         return ans;
     }
+
+
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode() {}
+        ListNode(int val) { this.val = val; }
+        ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+    }
+    // leetcode 23 Merge K Sorted lists
+    // You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+    // Merge all the linked-lists into one sorted linked-list and return it.
+
+    /*
+    Simply add all the elemts in the list to the PQ , pop back one by one into a new list
+    Make sure while popping back we delink the exiting the pointer otherwise it will cause a cycle
+    */
+
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists==null || lists.length==0 || (lists.length==1 && lists[0]==null))
+            return null;
+
+        PriorityQueue<ListNode> pq=new PriorityQueue<>((a,b)->Integer.compare(a.val,b.val));
+        for(ListNode list:lists)
+        {
+            ListNode node=list;
+            while(node!=null)
+            {
+                pq.add(node);
+                node=node.next;
+
+            }
+        }
+        ListNode ans=new ListNode(-1);
+        ListNode temp=ans;
+        while(pq.size()!=0)
+        {
+            ListNode node=pq.poll();
+            node.next=null; // delinking is important to prevent cycles 
+            temp.next=node;
+            temp=temp.next;
+        }
+        return ans.next;
+        
+
+    }
 }

@@ -258,4 +258,40 @@ public class hashmap {
         //findItenaryForTicket();
         SubArrZeroSum();
     }
+
+    // Leetcode 621. Task Scheduler
+
+/*
+ * THE "SLOT-FILLING" INTUITION:
+ * 1. The task with the highest frequency (maxFreq) dictates the overall timeline structure.
+ * 2. If 'A' appears 3 times, we need to arrange them with spaces in between: A -> _ -> _ -> A -> _ -> _ -> A
+ * 3. This creates (maxFreq - 1) full "chunk blocks". 
+ * 4. Each block must hold the task itself plus its mandatory cooling period, making the block size (n + 1).
+ * 5. Multiplying these gives the total slots needed for all blocks: (maxFreq - 1) * (n + 1).
+ * 6. Finally, we add 'countMax' to account for the trailing tasks sitting at the very end of the final row.
+ * 7. If our actual task count is larger than this formula's result, it means we have enough tasks to completely 
+ *    fill all idle gaps (and more), making tasks.length the natural minimum answer.
+ */
+
+
+    public int leastInterval(char[] tasks, int n) {
+        HashMap<Character,Integer> hm=new HashMap<>();
+        for(char ch:tasks)
+        {
+            hm.put(ch,hm.getOrDefault(ch,0)+1);
+        }
+        int maxfreak=0;
+        for(int val:hm.values())
+        {
+            maxfreak=Math.max(maxfreak,val);
+        }
+        int countfreak=0;
+        for(int val:hm.values())
+        {
+            if(val==maxfreak)
+                countfreak++;
+        }
+        int structuralIntervals= (maxfreak-1) * (n+1) + countfreak;
+        return Math.max(tasks.length,structuralIntervals);
+    }
 }
