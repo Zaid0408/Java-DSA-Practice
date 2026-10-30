@@ -257,4 +257,37 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
         }
         return true;
     }
+
+    // leetcode 1296. Divide Array in Sets of K Consecutive Numbers , same pattern as above question
+
+    // Question: Determine if the array 'nums' can be divided into sets 
+    // of 'k' consecutive numbers each. Length of nums must be a 
+    // multiple of k.
+
+/* Approach: Using a Min-PriorityQueue to greedily always pick 
+   the smallest available number as the start of a new group. 
+   For each starting number, we look for the next k-1 consecutive 
+   elements in the queue and remove them one by one. If any 
+   required consecutive element is missing, return false. */
+
+   public boolean isPossibleDivide(int[] nums, int k) {
+        if(nums.length==0 || nums.length % k!=0)
+            return false;
+
+        PriorityQueue<Integer> pq=new PriorityQueue<>();
+        for(int hun:nums)
+            pq.add(hun);
+        
+        while(!pq.isEmpty())
+        {
+            int hun=pq.poll();
+            for(int i=1;i<k;i++)
+            {
+                int nextCard=hun+i;
+                if(!pq.remove(nextCard))
+                    return false;
+            }
+        }
+        return true;
+    }
 }
