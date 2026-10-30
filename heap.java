@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class heap {
     static class heap1 { // implementing heap using arraylist
@@ -289,5 +292,74 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
             }
         }
         return true;
+    }
+
+    // leetode 355. Design Twitter
+    // VVIP Question 
+
+    class Twitter {
+        class Tweet {
+            int tweetid;
+            int time;
+            // Twwet must need id and time so that it pops up in the feed in accordance with the latest time 
+            Tweet(int tweetid, int time) {
+                this.tweetid = tweetid;
+                this.time = time;
+            }
+        }
+        HashMap<Integer, Set<Integer>> following; // store following
+        HashMap<Integer, List<Tweet>> posts; // store posts of the current user and the following people as well 
+        int globalTimeStamp=0; // this is necessary as posts will be made at different times 
+        // makes fetching top 10 postst easier based on time stamps being the largest 
+        public Twitter() {
+            following=new HashMap<>();
+            posts=new HashMap<>();
+        }
+        
+        public void postTweet(int userId, int tweetId) {
+            List<Tweet> tweets=posts.getOrDefault(userId,new ArrayList<>());
+            tweets.add(new Tweet(tweetId,++globalTimeStamp));
+            posts.put(userId,tweets);
+        }
+        // 1. A user's news feed contains their own tweets and tweets from everyone they follow.
+        // 2. Each user's tweets are already stored in chronological order (oldest to newest).
+        // 3. We need to merge these multiple sorted timelines to find the 10 most recent tweets.
+        // 4. Use a max heap to always get the most recent tweet across all users.
+        // 5. Initially, insert only the latest tweet of each user into the heap.
+        // 6. Poll the most recent tweet and add its tweetId to the result.
+        // 7. After polling, insert the next older tweet from the same user's timeline.
+        // 8. Repeat until we collect 10 tweets or the heap becomes empty.
+        public List<Integer> getNewsFeed(int userId) {
+            Set<Integer> followees = following.getOrDefault(userId, new HashSet<>()); // get all the following of the user 
+            PriorityQueue<Tweet> maxHeap = new PriorityQueue<>((a, b) -> b.time - a.time); // maxheap based on timestamp pf the post
+
+            // Add current user's tweets
+            List<Tweet> tweets = posts.getOrDefault(userId, new ArrayList<>());
+            maxHeap.addAll(tweets);
+
+            // Add followees' tweets
+            for (int followee : followees) {
+                List<Tweet> followeeTweets= posts.getOrDefault(followee, new ArrayList<>());
+                maxHeap.addAll(followeeTweets);
+            }
+            List<Integer> result = new ArrayList<>();
+            // Extract at most 10 most recent tweets
+            while (!maxHeap.isEmpty() && result.size() < 10) {
+                result.add(maxHeap.poll().tweetid);
+            }
+            return result;
+        }
+        
+        public void follow(int followerId, int followeeId) {
+            Set<Integer> followees = following.getOrDefault(followerId, new HashSet<>());
+            followees.add(followeeId);
+            following.put(followerId, followees);
+        }
+        
+        public void unfollow(int followerId, int followeeId) {
+            Set<Integer> followees = following.getOrDefault(followerId, new HashSet<>());
+            followees.remove(followeeId);
+            following.put(followerId, followees);
+        }
     }
 }
