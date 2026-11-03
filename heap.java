@@ -56,6 +56,7 @@ public class heap {
     
         
     }
+    // leetcode 215 Kth Largest Element in an Array
     public int findKthLargest(int[] nums, int k) {
         PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
         for(int num: nums)
@@ -362,4 +363,40 @@ Explanation: The array satisfies the k = 3 condition. Sorting it gives [1, 2, 3,
             following.put(followerId, followees);
         }
     }
+
+    // leetcode 295. Find Median from Data Stream
+    // Given a stream of data you need to find the median of the numbers till that particular point
+
+    /*
+    Intuition : One min heap and one max heap
+    While adding the num add to the maxheap first , followed by pushing the peek of maxheap into the min heap
+    if(minheap.size()>maxheap.size()) add the minheap peek to the maxheap to balance the number of data in both 
+    if numbers are odd the median is peek of maxheap
+    else it is the average of peek va;lues of both minheap and maxheap
+    */
+    class MedianFinder {
+        PriorityQueue<Integer> minheap;
+        PriorityQueue<Integer> maxheap;
+        int k=0;
+        public MedianFinder() {
+            minheap=new PriorityQueue<>();
+            maxheap=new PriorityQueue<>(Collections.reverseOrder()); // maxheap normal declaration
+            k=0;
+        }
+        
+        public void addNum(int num) {
+            maxheap.add(num);
+            minheap.add(maxheap.poll());
+            k++;
+            if(minheap.size()>maxheap.size())
+                maxheap.add(minheap.poll());
+        }
+        
+        public double findMedian() {
+            if(k%2==1)
+                return maxheap.peek();
+            return ((double)maxheap.peek()+minheap.peek())/2;
+        }
+    }
+
 }
