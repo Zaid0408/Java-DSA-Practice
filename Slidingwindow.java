@@ -73,4 +73,32 @@ public class Slidingwindow {
         return ans;
     }
 
+    // Leetcode 1004. Max Consecutive Ones III
+    /*
+    Given a binary array nums and an integer k, 
+    return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+    */
+    public int longestOnes(int[] nums, int k) {
+        int left = 0,right = 0;
+        int zeroCount = 0;
+        int maxLen = 0;
+        while (right < nums.length) {
+            // If we encounter a zero, increment our zero count
+            if (nums[right] == 0) {
+                zeroCount++;
+            }
+            // If zeros exceed k, shrink the window from the left
+            while (zeroCount > k) {
+                if (nums[left] == 0) {
+                    zeroCount--;
+                }
+                left++;
+            }
+            // Update the maximum length of valid window found so far
+            maxLen = Math.max(maxLen, right - left + 1);
+            right++;
+        }
+        return maxLen;
+    }
+
 }
