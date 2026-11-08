@@ -42,5 +42,35 @@ public class Slidingwindow {
 
     // Longest and Smallest Window Problems:
 
-    
+    // leetcode 3 : Longest Substring Without Repeating Characters
+
+    /*
+    Given a string s, find the length of the longest substring without repeating characters.
+    Substring here means order matters and should be continous. 
+    For example, "abc" is a substring of "abcde", but "ace" is not. not to be confused with subsequence.
+    */
+
+    /*
+    Intuition : Store an array to increment count of all characters in the current window. 
+    If any character count exceeds 1, we have a duplicate and we need to shrink the window from the left until all characters are unique again. 
+    Keep track of the maximum length of the window during this process.
+    */
+
+    public int lengthOfLongestSubstring(String s) {
+        int charSum[]=new int[128];
+        int l=0,ans=0;
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            charSum[ch]++; // append the character to the current window regardless of whether it is a duplicate or not
+            while(charSum[ch]>1) // if the character count exceeds 1, we have a duplicate and need to shrink the window
+            {
+                charSum[s.charAt(l)]--; // l here is the left pointer of the window, we decrement the count of the character at the left pointer
+                l++; // move the left pointer to the right to shrink the window
+            }
+            ans=Math.max(ans,i-l+1); // Max window length is the current index minus the left pointer plus 1 
+        }
+        return ans;
+    }
+
 }
