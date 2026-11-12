@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 public class Slidingwindow {
     // Constant Window:
 
@@ -103,4 +105,37 @@ public class Slidingwindow {
         return maxLen;
     }
 
+    // leetcode 903 Fruits into baskets (question is same as longest substring with at most 2 unique characters but is framed in a bad way)
+    // the problem is basically Find the length of the longest sub array such that it has only two unique elements
+
+    /* Approach:
+    We initialize two pointers: start and end to define our sliding window.
+
+A HashMap stores the count of each fruit type in the current window.
+
+Expand the window by moving end ➡️ and adding fruits to the map.
+
+If the map has more than 2 fruit types, shrink the window from start until we're back to only two types 🍎🍌.
+
+Keep updating the maximum length (maxLen) at each valid window.
+     */
+    public int totalFruit(int[] fruits) {
+        HashMap<Integer,Integer> hm =new HashMap<>();
+        int maxLen=0;
+        int left=0,right=0;
+        while(right<fruits.length)
+        {
+            hm.put(fruits[right],hm.getOrDefault(fruits[right],0)+1);
+            while(hm.size()>=3)
+            {
+                hm.put(fruits[left],hm.get(fruits[left])-1);
+                if(hm.get(fruits[left])==0)
+                    hm.remove(fruits[left]);
+                left++;
+            }
+            maxLen=Math.max(maxLen,right-left+1);
+            right++;
+        }
+        return maxLen;
+    }
 }
