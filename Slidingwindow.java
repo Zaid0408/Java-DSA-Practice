@@ -38,6 +38,8 @@ public class Slidingwindow {
             minSum = Math.min(minSum, currentWindowSum);
         }
         return sum-minSum;
+        // minSum is the minimum sum of the middle subarray of size (n - k), and sum is the total sum of all cards.
+        // hence it is important to subtract from here
     }
 
     // Longest and Smallest Window Problems:
