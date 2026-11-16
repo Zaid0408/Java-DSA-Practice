@@ -1,5 +1,7 @@
 import java.util.HashMap;
 
+import javax.xml.stream.events.Characters;
+
 public class Slidingwindow {
     // Constant Window:
 
@@ -178,7 +180,31 @@ Once all characters are matched, we try to shrink the window from the left to fi
 
     // Counting Sub Arrays / Sub strings problems 
 
+    // 1358. Number of Substrings Containing All Three Characters
+    // Given a string s consisting only of characters a, b and c.
+    // Return the number of substrings containing at least one occurrence of all these characters a, b and c.
+
     // Brute force Gives TLE
+    /* INTUITION:
+ * Fix a starting index 'i' and expand a substring forward using index 'j'.
+ * Track the presence of 'a', 'b', and 'c' using a small frequency/presence 
+ * array of size 3 (since only these three characters exist).
+ * 
+ * KEY OPTIMIZATION (EARLY BREAK):
+ * The moment our substring s[i...j] contains all three characters (sum == 3),
+ * we don't need to keep extending 'j' one by one. Why? Because adding any 
+ * remaining characters to the right of 'j' will still keep the substring valid.
+ * 
+ * Therefore, every substring starting at 'i' and ending at 'j', 'j+1', ..., 'n-1'
+ * is guaranteed to be valid. That gives us (n - j) valid substrings for this 'i'
+ * in one shot, allowing us to break out of the inner loop immediately.
+ * 
+ * COMPLEXITY:
+ * - Time:  O(N^2) in the worst case (e.g., "aaaa...bc", where the valid condition 
+ *          isn't met until the very end of the string for almost every 'i'). 
+ *          This causes Time Limit Exceeded (TLE) on large inputs.
+ * - Space: O(1) as the tracking array always has a fixed size of 3.
+ */
     public int numberOfSubstrings(String s) {
         int n=s.length();
         int cnt=0;
@@ -200,6 +226,43 @@ Once all characters are matched, we try to shrink the window from the left to fi
         }
         return cnt;
     }
+    // Optimal soln
 
-    
+    /* INTUITION:
+ * Instead of fixing the START of a substring and looking forward, we fix the 
+ * END of a substring at the current index 'i' and look backward.
+ * 
+ * HOW IT WORKS:
+ * 1. Maintain an array 'hash' of size 3 initialized to {-1, -1, -1} to store 
+ *    the most recent (last seen) index of 'a', 'b', and 'c' as we scan left to right.
+ * 2. Once all three characters have been seen at least once (none are -1), 
+ *    we can form valid substrings ending at the current index 'i'.
+ * 3. To find the SHORTEST valid substring ending at 'i', we must include the 
+ *    earliest among the three last-seen positions. Let this index be:
+ *    minIdx = Math.min(hash[0], Math.min(hash[1], hash[2]))
+ *    The shortest valid window is s[minIdx ... i].
+ * 4. Since s[minIdx ... i] already contains all three characters, prepending 
+ *    ANY character before 'minIdx' (from index 0 up to minIdx - 1) will also 
+ *    produce a valid substring ending at 'i'.
+ * 5. Thus, all starting indices from 0 to 'minIdx' form valid substrings ending 
+ *    at 'i'. The total count of such starting positions is (minIdx + 1).
+ * 
+ * COMPLEXITY:
+ * - Time:  O(N) — we traverse the string in a single pass, doing O(1) work per step.
+ * - Space: O(1) — uses only a fixed-size array of 3 integers.
+ */
+    public int numberOfSubstringsOpt(String s) {
+        int n=s.length();
+        int cnt=0;
+        int hash[]=new int[]{-1,-1,-1};
+        for(int i=0;i<n;i++)
+        {
+            hash[s.charAt(i)-'a']=i;
+            if(hash[0]!=-1 && hash[1]!=-1 && hash[2]!=-1)
+            {
+                cnt=cnt + 1 + Math.min(hash[0],Math.min(hash[1],hash[2]));
+            }
+        }
+        return cnt;
+    }
 }
