@@ -149,7 +149,6 @@ Sliding Window Approach: We expand a window from right to left using two pointer
 Tracking Counts: We use frequency arrays (have and need) to ensure every required character from t is satisfied. 
 Once all characters are matched, we try to shrink the window from the left to find the minimum possible length while still keeping all required characters.
     */
-   class Solution {
     public String minWindow(String s, String t) {
         int[] have = new int[128], need = new int[128];
         for (char ch : t.toCharArray()) need[ch]++; // Count required chars
@@ -162,7 +161,7 @@ Once all characters are matched, we try to shrink the window from the left to fi
             if (need[ch] > 0 && have[ch] <= need[ch]) 
                 matched++; // Track fulfilled needs
             while (matched == t.length()) { // When all chars are found, shrink window
-                
+
                 if (right - left + 1 < minLen) { 
                     minLen = right - left + 1; start = left; 
                 }
@@ -175,5 +174,9 @@ Once all characters are matched, we try to shrink the window from the left to fi
         }
         return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
     }
-}
+
+
+    // Counting Sub Arrays / Sub strings problems 
+
+    
 }

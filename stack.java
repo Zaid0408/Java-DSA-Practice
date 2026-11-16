@@ -1,7 +1,5 @@
 import java.util.*;
 
-import org.w3c.dom.Node;
-
 public class stack {
     static class StackUsingArrayList{// Implement Stack using ArrayList
         static ArrayList<Integer> list=new ArrayList<>();
@@ -1231,7 +1229,7 @@ PGE + NGE  -> maximum contribution
     3. Calculate Width and Area: The width of the rectangle is determined by the distance between the current index and the new stack top (or the full index if the stack is empty). It continuously updates maxArea with height * width.
     */
 
-    public int largestRectangleArea(int[] heights) {
+    public int largestRectangleArea2(int[] heights) {
         Stack<Integer> st = new Stack<>();
         int maxArea = 0;
         int n = heights.length;
