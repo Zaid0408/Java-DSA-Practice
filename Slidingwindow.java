@@ -138,4 +138,42 @@ Keep updating the maximum length (maxLen) at each valid window.
         }
         return maxLen;
     }
+
+    // leetcode 76
+    /*
+    Minimum Window Substring
+You are given two strings: s and t. 
+Your goal is to find the shortest substring in s that contains all the characters found in t (including duplicates). If no such substring exists, you return an empty string "".
+
+Sliding Window Approach: We expand a window from right to left using two pointers (left and right).
+Tracking Counts: We use frequency arrays (have and need) to ensure every required character from t is satisfied. 
+Once all characters are matched, we try to shrink the window from the left to find the minimum possible length while still keeping all required characters.
+    */
+   class Solution {
+    public String minWindow(String s, String t) {
+        int[] have = new int[128], need = new int[128];
+        for (char ch : t.toCharArray()) need[ch]++; // Count required chars
+
+        int left = 0, matched = 0, minLen = Integer.MAX_VALUE, start = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right); 
+            have[ch]++; // Expand window to the right
+            if (need[ch] > 0 && have[ch] <= need[ch]) 
+                matched++; // Track fulfilled needs
+            while (matched == t.length()) { // When all chars are found, shrink window
+                
+                if (right - left + 1 < minLen) { 
+                    minLen = right - left + 1; start = left; 
+                }
+                have[s.charAt(left)]--; // Remove leftmost char and update match count if needed
+
+                if (need[s.charAt(left)] > 0 && have[s.charAt(left)] < need[s.charAt(left)]) 
+                    matched--;
+                left++; // Shrink from left
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
+    }
+}
 }
