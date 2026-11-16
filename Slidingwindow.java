@@ -178,5 +178,28 @@ Once all characters are matched, we try to shrink the window from the left to fi
 
     // Counting Sub Arrays / Sub strings problems 
 
+    // Brute force Gives TLE
+    public int numberOfSubstrings(String s) {
+        int n=s.length();
+        int cnt=0;
+        for(int i=0;i<n;i++)
+        {
+            int hash[]=new int[3];
+            for(int j=i;j<n;j++)
+            {
+                hash[s.charAt(j)-'a']=1;
+                if(hash[0]+hash[1]+hash[2]==3)
+                {
+                    cnt=cnt + (n-j);
+                    break; 
+                    // why ? Because we dont need to count the remaining substrings when the needed characters are already present
+                    // example string is abcaa : so when abc is counted as correct no matter how many letters you add the substring is valid 
+                    // hence just add the remainig number of characters to the cnt 
+                }
+            }
+        }
+        return cnt;
+    }
+
     
 }
