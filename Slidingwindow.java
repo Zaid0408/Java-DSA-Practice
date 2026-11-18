@@ -265,4 +265,42 @@ Once all characters are matched, we try to shrink the window from the left to fi
         }
         return cnt;
     }
+
+    // leetcode 930. Binary Subarrays With Sum
+
+    // Given a binary array nums and an integer goal, return the number of non-empty subarrays with a sum goal.
+    // A subarray is a contiguous part of the array.
+    /*
+    Input: nums = [1,0,1,0,1], goal = 2
+Output: 4
+Explanation: The 4 subarrays are bolded and underlined below:
+[{1,0,1},0,1] 
+[{1,0,1,0},1]
+[1,{0,1,0,1}]
+[1,0,{1,0,1}]
+    */
+
+
+    /*
+    Intuition:
+    transform the problem into finding two prefix sums whose difference equals goal
+    While iterating through the array, keep track of how many times each prefix sum has appeared so far.
+    If the current prefix sum is curr, how many previous prefix sums equal to curr - goal exist, append them to ans
+    */
+
+    public int numSubarraysWithSum(int[] nums, int goal) {
+        int ans=0,prefix=0,n=nums.length;
+        HashMap<Integer,Integer>  hm=new HashMap<>();
+        hm.put(0,1);
+        for(int i=0;i<n;i++)
+        {
+            prefix+= nums[i];
+            if(hm.containsKey(prefix-goal))
+            {
+                ans += hm.get(prefix-goal);
+            }
+            hm.put(prefix,hm.getOrDefault(prefix,0)+1);
+        }
+        return ans;
+    }
 }
