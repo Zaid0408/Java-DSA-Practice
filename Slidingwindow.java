@@ -303,4 +303,41 @@ Explanation: The 4 subarrays are bolded and underlined below:
         }
         return ans;
     }
+
+    // leetcode 1248. Count Number of Nice Subarrays
+
+    // Given an array of integers nums and an integer k.
+    // A continuous subarray is called nice if there are k odd numbers on it.
+    // Return the number of nice sub-arrays.
+
+    /*
+    Input: nums = [1,1,2,1,1], k = 3
+Output: 2
+Explanation: The only sub-arrays with 3 odd numbers are [1,1,2,1] and [1,2,1,1].
+    */
+
+    // Same or similar intuition as above with one change , convert the input array to aarsy of 0s and 1s based on nums[i]%2
+    // then it is the same problem as above 
+
+    public int numberOfSubarrays(int[] nums, int k) {
+        int ans=0,prefix=0,n=nums.length;
+        int num[]=new int[n];
+        for(int i=0;i<n;i++)
+        {
+            if(nums[i]%2==1)
+                num[i]=1;
+        }
+        HashMap<Integer,Integer>  hm=new HashMap<>();
+        hm.put(0,1);
+        for(int i=0;i<n;i++)
+        {
+            prefix+= num[i];
+            if(hm.containsKey(prefix-k))
+            {
+                ans = ans+ hm.get(prefix-k);
+            }
+            hm.put(prefix,hm.getOrDefault(prefix,0)+1);
+        }
+        return ans;
+    }
 }
