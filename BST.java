@@ -1,6 +1,5 @@
 import java.util.*;
 
-import javax.swing.tree.TreeNode;
 public class BST {
     static class Node{
         int data;
@@ -246,7 +245,7 @@ Every recursive call narrows the valid range. If any node falls outside its rang
 Intuition:
 - Inorder traversal of a BST is always strictly increasing.
 - Keep track of the previously visited node.
-- If prev.val >= current.val, BST property is violated.
+- If prev.data >= current.data, BST property is violated.
 - Traverse Left -> Root -> Right.
     *
      */
@@ -443,5 +442,55 @@ Intuition:
         int arr[]={1,2,3,4,5,6,7};
         Node root=ArrToBST(arr, 0, arr.length-1);
         InOrder(root);
+    }
+
+    // Leetcode 99 Recover Binary Search Tree
+
+    /*
+    You are given the root of a binary search tree (BST), where the values of exactly two nodes of the tree were swapped by mistake. 
+    Recover the tree without changing its structure.
+    Input: root = [1,3,null,null,2]
+Output: [3,1,null,null,2]
+Explanation: 3 cannot be a left child of 1 because 3 > 1. Swapping 1 and 3 makes the BST valid.
+    */
+
+    /**
+     * An inorder traversal of a valid BST visits values in ascending order, so swapped nodes
+     * appear as one or two places where the current value is smaller than the previous value.
+     * At the first such violation, save the previous node as the first misplaced node and the
+     * current node as the second; if a second violation appears, update the second node to current.
+     * This handles both adjacent swapped nodes (one violation) and non-adjacent ones (two).
+     * After traversal, swapping just these two nodes' values restores the BST without changing
+     * its structure. The traversal tracks its previous node and the two candidates in fields.
+     */
+    int count=0;
+    Node prev=null,first=null,second;
+    public void recoverTree(Node root) {
+        InorderRecoverTree(root);
+        int swap=first.data;
+        first.data=second.data;
+        second.data=swap;
+
+        return;
+    }
+    public void InorderRecoverTree(Node root)
+    {
+        if(root==null)
+            return;
+        InorderRecoverTree(root.left);
+        if(prev!=null && prev.data>root.data)
+        {
+            if(count==0){
+                first=prev;
+                second=root;
+                count=1;
+            }
+            else{
+                second=root;
+                count=2;
+            }
+        }
+        prev=root;
+        InorderRecoverTree(root.right);
     }
 }

@@ -1,7 +1,5 @@
 import java.util.HashMap;
 
-import javax.xml.stream.events.Characters;
-
 public class Slidingwindow {
     // Constant Window:
 
